@@ -1,29 +1,52 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { Hero } from "@/components/site/Hero";
+import { TrustBar } from "@/components/site/TrustBar";
+import { WhyAvior } from "@/components/site/WhyAvior";
+import { BestSellers } from "@/components/site/BestSellers";
+import { WhiteGlove } from "@/components/site/WhiteGlove";
+import { RoomPlanner } from "@/components/site/RoomPlanner";
+import { Inspiration } from "@/components/site/Inspiration";
+import { FAQ } from "@/components/site/FAQ";
+import { Footer } from "@/components/site/Footer";
+import { useCartSync } from "@/hooks/useCartSync";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Avior Living — Designer Furniture Without Showroom Markups" },
+      {
+        name: "description",
+        content:
+          "Factory-direct furniture for Singapore homes. Up to 40% below retail with white-glove delivery, assembly and packaging disposal included.",
+      },
+      { property: "og:title", content: "Avior Living — Factory-Direct Furniture in Singapore" },
+      {
+        property: "og:description",
+        content:
+          "Designer furniture without showroom markups. Delivery, assembly and disposal included across Singapore.",
+      },
     ],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  useCartSync();
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background">
+      <SiteHeader />
+      <main>
+        <Hero />
+        <TrustBar />
+        <WhyAvior />
+        <BestSellers />
+        <WhiteGlove />
+        <RoomPlanner />
+        <Inspiration />
+        <FAQ />
+      </main>
+      <Footer />
     </div>
   );
 }
