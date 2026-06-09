@@ -1,29 +1,26 @@
-import { Truck, Wrench, Recycle, MessageCircle, MapPin, Star } from "lucide-react";
-
-const items = [
-  { icon: Star, label: "Trusted by SG homeowners" },
-  { icon: Truck, label: "Delivery included" },
-  { icon: Wrench, label: "Assembly included" },
-  { icon: Recycle, label: "Packaging disposal" },
-  { icon: MessageCircle, label: "WhatsApp support" },
-  { icon: MapPin, label: "Designed for SG homes" },
+const stats = [
+  { big: "40%", small: "Below Retail" },
+  { big: "10,000+", small: "Singapore Homes" },
+  { big: "$0", small: "Delivery & Assembly" },
+  { big: "7 Days", small: "WhatsApp Support" },
 ];
 
 export function TrustBar() {
   return (
-    <section aria-label="Trust signals" className="border-y border-border bg-background">
+    <section aria-label="Avior Assurance" className="bg-primary text-primary-foreground">
       <div className="container-page">
-        <ul className="flex snap-x snap-mandatory gap-6 overflow-x-auto py-4 text-sm text-foreground/80 md:grid md:grid-cols-6 md:gap-3 md:overflow-visible">
-          {items.map(({ icon: Icon, label }) => (
-            <li
-              key={label}
-              className="flex shrink-0 snap-start items-center gap-2 md:justify-center"
-            >
-              <Icon className="h-4 w-4 text-accent" />
-              <span className="whitespace-nowrap text-xs md:text-[13px]">{label}</span>
-            </li>
+        <div className="grid grid-cols-2 divide-x divide-primary-foreground/15 md:grid-cols-4">
+          {stats.map((s) => (
+            <div key={s.small} className="px-4 py-8 text-center md:py-10">
+              <p className="font-display text-4xl leading-none tracking-tight sm:text-5xl md:text-6xl">
+                {s.big}
+              </p>
+              <p className="mt-3 text-xs font-semibold uppercase tracking-[0.15em] text-primary-foreground/80 sm:text-sm">
+                {s.small}
+              </p>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );
