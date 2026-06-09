@@ -1,23 +1,19 @@
 const stats = [
-  { big: "40%", small: "Below Retail" },
-  { big: "10,000+", small: "Singapore Homes" },
-  { big: "$0", small: "Delivery & Assembly" },
-  { big: "7 Days", small: "WhatsApp Support" },
+  { big: "40%", small: "Save on retail" },
+  { big: "$189", small: "Opening sale" },
+  { big: "$0", small: "Delivery assembly disposal" },
+  { big: "7 Days", small: "WhatsApp support" },
 ];
 
 export function TrustBar() {
   return (
-    <section aria-label="Avior Assurance" className="bg-primary text-primary-foreground">
+    <section aria-label="Avior value points" className="bg-primary text-primary-foreground">
       <div className="container-page">
-        <div className="grid grid-cols-2 divide-x divide-primary-foreground/15 md:grid-cols-4">
+        <div className="grid grid-cols-2 md:grid-cols-4">
           {stats.map((s) => (
-            <div key={s.small} className="px-4 py-8 text-center md:py-10">
-              <p className="font-display text-4xl leading-none tracking-tight sm:text-5xl md:text-6xl">
-                {s.big}
-              </p>
-              <p className="mt-3 text-xs font-semibold uppercase tracking-[0.15em] text-primary-foreground/80 sm:text-sm">
-                {s.small}
-              </p>
+            <div key={s.small} className="border-primary-foreground/12 px-4 py-7 text-center not-last:border-r md:py-9">
+              <p className="font-display text-4xl leading-none sm:text-5xl md:text-6xl">{s.big}</p>
+              <p className="mt-2 text-sm font-semibold text-primary-foreground/80 sm:text-base">{s.small}</p>
             </div>
           ))}
         </div>
