@@ -1,46 +1,47 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, X, Check } from "lucide-react";
 
 const traditional = ["Factory", "Distributor", "Retailer", "Showroom", "You"];
 const avior = ["Factory", "Avior", "You"];
 
 export function WhyAvior() {
   return (
-    <section id="why-avior" className="bg-cream py-20 md:py-28">
+    <section id="why-avior" className="bg-cream py-16 md:py-24">
       <div className="container-page">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="chip mb-4 bg-background">Why Avior exists</span>
-          <h2 className="font-display text-3xl tracking-tight sm:text-4xl md:text-5xl">
-            Same factories. <em className="not-italic text-accent">Half the markup.</em>
-          </h2>
-          <p className="mt-4 text-base text-muted-foreground">
-            Traditional furniture retailers stack distributor, importer and showroom margins
-            onto every piece. Avior sources directly from the same factories — and passes the
-            savings on to you.
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-accent">
+            Why Avior
           </p>
+          <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-6xl md:text-7xl">
+            Same factories.
+            <br />
+            <span className="text-accent">Half the price.</span>
+          </h2>
         </div>
 
         <div className="mt-14 grid gap-6 md:grid-cols-2">
           <PriceFlow
-            title="The Old Way"
-            sub="Up to 2.5× markup before it reaches you"
+            title="Everyone Else"
             steps={traditional}
             tone="muted"
-            badge="Retail pricing"
+            price="$2,499"
+            label="Retail Price"
           />
           <PriceFlow
-            title="The Avior Way"
-            sub="Up to 40% savings on every order"
+            title="Avior"
             steps={avior}
             tone="accent"
-            badge="Factory-direct"
+            price="$1,499"
+            label="You Pay"
           />
         </div>
 
-        <p className="mx-auto mt-10 max-w-xl text-center text-sm text-muted-foreground">
-          We don't run physical showrooms. We don't pay middlemen. You get the same quality,
-          built in the same factories that supply Singapore's biggest furniture brands —
-          for thousands of dollars less.
-        </p>
+        <div className="mt-8 rounded-3xl bg-accent px-6 py-8 text-center text-accent-foreground sm:py-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] opacity-80">You Save</p>
+          <p className="mt-2 font-display text-6xl leading-none tracking-tight sm:text-7xl md:text-8xl">
+            $1,000
+          </p>
+          <p className="mt-3 text-base font-medium opacity-90 sm:text-lg">On every sofa. Every time.</p>
+        </div>
       </div>
     </section>
   );
@@ -48,42 +49,40 @@ export function WhyAvior() {
 
 function PriceFlow({
   title,
-  sub,
   steps,
   tone,
-  badge,
+  price,
+  label,
 }: {
   title: string;
-  sub: string;
   steps: string[];
   tone: "muted" | "accent";
-  badge: string;
+  price: string;
+  label: string;
 }) {
   const isAccent = tone === "accent";
   return (
     <div
-      className={`rounded-2xl border p-6 md:p-8 ${
+      className={`rounded-3xl p-7 md:p-9 ${
         isAccent
-          ? "border-accent/30 bg-background shadow-[0_20px_60px_-30px_rgba(170,80,40,0.3)]"
-          : "border-border bg-background/60"
+          ? "bg-background shadow-[0_30px_80px_-30px_rgba(170,80,40,0.35)]"
+          : "bg-sand/60"
       }`}
     >
-      <div className="flex items-center justify-between">
-        <h3 className="font-display text-2xl">{title}</h3>
-        <span
-          className={`rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider ${
-            isAccent ? "bg-accent text-accent-foreground" : "bg-sand text-foreground/70"
-          }`}
-        >
-          {badge}
-        </span>
+      <div className="flex items-center gap-3">
+        {isAccent ? (
+          <Check className="h-6 w-6 rounded-full bg-accent p-1 text-accent-foreground" />
+        ) : (
+          <X className="h-6 w-6 rounded-full bg-foreground/10 p-1 text-foreground/60" />
+        )}
+        <h3 className="font-display text-3xl tracking-tight sm:text-4xl">{title}</h3>
       </div>
-      <p className="mt-1 text-sm text-muted-foreground">{sub}</p>
+
       <div className="mt-6 flex flex-wrap items-center gap-2">
         {steps.map((s, i) => (
           <div key={s} className="flex items-center gap-2">
             <span
-              className={`rounded-md px-3 py-2 text-sm font-medium ${
+              className={`rounded-lg px-3 py-2 text-sm font-semibold sm:text-base ${
                 isAccent && (s === "Avior" || s === "You")
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-foreground"
@@ -96,6 +95,17 @@ function PriceFlow({
             )}
           </div>
         ))}
+      </div>
+
+      <div className="mt-8 border-t border-border pt-5">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+        <p
+          className={`mt-1 font-display text-5xl leading-none tracking-tight sm:text-6xl ${
+            isAccent ? "text-accent" : "text-foreground/50 line-through decoration-2"
+          }`}
+        >
+          {price}
+        </p>
       </div>
     </div>
   );

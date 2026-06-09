@@ -3,47 +3,49 @@ import dining from "@/assets/inspiration-dining.jpg";
 import living from "@/assets/inspiration-living.jpg";
 
 const tiles = [
-  { src: bedroom, label: "Master Bedroom", tag: "Tampines BTO · 4-Room" },
-  { src: dining, label: "Dining Nook", tag: "Bishan Condo · 3-Bedder" },
-  { src: living, label: "Living Room", tag: "Punggol BTO · 5-Room" },
+  { src: living, label: "Living Room", count: "120+ pieces" },
+  { src: bedroom, label: "Bedroom", count: "80+ pieces" },
+  { src: dining, label: "Dining", count: "60+ pieces" },
 ];
 
 export function Inspiration() {
   return (
-    <section className="bg-cream py-20 md:py-28">
+    <section className="bg-cream py-16 md:py-24">
       <div className="container-page">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="max-w-xl">
-            <span className="chip mb-3 bg-background">Real Singapore homes</span>
-            <h2 className="font-display text-3xl tracking-tight sm:text-4xl md:text-5xl">
-              Home inspiration
-            </h2>
-            <p className="mt-3 text-sm text-muted-foreground">
-              See how homeowners across Singapore styled their spaces with Avior. Tag us
-              <span className="font-medium text-foreground"> #AviorAtHome</span> to be featured.
-            </p>
-          </div>
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-accent">
+            Shop By Room
+          </p>
+          <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-6xl md:text-7xl">
+            Built for
+            <br />
+            <span className="text-accent">Singapore homes.</span>
+          </h2>
         </div>
 
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
           {tiles.map((t) => (
-            <figure
+            <a
               key={t.label}
-              className="group relative overflow-hidden rounded-2xl bg-sand"
+              href="#bestsellers"
+              className="group relative block overflow-hidden rounded-3xl bg-sand"
             >
               <img
                 src={t.src}
-                alt={`${t.label} — ${t.tag}`}
+                alt={t.label}
                 loading="lazy"
-                className="h-[420px] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                className="h-[460px] w-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/60 to-transparent p-5 text-background">
-                <div>
-                  <p className="font-display text-xl text-cream">{t.label}</p>
-                  <p className="text-xs text-cream/80">{t.tag}</p>
-                </div>
-              </figcaption>
-            </figure>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-7 text-cream">
+                <p className="font-display text-4xl leading-none tracking-tight sm:text-5xl">
+                  {t.label}
+                </p>
+                <p className="mt-2 text-sm font-semibold uppercase tracking-wider text-cream/85">
+                  {t.count} →
+                </p>
+              </div>
+            </a>
           ))}
         </div>
       </div>

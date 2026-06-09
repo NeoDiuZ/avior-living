@@ -1,63 +1,50 @@
 import { Button } from "@/components/ui/button";
-import { Sparkles, Ruler, Eye } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import roomImg from "@/assets/inspiration-living.jpg";
 
 export function RoomPlanner() {
   return (
-    <section id="room-planner" className="bg-background py-20 md:py-28">
+    <section id="room-planner" className="bg-background py-16 md:py-24">
       <div className="container-page">
         <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
           <div className="relative order-2 md:order-1">
-            <div className="overflow-hidden rounded-2xl bg-sand">
+            <div className="overflow-hidden rounded-3xl bg-sand">
               <img
                 src={roomImg}
-                alt="Avior Room Planner preview — visualise furniture in your Singapore home before you buy"
+                alt="Avior Room Planner preview"
                 loading="lazy"
                 width={1024}
                 height={1280}
                 className="h-auto w-full object-cover"
               />
             </div>
-            <div className="absolute -bottom-4 right-4 flex items-center gap-2 rounded-xl border border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur">
-              <Sparkles className="h-4 w-4 text-accent" />
-              <span className="text-xs font-medium">AI-powered fit & style preview</span>
+            <div className="absolute -bottom-5 left-5 flex items-center gap-2 rounded-2xl bg-accent px-5 py-3 text-accent-foreground shadow-lg">
+              <Sparkles className="h-5 w-5" />
+              <span className="text-sm font-semibold uppercase tracking-wider">AI Preview</span>
             </div>
           </div>
 
           <div className="order-1 md:order-2">
-            <span className="chip mb-4">Room planner</span>
-            <h2 className="font-display text-3xl tracking-tight sm:text-4xl md:text-5xl">
-              Not sure if it'll fit?
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-accent">
+              Room Planner
+            </p>
+            <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-6xl md:text-7xl">
+              Will it fit?
+              <br />
+              <span className="text-accent">See it first.</span>
             </h2>
-            <p className="mt-4 max-w-lg text-base text-muted-foreground">
-              Upload a photo of your room or share your floor plan — and see how any Avior
-              piece will actually look in your home, at the right scale, before you spend
-              a single cent.
+            <p className="mt-5 max-w-lg text-lg font-medium text-foreground/80">
+              Snap a photo. We show you exactly how it looks in your HDB or condo.
             </p>
 
-            <ul className="mt-6 space-y-3 text-sm">
-              <li className="flex items-start gap-3">
-                <Ruler className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" />
-                <span>True-to-scale previews built for Singapore HDB and condo layouts.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Eye className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" />
-                <span>Try different fabrics, colours and configurations side by side.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Sparkles className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" />
-                <span>Get pieces recommended for your space — and your budget.</span>
-              </li>
-            </ul>
-
             <div className="mt-7 flex flex-wrap gap-3">
-              <Button size="lg" className="h-12 bg-primary px-6 text-primary-foreground hover:bg-primary/90">
-                Try the Room Planner
+              <Button size="lg" className="h-14 bg-primary px-8 text-base font-semibold text-primary-foreground hover:bg-primary/90">
+                Try Room Planner
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="h-12 border-foreground/15 bg-background px-6 hover:bg-secondary"
+                className="h-14 border-foreground/20 bg-background px-8 text-base font-semibold hover:bg-secondary"
                 asChild
               >
                 <a href="https://wa.me/6580000000" target="_blank" rel="noopener noreferrer">

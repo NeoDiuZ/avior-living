@@ -24,24 +24,24 @@ export function BestSellers() {
   }, []);
 
   return (
-    <section id="bestsellers" className="bg-background py-20 md:py-28">
+    <section id="bestsellers" className="bg-background py-16 md:py-24">
       <div className="container-page">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="chip mb-3">Customer favourites</span>
-            <h2 className="font-display text-3xl tracking-tight sm:text-4xl md:text-5xl">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-accent">
               Best Sellers
-            </h2>
-            <p className="mt-2 max-w-lg text-sm text-muted-foreground">
-              The pieces Singapore homeowners can't stop ordering — sized for BTOs, condos,
-              and everything in between.
             </p>
+            <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-6xl md:text-7xl">
+              Singapore's
+              <br />
+              <span className="text-accent">favourites.</span>
+            </h2>
           </div>
           <a
             href="#all"
-            className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+            className="text-base font-semibold text-foreground underline-offset-4 hover:underline"
           >
-            View all collections →
+            View All →
           </a>
         </div>
 
