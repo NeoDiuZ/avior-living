@@ -9,22 +9,24 @@ import { RoomPlanner } from "@/components/site/RoomPlanner";
 import { Inspiration } from "@/components/site/Inspiration";
 import { FAQ } from "@/components/site/FAQ";
 import { Footer } from "@/components/site/Footer";
+import { Collections } from "@/components/site/Collections";
+import { OpeningSale } from "@/components/site/OpeningSale";
 import { useCartSync } from "@/hooks/useCartSync";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Avior Living — Designer Furniture Without Showroom Markups" },
+      { title: "Avior Living Singapore Furniture | Factory Direct" },
       {
         name: "description",
         content:
-          "Factory-direct furniture for Singapore homes. Up to 40% below retail with white-glove delivery, assembly and packaging disposal included.",
+          "Avior Living offers factory direct furniture in Singapore with a $189 opening sale and Avior Assurance including delivery, assembly, disposal and WhatsApp support.",
       },
-      { property: "og:title", content: "Avior Living — Factory-Direct Furniture in Singapore" },
+      { property: "og:title", content: "Avior Living | Factory Direct Furniture Singapore" },
       {
         property: "og:description",
         content:
-          "Designer furniture without showroom markups. Delivery, assembly and disposal included across Singapore.",
+          "Save more on premium-looking furniture with factory direct pricing, a $189 opening sale, and Avior Assurance included.",
       },
     ],
   }),
@@ -39,6 +41,8 @@ function Index() {
       <main>
         <Hero />
         <TrustBar />
+        <Collections />
+        <OpeningSale />
         <WhyAvior />
         <BestSellers />
         <WhiteGlove />

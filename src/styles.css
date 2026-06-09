@@ -12,8 +12,8 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
 
-  --font-display: "Fraunces", "Cormorant Garamond", Georgia, serif;
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Libre Baskerville", Georgia, serif;
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -55,38 +55,31 @@
 
 :root {
   --radius: 0.5rem;
-
-  /* Warm neutral palette — Avior Living */
-  --background: oklch(0.985 0.008 80);          /* warm off-white */
-  --foreground: oklch(0.22 0.02 60);            /* deep warm ink */
+  --background: oklch(0.985 0.008 80);
+  --foreground: oklch(0.22 0.02 60);
   --card: oklch(0.99 0.006 80);
   --card-foreground: oklch(0.22 0.02 60);
   --popover: oklch(0.99 0.006 80);
   --popover-foreground: oklch(0.22 0.02 60);
-
-  --primary: oklch(0.27 0.025 50);              /* espresso */
+  --primary: oklch(0.27 0.025 50);
   --primary-foreground: oklch(0.97 0.01 80);
-  --secondary: oklch(0.94 0.012 75);            /* sand */
+  --secondary: oklch(0.94 0.012 75);
   --secondary-foreground: oklch(0.27 0.025 50);
   --muted: oklch(0.95 0.01 75);
   --muted-foreground: oklch(0.48 0.018 60);
-  --accent: oklch(0.62 0.13 45);                /* terracotta accent */
+  --accent: oklch(0.62 0.13 45);
   --accent-foreground: oklch(0.98 0.01 80);
-
   --destructive: oklch(0.55 0.2 27);
   --destructive-foreground: oklch(0.98 0.01 80);
-
   --border: oklch(0.9 0.012 75);
   --input: oklch(0.9 0.012 75);
   --ring: oklch(0.62 0.13 45);
-
   --cream: oklch(0.97 0.012 80);
   --sand: oklch(0.91 0.018 75);
   --clay: oklch(0.78 0.05 60);
   --terracotta: oklch(0.62 0.13 45);
   --ink: oklch(0.22 0.02 60);
   --success: oklch(0.55 0.12 150);
-
   --sidebar: oklch(0.97 0.012 80);
   --sidebar-foreground: oklch(0.22 0.02 60);
   --sidebar-primary: oklch(0.27 0.025 50);
@@ -128,18 +121,18 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
   }
 
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-feature-settings: "ss01", "cv11";
   }
 
   h1, h2, h3, h4, h5 {
     font-family: var(--font-display);
-    font-weight: 500;
-    letter-spacing: -0.015em;
+    font-weight: 700;
+    letter-spacing: 0;
   }
 }
 
@@ -159,7 +152,6 @@
   background: var(--color-secondary);
   color: var(--color-foreground);
   font-size: 0.78rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
+  font-weight: 600;
   white-space: nowrap;
 }
