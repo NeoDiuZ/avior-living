@@ -1,5 +1,6 @@
 "use client";
 
+import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Hero } from "@/components/site/Hero";
 import { TrustBar } from "@/components/site/TrustBar";
@@ -17,6 +18,7 @@ export function HomeContent() {
   useCartSync();
   return (
     <div className="min-h-screen bg-background">
+      <AnnouncementBar />
       <SiteHeader />
       <main className="pb-20 md:pb-0">
         <Hero />

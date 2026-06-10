@@ -16,9 +16,12 @@ export function ProductCard({ product, badge }: Props) {
   const isLoading = useCartStore((s) => s.isLoading);
 
   const price = variant?.price ?? node.priceRange.minVariantPrice;
-  // Show implied savings (illustrative only — based on declared "up to 40% below retail")
+  // Illustrative retail comparison based on declared "up to 40% below retail"
   const numericPrice = parseFloat(price.amount);
   const retailPrice = Math.round(numericPrice / 0.62 / 10) * 10;
+  const hasSavings = retailPrice > numericPrice;
+  const savingAmount = hasSavings ? retailPrice - numericPrice : 0;
+  const savingPercent = hasSavings ? Math.round((savingAmount / retailPrice) * 100) : 0;
 
   const handleAdd = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -56,6 +59,11 @@ export function ProductCard({ product, badge }: Props) {
             {badge}
           </span>
         )}
+        {hasSavings && (
+          <span className="absolute right-3 top-3 rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground">
+            -{savingPercent}%
+          </span>
+        )}
         <button
           onClick={handleAdd}
           disabled={!variant || isLoading}
@@ -72,13 +80,18 @@ export function ProductCard({ product, badge }: Props) {
           )}
         </div>
         <div className="text-right">
-          <p className="font-display text-base text-foreground">
+          <p className="font-display text-base font-semibold text-foreground">
             {formatPrice(price.amount, price.currencyCode)}
           </p>
-          {retailPrice > numericPrice && (
-            <p className="text-[11px] text-muted-foreground line-through">
-              {formatPrice(retailPrice, price.currencyCode)}
-            </p>
+          {hasSavings && (
+            <>
+              <p className="text-[11px] text-muted-foreground line-through">
+                {formatPrice(String(retailPrice), price.currencyCode)}
+              </p>
+              <p className="text-[11px] font-semibold text-accent">
+                Save {formatPrice(String(savingAmount), price.currencyCode)}
+              </p>
+            </>
           )}
         </div>
       </div>

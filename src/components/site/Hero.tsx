@@ -16,7 +16,21 @@ export function Hero() {
           <p className="mt-5 text-base text-foreground/70 sm:text-lg lg:text-xl">
             Factory-direct pricing, white-glove delivery, assembly and disposal included across Singapore.
           </p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+
+          {/* Price anchor — scannable savings at a glance */}
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground">
+              From $189
+            </span>
+            <span className="inline-flex items-center rounded-lg bg-secondary px-4 py-2.5 text-sm font-semibold text-foreground">
+              Up to 40% below retail
+            </span>
+            <span className="inline-flex items-center rounded-lg bg-secondary px-4 py-2.5 text-sm font-semibold text-foreground">
+              $0 Delivery + Assembly
+            </span>
+          </div>
+
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Button
               asChild
               size="lg"
