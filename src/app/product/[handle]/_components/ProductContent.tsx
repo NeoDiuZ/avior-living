@@ -1,5 +1,8 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+"use client";
+
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Loader2, ChevronLeft, Truck, Wrench, Recycle } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Footer } from "@/components/site/Footer";
@@ -12,24 +15,6 @@ import {
 } from "@/lib/shopify/client";
 import { useCartStore } from "@/stores/cartStore";
 import { useCartSync } from "@/hooks/useCartSync";
-
-export const Route = createFileRoute("/product/$handle")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `${params.handle.replace(/-/g, " ")} — Avior Living` },
-      {
-        name: "description",
-        content:
-          "Factory-direct furniture with white-glove delivery, assembly and disposal included across Singapore.",
-      },
-    ],
-  }),
-  component: ProductPage,
-  errorComponent: ({ error, reset }) => (
-    <ErrorView message={error.message} reset={reset} />
-  ),
-  notFoundComponent: () => <NotFoundView />,
-});
 
 interface ProductDetail {
   id: string;
@@ -54,9 +39,9 @@ interface ProductDetail {
   options: Array<{ name: string; values: string[] }>;
 }
 
-function ProductPage() {
+export function ProductContent({ handle }: { handle: string }) {
   useCartSync();
-  const { handle } = Route.useParams();
+  const router = useRouter();
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
@@ -106,7 +91,7 @@ function ProductPage() {
         <div className="py-20 text-center">
           <p className="text-muted-foreground">{error ?? "Product not found"}</p>
           <Button asChild className="mt-6" variant="outline">
-            <Link to="/">Back to home</Link>
+            <Link href="/">Back to home</Link>
           </Button>
         </div>
       </Shell>
@@ -119,9 +104,8 @@ function ProductPage() {
   const image = product.images.edges[0]?.node;
   const price = variant?.price ?? product.priceRange.minVariantPrice;
   const numericPrice = parseFloat(price.amount);
-  const retailPrice = Math.round((numericPrice / 0.62) / 10) * 10;
+  const retailPrice = Math.round(numericPrice / 0.62 / 10) * 10;
 
-  // Reconstruct minimal ShopifyProduct shape for cart
   const cartProduct: ShopifyProduct = {
     node: {
       id: product.id,
@@ -153,7 +137,7 @@ function ProductPage() {
     <Shell>
       <div className="container-page py-8">
         <Link
-          to="/"
+          href="/"
           className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -284,6 +268,12 @@ function ProductPage() {
           </div>
         </div>
       </div>
+
+      <div className="container-page py-8 hidden">
+        <button onClick={() => router.refresh()} className="text-sm text-muted-foreground">
+          Retry
+        </button>
+      </div>
     </Shell>
   );
 }
@@ -304,39 +294,5 @@ function Shell({ children }: { children: React.ReactNode }) {
       <main>{children}</main>
       <Footer />
     </div>
-  );
-}
-
-function ErrorView({ message, reset }: { message: string; reset: () => void }) {
-  const router = useRouter();
-  return (
-    <Shell>
-      <div className="container-page py-24 text-center">
-        <h1 className="font-display text-2xl">Something went wrong</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{message}</p>
-        <Button
-          className="mt-6"
-          onClick={() => {
-            router.invalidate();
-            reset();
-          }}
-        >
-          Try again
-        </Button>
-      </div>
-    </Shell>
-  );
-}
-
-function NotFoundView() {
-  return (
-    <Shell>
-      <div className="container-page py-24 text-center">
-        <h1 className="font-display text-2xl">Product not found</h1>
-        <Button asChild className="mt-6" variant="outline">
-          <Link to="/">Back to home</Link>
-        </Button>
-      </div>
-    </Shell>
   );
 }

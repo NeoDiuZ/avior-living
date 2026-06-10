@@ -5,11 +5,13 @@ export function Footer() {
         <div className="md:col-span-4">
           <div className="flex items-baseline gap-2">
             <span className="font-display text-2xl">Avior</span>
-            <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Living</span>
+            <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+              Living
+            </span>
           </div>
           <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-            Factory-direct furniture for Singapore homes. Delivery, assembly and disposal —
-            always included.
+            Factory-direct furniture for Singapore homes. Delivery, assembly and disposal — always
+            included.
           </p>
         </div>
         <Col title="Shop" links={["Best Sellers", "Sofas", "Beds", "Dining", "Storage"]} />

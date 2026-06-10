@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { storefrontApiRequest, PRODUCTS_QUERY, type ShopifyProduct } from "@/lib/shopify/client";
 import { ProductCard } from "./ProductCard";
 
@@ -24,31 +25,29 @@ export function BestSellers() {
   }, []);
 
   return (
-    <section id="bestsellers" className="bg-background py-16 md:py-24">
+    <section id="opening-sale" className="bg-background py-16 md:py-24">
       <div className="container-page">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-accent">
-              Best Sellers
-            </p>
-            <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-6xl md:text-7xl">
-              Singapore's
-              <br />
-              <span className="text-accent">favourites.</span>
+            <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-5xl md:text-6xl">
+              $189 Opening Sale
             </h2>
+            <p className="mt-3 text-base text-foreground/65 sm:text-lg">
+              Furnish your home for less with selected launch deals starting from $189.
+            </p>
           </div>
           <a
             href="#all"
-            className="text-base font-semibold text-foreground underline-offset-4 hover:underline"
+            className="text-sm font-semibold text-foreground underline-offset-4 hover:underline"
           >
-            View All →
+            View All Items
           </a>
         </div>
 
         <div className="mt-10">
           {error && (
-            <p className="rounded-md border border-border bg-secondary p-6 text-sm text-muted-foreground">
-              Couldn't load products: {error}
+            <p className="rounded-2xl border border-border bg-secondary p-6 text-sm text-muted-foreground">
+              Could not load products: {error}
             </p>
           )}
           {!products && !error && (
@@ -57,21 +56,28 @@ export function BestSellers() {
             </div>
           )}
           {products && products.length === 0 && (
-            <p className="rounded-md border border-border bg-secondary p-6 text-sm text-muted-foreground">
+            <p className="rounded-2xl border border-border bg-secondary p-6 text-sm text-muted-foreground">
               No products found.
             </p>
           )}
           {products && products.length > 0 && (
             <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
-              {products.map((p, i) => (
-                <ProductCard
-                  key={p.node.id}
-                  product={p}
-                  badge={i < 3 ? "Best Seller" : undefined}
-                />
+              {products.map((p) => (
+                <ProductCard key={p.node.id} product={p} badge="Opening Sale" />
               ))}
             </div>
           )}
+        </div>
+
+        <div className="mt-10 text-center">
+          <Button
+            asChild
+            size="lg"
+            variant="outline"
+            className="h-14 border-foreground/20 px-10 text-base font-semibold hover:bg-secondary"
+          >
+            <a href="#all">Shop All Opening Sale Items</a>
+          </Button>
         </div>
       </div>
     </section>

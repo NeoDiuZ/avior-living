@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { useCartStore } from "@/stores/cartStore";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify/client";
@@ -18,7 +18,7 @@ export function ProductCard({ product, badge }: Props) {
   const price = variant?.price ?? node.priceRange.minVariantPrice;
   // Show implied savings (illustrative only — based on declared "up to 40% below retail")
   const numericPrice = parseFloat(price.amount);
-  const retailPrice = Math.round((numericPrice / 0.62) / 10) * 10;
+  const retailPrice = Math.round(numericPrice / 0.62 / 10) * 10;
 
   const handleAdd = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -35,11 +35,7 @@ export function ProductCard({ product, badge }: Props) {
   };
 
   return (
-    <Link
-      to="/product/$handle"
-      params={{ handle: node.handle }}
-      className="group block"
-    >
+    <Link href={`/product/${node.handle}`} className="group block">
       <div className="relative overflow-hidden rounded-xl bg-secondary">
         <div className="aspect-[4/5] w-full">
           {image ? (

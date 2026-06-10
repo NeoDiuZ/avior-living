@@ -73,7 +73,10 @@ export function CartDrawer() {
                 <div className="flex-1 overflow-y-auto px-6 py-4">
                   <div className="space-y-5">
                     {items.map((item) => (
-                      <div key={item.variantId} className="flex gap-4 border-b border-border pb-5 last:border-0">
+                      <div
+                        key={item.variantId}
+                        className="flex gap-4 border-b border-border pb-5 last:border-0"
+                      >
                         <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md bg-secondary">
                           {item.product.node.images?.edges?.[0]?.node && (
                             <img
@@ -84,7 +87,9 @@ export function CartDrawer() {
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <h4 className="truncate text-sm font-medium">{item.product.node.title}</h4>
+                          <h4 className="truncate text-sm font-medium">
+                            {item.product.node.title}
+                          </h4>
                           {item.selectedOptions.length > 0 && (
                             <p className="mt-0.5 text-xs text-muted-foreground">
                               {item.selectedOptions.map((o) => o.value).join(" · ")}
@@ -127,7 +132,9 @@ export function CartDrawer() {
                 <div className="space-y-4 border-t border-border bg-cream px-6 py-5">
                   <div className="flex items-baseline justify-between">
                     <span className="text-sm text-muted-foreground">Subtotal</span>
-                    <span className="font-display text-2xl">{formatPrice(totalPrice, currency)}</span>
+                    <span className="font-display text-2xl">
+                      {formatPrice(totalPrice, currency)}
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Delivery, assembly and packaging disposal included islandwide.

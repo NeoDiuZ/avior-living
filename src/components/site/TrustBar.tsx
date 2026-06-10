@@ -1,22 +1,29 @@
-const stats = [
-  { big: "40%", small: "Below Retail" },
-  { big: "10,000+", small: "Singapore Homes" },
-  { big: "$0", small: "Delivery & Assembly" },
-  { big: "7 Days", small: "WhatsApp Support" },
+import { Tag, Truck, Wrench, Recycle, MessageCircle, Home } from "lucide-react";
+
+const trustItems = [
+  { icon: Tag, label: "Factory-Direct Pricing" },
+  { icon: Truck, label: "White-Glove Delivery" },
+  { icon: Wrench, label: "Assembly Included" },
+  { icon: Recycle, label: "Packaging Disposal" },
+  { icon: MessageCircle, label: "WhatsApp Support" },
+  { icon: Home, label: "Singapore Homes" },
 ];
 
 export function TrustBar() {
   return (
-    <section aria-label="Avior Assurance" className="bg-primary text-primary-foreground">
+    <section aria-label="Avior Assurance highlights" className="border-b border-border bg-background">
       <div className="container-page">
-        <div className="grid grid-cols-2 divide-x divide-primary-foreground/15 md:grid-cols-4">
-          {stats.map((s) => (
-            <div key={s.small} className="px-4 py-8 text-center md:py-10">
-              <p className="font-display text-4xl leading-none tracking-tight sm:text-5xl md:text-6xl">
-                {s.big}
-              </p>
-              <p className="mt-3 text-xs font-semibold uppercase tracking-[0.15em] text-primary-foreground/80 sm:text-sm">
-                {s.small}
+        <div className="grid grid-cols-3 divide-x divide-border md:grid-cols-6">
+          {trustItems.map(({ icon: Icon, label }) => (
+            <div
+              key={label}
+              className="flex flex-col items-center gap-2.5 px-3 py-6 text-center md:px-5 md:py-8"
+            >
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-secondary text-accent">
+                <Icon className="h-5 w-5" strokeWidth={1.75} />
+              </div>
+              <p className="text-[11px] font-semibold leading-tight text-foreground/75 sm:text-xs">
+                {label}
               </p>
             </div>
           ))}

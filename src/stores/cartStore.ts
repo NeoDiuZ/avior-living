@@ -191,9 +191,7 @@ export const useCartStore = create<CartStore>()(
           if (r.success) {
             const current = get().items;
             set({
-              items: current.map((i) =>
-                i.variantId === variantId ? { ...i, quantity } : i,
-              ),
+              items: current.map((i) => (i.variantId === variantId ? { ...i, quantity } : i)),
             });
           } else if (r.cartNotFound) clearCart();
         } finally {

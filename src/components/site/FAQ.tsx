@@ -7,28 +7,36 @@ import {
 
 const faqs = [
   {
-    q: "How can your prices be up to 40% lower than other Singapore retailers?",
-    a: "We source directly from the same factories that supply Singapore's major furniture brands — no distributors, no showrooms, no middleman markup. The savings go straight to you.",
+    q: "How does Avior offer lower prices?",
+    a: "We work directly with the same factories that supply Singapore's major furniture retailers, cutting out distributors, showrooms and retail rent. That saving goes straight to you.",
   },
   {
-    q: "Is delivery and assembly really included?",
-    a: "Yes. Every order across mainland Singapore includes two-person white-glove delivery into the room of your choice, full assembly, and packaging disposal — at no extra cost.",
+    q: "Is delivery included?",
+    a: "Yes. White-glove delivery is included for eligible orders across Singapore, including HDBs and condos. Our team brings your furniture into the room of your choice.",
   },
   {
-    q: "How long does delivery take?",
-    a: "In-stock items are typically delivered within 5–10 working days. We'll confirm your slot over WhatsApp once your order is placed.",
+    q: "Is assembly included?",
+    a: "Yes. Assembly is included for applicable furniture items. You do not need to provide tools or arrange a separate handyman.",
   },
   {
-    q: "What if the furniture doesn't fit my space?",
-    a: "Use our Room Planner to visualise it before you buy, or chat with us on WhatsApp with your dimensions — we'll recommend pieces that actually work for your home.",
+    q: "Do you dispose of packaging after delivery?",
+    a: "Yes. After assembly is complete, our team will clear and remove all packaging so your home stays clean from the start.",
   },
   {
-    q: "What's your warranty and returns policy?",
-    a: "All Avior pieces come with a 1-year structural warranty. If something arrives damaged or isn't right, contact us within 7 days and we'll make it right.",
+    q: "Can I check whether the furniture fits my home before buying?",
+    a: "Yes. Our Find Your Fit room planner lets you upload a PDF, PNG or JPG floor plan to get a rough idea of whether selected furniture fits your space.",
   },
   {
-    q: "Do you serve all areas of Singapore?",
-    a: "Yes — we deliver islandwide, including HDBs, condos and landed homes. Sentosa and restricted-access areas may have a small surcharge confirmed before delivery.",
+    q: "Is the AI room planner accurate?",
+    a: "It is designed to provide visual guidance and a rough fit check. We recommend confirming final measurements before placing your order.",
+  },
+  {
+    q: "How do I contact support?",
+    a: "You can reach us through WhatsApp before or after your purchase. Most replies come back within 1 working day.",
+  },
+  {
+    q: "Is Avior Living suitable for BTOs and smaller Singapore homes?",
+    a: "Yes. Our furniture selection and planning tools are designed with Singapore homes, BTOs, condos and compact layouts specifically in mind.",
   },
 ];
 
@@ -42,7 +50,7 @@ export function FAQ() {
             Questions, answered.
           </h2>
           <p className="mt-3 text-sm text-muted-foreground">
-            Still unsure? Message us on WhatsApp — most replies come back inside 10 minutes.
+            Still unsure? Message us on WhatsApp and we will get back to you within 1 working day.
           </p>
           <a
             href="https://wa.me/6580000000"
@@ -50,22 +58,18 @@ export function FAQ() {
             rel="noopener noreferrer"
             className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-accent underline-offset-4 hover:underline"
           >
-            Chat with us on WhatsApp →
+            Chat with us on WhatsApp
           </a>
         </div>
 
         <div className="md:col-span-8">
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((f, i) => (
-              <AccordionItem
-                key={f.q}
-                value={`item-${i}`}
-                className="border-b border-border"
-              >
+              <AccordionItem key={f.q} value={`item-${i}`} className="border-b border-border">
                 <AccordionTrigger className="py-5 text-left font-display text-lg hover:no-underline">
                   {f.q}
                 </AccordionTrigger>
-                <AccordionContent className="pb-5 text-sm text-muted-foreground">
+                <AccordionContent className="pb-5 text-sm leading-relaxed text-muted-foreground">
                   {f.a}
                 </AccordionContent>
               </AccordionItem>

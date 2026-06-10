@@ -29,7 +29,9 @@ export async function storefrontApiRequest(query: string, variables: Record<stri
 
   const data = await response.json();
   if (data.errors) {
-    throw new Error(`Shopify error: ${data.errors.map((e: { message: string }) => e.message).join(", ")}`);
+    throw new Error(
+      `Shopify error: ${data.errors.map((e: { message: string }) => e.message).join(", ")}`,
+    );
   }
   return data;
 }
