@@ -5,15 +5,15 @@ import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
   title: {
-    default: "Avior Living — Designer Furniture Without Showroom Markups",
-    template: "%s — Avior Living",
+    default: "Avior Living | Save 40% Off Retail Furniture in Singapore",
+    template: "%s | Avior Living",
   },
   description:
-    "Factory-direct furniture for Singapore homes. Up to 40% below retail with white-glove delivery, assembly and packaging disposal included.",
+    "Factory-direct furniture for Singapore homes. Save up to 40% off retail. Free white-glove delivery, assembly, and packaging disposal.",
   openGraph: {
-    title: "Avior Living — Factory-Direct Furniture in Singapore",
+    title: "Avior Living | Factory-Direct Furniture, Singapore",
     description:
-      "Designer furniture without showroom markups. Delivery, assembly and disposal included across Singapore.",
+      "Save up to 40% off retail. Free delivery, assembly, and disposal across Singapore.",
     type: "website",
   },
   twitter: {
@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap"
         />
       </head>
       <body>

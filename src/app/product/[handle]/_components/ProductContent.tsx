@@ -254,7 +254,7 @@ export function ProductContent({ handle }: { handle: string }) {
             <div className="mt-7 space-y-3 rounded-xl border border-border bg-cream p-5 text-sm">
               <Row icon={Truck} label="White-glove delivery included islandwide" />
               <Row icon={Wrench} label="Full assembly by our two-person team" />
-              <Row icon={Recycle} label="Packaging disposal — we take it back" />
+              <Row icon={Recycle} label="Packaging disposal included" />
             </div>
 
             {product.description && (

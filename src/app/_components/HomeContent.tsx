@@ -22,7 +22,6 @@ export function HomeContent() {
       <SiteHeader />
       <main className="pb-20 md:pb-0">
         <Hero />
-        <TrustBar />
         <WhyAvior />
         <BestSellers />
         <WhiteGlove />

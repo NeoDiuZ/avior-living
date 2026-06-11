@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { HomeContent } from "./_components/HomeContent";
 
 export const metadata: Metadata = {
-  title: "Avior Living — Designer Furniture Without Showroom Markups",
+  title: "Avior Living | Save 40% Off Retail Furniture in Singapore",
   description:
-    "Factory-direct furniture for Singapore homes. Up to 40% below retail with white-glove delivery, assembly and packaging disposal included.",
+    "Factory-direct furniture for Singapore homes. Save up to 40% off retail. Free white-glove delivery, assembly, and packaging disposal.",
   openGraph: {
-    title: "Avior Living — Factory-Direct Furniture in Singapore",
+    title: "Avior Living | Factory-Direct Furniture, Singapore",
     description:
-      "Designer furniture without showroom markups. Delivery, assembly and disposal included across Singapore.",
+      "Save up to 40% off retail. Free delivery, assembly, and disposal across Singapore.",
   },
 };
 

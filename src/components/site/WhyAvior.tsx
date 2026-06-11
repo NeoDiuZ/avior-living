@@ -1,233 +1,238 @@
+import type { LucideIcon } from "lucide-react";
 import {
-  ArrowRight,
+  Building2,
+  Package,
+  Store,
+  Warehouse,
+  TrendingUp,
+  Zap,
+  TrendingDown,
   X,
   Check,
-  Tag,
-  BadgePercent,
-  Truck,
-  Wrench,
-  Recycle,
-  MessageCircle,
-  LayoutGrid,
 } from "lucide-react";
 
-const features = [
-  {
-    group: "Pricing & Value",
-    name: "Pricing Model",
-    icon: Tag,
-    traditional: "Showroom and retail markups built into every price",
-    avior: "Factory-direct pricing, no middleman markups",
-  },
-  {
-    group: "Pricing & Value",
-    name: "Typical Savings",
-    icon: BadgePercent,
-    traditional: "Higher final price due to distribution layers",
-    avior: "Up to 40% savings versus traditional retail pricing",
-  },
-  {
-    group: "Service Inclusions",
-    name: "Delivery",
-    icon: Truck,
-    traditional: "May be charged separately or limited to doorstep",
-    avior: "White-glove delivery into your home, included",
-  },
-  {
-    group: "Service Inclusions",
-    name: "Assembly",
-    icon: Wrench,
-    traditional: "May be an add-on charge or limited to some items",
-    avior: "Full assembly included for applicable items",
-  },
-  {
-    group: "Service Inclusions",
-    name: "Packaging Disposal",
-    icon: Recycle,
-    traditional: "Often not included, you handle the packaging",
-    avior: "Packaging disposal included after setup",
-  },
-  {
-    group: "Support & Tools",
-    name: "Customer Support",
-    icon: MessageCircle,
-    traditional: "Standard customer service channels",
-    avior: "WhatsApp support before and after your purchase",
-  },
-  {
-    group: "Support & Tools",
-    name: "Home Fit Check",
-    icon: LayoutGrid,
-    traditional: "Customer takes measurements independently",
-    avior: "AI room planner helps visualise fit before purchase",
-  },
+type Step = { icon: LucideIcon; label: string; markup?: boolean };
+
+const traditionalSteps: Step[] = [
+  { icon: Building2, label: "Factory" },
+  { icon: Package,   label: "Distributor", markup: true },
+  { icon: Store,     label: "Retailer",    markup: true },
+  { icon: Warehouse, label: "Showroom",    markup: true },
+  { icon: TrendingUp, label: "You Pay More" },
 ];
 
-const groups = ["Pricing & Value", "Service Inclusions", "Support & Tools"];
+const aviorSteps: Step[] = [
+  { icon: Building2,    label: "Factory" },
+  { icon: Zap,          label: "Avior Living" },
+  { icon: TrendingDown, label: "You Save 40%" },
+];
 
 export function WhyAvior() {
   return (
-    <section id="why-avior" className="bg-cream py-16 md:py-24">
+    <section id="why-avior" className="bg-cream py-20 md:py-28">
       <div className="container-page">
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-5xl md:text-6xl">
-            Why Pay Showroom Markups?
+
+        {/* Section header */}
+        <div className="mx-auto max-w-2xl text-center">
+          <h2
+            className="font-display font-bold leading-[0.95] tracking-tight text-balance"
+            style={{ fontSize: "clamp(2.75rem, 7vw, 5rem)" }}
+          >
+            Same factories.
+            <br />
+            <span className="text-accent">Half the price.</span>
           </h2>
-          <p className="mt-5 text-base text-foreground/65 sm:text-lg">
-            Most furniture prices include layers of middlemen, retail rent and showroom costs. Avior Living keeps things simple with factory-direct pricing and included service.
+          <p className="mt-5 text-base text-foreground/60 text-balance sm:text-lg">
+            We cut out every middleman so the savings go straight to you.
           </p>
         </div>
 
-        {/* Supply chain visual */}
-        <div className="mt-12 grid gap-4 md:grid-cols-2">
-          <SupplyChain
-            label="Traditional Retail Model"
-            steps={["Factory", "Distributor", "Retailer", "Showroom", "You pay more"]}
-            variant="muted"
-          />
-          <SupplyChain
-            label="Avior Living Model"
-            steps={["Factory", "Avior Living", "You save up to 40%"]}
-            variant="accent"
-          />
-        </div>
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          By removing unnecessary middlemen and showroom costs, Avior passes the savings directly to you.
-        </p>
+        {/* Comparison card — double-bezel architecture */}
+        <div className="mt-12 rounded-[1.75rem] p-[6px] ring-1 ring-border bg-border/50">
+          <div className="overflow-hidden rounded-[1.35rem] border border-border bg-background">
+            <div className="grid grid-cols-1 sm:grid-cols-2">
 
-        {/* Comparison table - desktop */}
-        <div className="mt-12 hidden overflow-hidden rounded-3xl border border-border bg-background md:block">
-          {/* Header */}
-          <div className="grid grid-cols-[2fr_1.1fr_1.1fr]">
-            <div className="border-b border-border bg-secondary px-7 py-5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Feature
-            </div>
-            <div className="border-b border-l border-border bg-secondary px-7 py-5 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Traditional Retailers
-            </div>
-            <div className="border-b border-l border-border bg-accent/12 px-7 py-5 text-xs font-bold uppercase tracking-wider text-accent">
-              Avior Living
+              {/* Avior column — first on mobile, second on desktop */}
+              <div className="order-first sm:order-last flex flex-col border-b border-border sm:border-b-0 sm:border-l">
+                <Column
+                  className="flex-1"
+                  title="Avior Living"
+                  steps={aviorSteps}
+                  price="$1,499"
+                  priceLabel="You Pay"
+                />
+              </div>
+
+              {/* Competitors column — second on mobile, first on desktop */}
+              <div className="order-last sm:order-first flex flex-col">
+                <Column
+                  className="flex-1"
+                  title="Local Competitors"
+                  bad
+                  steps={traditionalSteps}
+                  price="$2,499"
+                  priceLabel="You Pay"
+                />
+              </div>
+
             </div>
           </div>
-
-          {/* Feature rows grouped */}
-          {groups.map((group, gi) => {
-            const rows = features.filter((f) => f.group === group);
-            return (
-              <div key={group}>
-                {gi > 0 && (
-                  <div className="grid grid-cols-[2fr_1.1fr_1.1fr]">
-                    <div className="border-t-2 border-border/60 px-7 py-3 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60" />
-                    <div className="border-l border-t-2 border-border/60 px-7 py-3" />
-                    <div className="border-l border-t-2 border-border/60 bg-accent/12 px-7 py-3" />
-                  </div>
-                )}
-                {rows.map((f) => (
-                  <div key={f.name} className="grid grid-cols-[2fr_1.1fr_1.1fr] border-t border-border/40">
-                    <div className="flex items-center gap-3 px-7 py-5">
-                      <f.icon className="h-5 w-5 shrink-0 text-foreground/40" strokeWidth={1.75} />
-                      <span className="text-base font-semibold text-foreground">{f.name}</span>
-                    </div>
-                    <div className="flex items-start gap-2.5 border-l border-border/40 px-7 py-5">
-                      <X className="mt-0.5 h-4 w-4 shrink-0 text-destructive/50" strokeWidth={2.5} />
-                      <span className="text-sm text-muted-foreground">{f.traditional}</span>
-                    </div>
-                    <div className="flex items-start gap-2.5 border-l border-border/40 bg-accent/12 px-7 py-5">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" strokeWidth={2.5} />
-                      <span className="text-sm font-medium text-foreground">{f.avior}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            );
-          })}
         </div>
 
-        {/* Comparison cards - mobile */}
-        <div className="mt-10 space-y-3 md:hidden">
-          {features.map((f) => (
-            <div key={f.name} className="overflow-hidden rounded-2xl border border-border bg-background">
-              <div className="flex items-center gap-3 bg-secondary px-5 py-4">
-                <f.icon className="h-4 w-4 shrink-0 text-foreground/50" strokeWidth={1.75} />
-                <span className="text-sm font-bold text-foreground">{f.name}</span>
-              </div>
-              <div className="grid grid-cols-2 divide-x divide-border">
-                <div className="px-4 py-4">
-                  <div className="mb-2 flex items-center gap-1.5">
-                    <X className="h-3.5 w-3.5 text-destructive/50" strokeWidth={2.5} />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                      Traditional
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{f.traditional}</p>
-                </div>
-                <div className="bg-accent/8 px-4 py-4">
-                  <div className="mb-2 flex items-center gap-1.5">
-                    <Check className="h-3.5 w-3.5 text-accent" strokeWidth={2.5} />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
-                      Avior Living
-                    </span>
-                  </div>
-                  <p className="text-xs font-medium text-foreground">{f.avior}</p>
-                </div>
-              </div>
-            </div>
-          ))}
+        {/* You Save banner */}
+        <div className="relative mt-3 overflow-hidden rounded-[1.35rem] bg-accent px-6 py-10 text-center text-accent-foreground sm:py-14">
+          {/* Radial glow for depth */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 60% 80% at 50% 110%, oklch(1 0 0 / 0.14) 0%, transparent 70%)",
+            }}
+          />
+          <p className="relative text-[10px] font-semibold uppercase tracking-[0.22em] opacity-75">
+            You Save
+          </p>
+          <p
+            className="relative mt-1 font-display font-bold leading-none tracking-tight"
+            style={{ fontSize: "clamp(5rem, 18vw, 10rem)" }}
+          >
+            $1,000
+          </p>
+          <p className="relative mt-4 text-base font-medium opacity-80 sm:text-lg">
+            On every sofa, every time.
+          </p>
         </div>
+
       </div>
     </section>
   );
 }
 
-function SupplyChain({
-  label,
+function Column({
+  title,
+  bad,
   steps,
-  variant,
+  price,
+  priceLabel,
+  className,
 }: {
-  label: string;
-  steps: string[];
-  variant: "muted" | "accent";
+  title: string;
+  bad?: boolean;
+  steps: Step[];
+  price: string;
+  priceLabel: string;
+  className?: string;
 }) {
-  const isAccent = variant === "accent";
+  // Each step row = 2.125rem circle + 0.875rem gap (gap-3.5) = 3rem per step.
+  // Line runs from center of first circle to center of last circle.
+  const connectorH = `${(steps.length - 1) * 3}rem`;
+
   return (
-    <div
-      className={`rounded-2xl p-6 ${
-        isAccent ? "bg-primary text-primary-foreground" : "bg-sand/70 text-foreground"
-      }`}
-    >
-      <p
-        className={`mb-4 text-[11px] font-bold uppercase tracking-widest ${
-          isAccent ? "text-primary-foreground/70" : "text-muted-foreground"
-        }`}
-      >
-        {label}
-      </p>
-      <div className="flex flex-wrap items-center gap-2">
-        {steps.map((s, i) => (
-          <div key={s} className="flex items-center gap-2">
-            <span
-              className={`rounded-lg px-3 py-2 text-sm font-semibold ${
-                isAccent
-                  ? s.includes("You save")
-                    ? "bg-accent text-accent-foreground"
-                    : "bg-primary-foreground/15 text-primary-foreground"
-                  : s === "You pay more"
-                  ? "bg-foreground/10 text-foreground/50 line-through"
-                  : "bg-secondary text-foreground"
-              }`}
-            >
-              {s}
-            </span>
-            {i < steps.length - 1 && (
-              <ArrowRight
-                className={`h-4 w-4 shrink-0 ${
-                  isAccent ? "text-primary-foreground/50" : "text-muted-foreground"
-                }`}
-              />
-            )}
-          </div>
-        ))}
+    <div className={`flex flex-col p-6 sm:p-8 ${bad ? "bg-background" : "bg-accent/[0.04]"} ${className ?? ""}`}>
+
+      {/* Column header */}
+      <div className="mb-8 flex items-center gap-2.5">
+        <span
+          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors ${
+            bad
+              ? "bg-foreground/8 text-foreground/40"
+              : "bg-accent text-accent-foreground"
+          }`}
+        >
+          {bad ? (
+            <X className="h-3.5 w-3.5" strokeWidth={2.5} />
+          ) : (
+            <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
+          )}
+        </span>
+        <h3
+          className={`font-display text-xl font-semibold tracking-tight sm:text-2xl ${
+            bad ? "text-foreground/45" : "text-foreground"
+          }`}
+        >
+          {title}
+        </h3>
       </div>
+
+      {/* Steps with gradient connector line */}
+      <div className="relative flex flex-col gap-3.5">
+        <div
+          className="pointer-events-none absolute w-px"
+          style={{
+            left: "1.0625rem",
+            top: "1.0625rem",
+            height: connectorH,
+            background: bad
+              ? "linear-gradient(to bottom, oklch(0.92 0.010 78 / 0.7), transparent)"
+              : "linear-gradient(to bottom, oklch(0.65 0.15 44 / 0.35), transparent)",
+          }}
+        />
+
+        {steps.map((step, i) => {
+          const isLast = i === steps.length - 1;
+          const isGood = !bad && isLast;
+          const isDanger = bad && isLast;
+
+          return (
+            <div key={step.label} className="relative flex items-center gap-3">
+
+              {/* Step icon circle */}
+              <div
+                className={`relative z-10 flex h-[2.125rem] w-[2.125rem] shrink-0 items-center justify-center rounded-full border ${
+                  isGood
+                    ? "border-accent/25 bg-accent/10 text-accent"
+                    : isDanger
+                      ? "border-destructive/15 bg-background text-destructive/40"
+                      : bad
+                        ? "border-border/50 bg-background text-foreground/28"
+                        : "border-border bg-background text-foreground/45"
+                }`}
+              >
+                <step.icon className="h-[0.9rem] w-[0.9rem]" strokeWidth={1.75} />
+              </div>
+
+              {/* Step label + markup badge */}
+              <div className="flex flex-1 min-w-0 items-center justify-between gap-2">
+                <span
+                  className={`text-sm leading-tight sm:text-[0.9375rem] ${
+                    isGood
+                      ? "font-semibold text-accent"
+                      : isDanger
+                        ? "font-medium text-destructive/45 line-through decoration-1"
+                        : bad
+                          ? "font-medium text-foreground/38"
+                          : "font-medium text-foreground/65"
+                  }`}
+                >
+                  {step.label}
+                </span>
+                {step.markup && (
+                  <span className="shrink-0 rounded-full border border-destructive/12 bg-destructive/[0.07] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-destructive/55">
+                    +markup
+                  </span>
+                )}
+              </div>
+
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Price */}
+      <div className="mt-auto border-t border-border/60 pt-5">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          {priceLabel}
+        </p>
+        <p
+          className={`mt-1 font-display font-bold leading-none tracking-tight ${
+            bad ? "text-foreground/30 line-through decoration-2" : "text-accent"
+          }`}
+          style={{ fontSize: "clamp(2.5rem, 6vw, 3.5rem)" }}
+        >
+          {price}
+        </p>
+      </div>
+
     </div>
   );
 }

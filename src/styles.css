@@ -56,7 +56,7 @@
 :root {
   --radius: 0.5rem;
 
-  /* Warm neutral palette — Avior Living */
+  /* Warm neutral palette - Avior Living */
   --background: oklch(0.985 0.008 80); /* warm off-white */
   --foreground: oklch(0.22 0.02 60); /* deep warm ink */
   --card: oklch(0.99 0.006 80);

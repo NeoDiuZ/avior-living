@@ -88,9 +88,9 @@ export function ProductCard({ product, badge }: Props) {
               <p className="text-[11px] text-muted-foreground line-through">
                 {formatPrice(String(retailPrice), price.currencyCode)}
               </p>
-              <p className="text-[11px] font-semibold text-accent">
+              <span className="mt-0.5 inline-block rounded-md bg-accent/10 px-1.5 py-0.5 text-[10px] font-bold text-accent">
                 Save {formatPrice(String(savingAmount), price.currencyCode)}
-              </p>
+              </span>
             </>
           )}
         </div>

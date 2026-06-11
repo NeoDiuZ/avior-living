@@ -30,3 +30,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# AI tooling
+.agents/
+.cursor/
+.claude/
+.next/
+tsconfig.tsbuildinfo
+screenshot.mjs

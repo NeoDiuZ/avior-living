@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Upload, LayoutGrid, Eye } from "lucide-react";
+import { Upload, LayoutGrid, Eye, Sparkles } from "lucide-react";
 
 const roomImg = "/images/inspiration-living.jpg";
 
@@ -8,19 +8,19 @@ const steps = [
     icon: Upload,
     step: "1",
     title: "Upload Your Floor Plan",
-    description: "PNG, JPG or PDF accepted",
+    description: "PNG, JPG or PDF",
   },
   {
     icon: LayoutGrid,
     step: "2",
     title: "Choose Your Furniture",
-    description: "Select from available pieces",
+    description: "Select from the catalog",
   },
   {
     icon: Eye,
     step: "3",
     title: "See If It Fits",
-    description: "Visual guide for your space",
+    description: "Scaled to your space",
   },
 ];
 
@@ -40,20 +40,20 @@ export function RoomPlanner() {
                 className="h-auto w-full object-cover"
               />
             </div>
-            <div className="absolute -bottom-5 left-5 flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-primary-foreground shadow-lg">
+            <div className="absolute -bottom-5 left-5 flex items-center gap-2 rounded-full bg-orange-500 px-4 py-2.5 text-white shadow-lg">
+              <Sparkles className="h-4 w-4 shrink-0" strokeWidth={1.75} />
               <span className="text-sm font-semibold uppercase tracking-wider">AI-Powered</span>
             </div>
           </div>
 
           <div className="order-1 md:order-2">
             <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-5xl md:text-[2.75rem] lg:text-5xl">
-              Not Sure If It Will Fit?
+              Does It Fit?
             </h2>
-            <p className="mt-5 max-w-lg text-base text-foreground/70 sm:text-lg">
-              Upload your floor plan or room image and get a clearer idea of whether your furniture will fit before placing an order. Useful for BTOs, condos and rental homes.
+            <p className="mt-4 text-base text-foreground/70">
+              Upload your floor plan. See what fits before you buy.
             </p>
 
-            {/* 3-step process */}
             <div className="mt-8 space-y-3">
               {steps.map(({ icon: Icon, step, title, description }) => (
                 <div key={step} className="flex items-center gap-4 rounded-xl bg-secondary px-5 py-4">
@@ -74,7 +74,7 @@ export function RoomPlanner() {
                 size="lg"
                 className="h-14 bg-primary px-8 text-base font-semibold text-primary-foreground hover:bg-primary/90"
               >
-                Try Find Your Fit
+                Try Room Planner
               </Button>
               <Button
                 size="lg"
@@ -88,7 +88,7 @@ export function RoomPlanner() {
               </Button>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              Room planning results are for visual guidance only. Please confirm final measurements before purchase.
+              Visual guidance only. Confirm measurements before ordering.
             </p>
           </div>
         </div>

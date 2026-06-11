@@ -10,8 +10,7 @@ export function Footer() {
             </span>
           </div>
           <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-            Factory-direct furniture for Singapore homes. Delivery, assembly and disposal — always
-            included.
+            Factory-direct furniture for Singapore homes. Delivery, assembly, and disposal always included.
           </p>
         </div>
         <Col title="Shop" links={["Best Sellers", "Sofas", "Beds", "Dining", "Storage"]} />
@@ -21,7 +20,7 @@ export function Footer() {
       <div className="border-t border-border">
         <div className="container-page flex flex-wrap items-center justify-between gap-3 py-5 text-xs text-muted-foreground">
           <p>© {new Date().getFullYear()} Avior Living Pte Ltd. Singapore.</p>
-          <p>Designer furniture without showroom markups.</p>
+          <p>Factory direct. Zero markup.</p>
         </div>
       </div>
     </footer>

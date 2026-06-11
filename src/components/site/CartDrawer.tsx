@@ -56,7 +56,7 @@ export function CartDrawer() {
             <p className="text-sm text-muted-foreground">
               {totalItems === 0
                 ? "Your cart is empty"
-                : `${totalItems} item${totalItems !== 1 ? "s" : ""} — delivery, assembly & disposal included`}
+                : `${totalItems} item${totalItems !== 1 ? "s" : ""} · delivery, assembly and disposal included`}
             </p>
           </SheetHeader>
 

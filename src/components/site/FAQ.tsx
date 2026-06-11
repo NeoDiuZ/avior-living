@@ -8,35 +8,35 @@ import {
 const faqs = [
   {
     q: "How does Avior offer lower prices?",
-    a: "We work directly with the same factories that supply Singapore's major furniture retailers, cutting out distributors, showrooms and retail rent. That saving goes straight to you.",
+    a: "We source direct from factory, cutting out distributors, showrooms, and retail rent. You keep the savings.",
   },
   {
     q: "Is delivery included?",
-    a: "Yes. White-glove delivery is included for eligible orders across Singapore, including HDBs and condos. Our team brings your furniture into the room of your choice.",
+    a: "Yes. Island-wide, across HDBs and condos. Brought into your room, not just your door.",
   },
   {
     q: "Is assembly included?",
-    a: "Yes. Assembly is included for applicable furniture items. You do not need to provide tools or arrange a separate handyman.",
+    a: "Yes. Fully assembled. No tools or handyman needed.",
   },
   {
-    q: "Do you dispose of packaging after delivery?",
-    a: "Yes. After assembly is complete, our team will clear and remove all packaging so your home stays clean from the start.",
+    q: "Do you dispose of packaging?",
+    a: "Yes. We clear everything after assembly.",
   },
   {
-    q: "Can I check whether the furniture fits my home before buying?",
-    a: "Yes. Our Find Your Fit room planner lets you upload a PDF, PNG or JPG floor plan to get a rough idea of whether selected furniture fits your space.",
+    q: "Can I check if furniture fits before buying?",
+    a: "Yes. Upload your floor plan to our room planner and see what fits before you order.",
   },
   {
-    q: "Is the AI room planner accurate?",
-    a: "It is designed to provide visual guidance and a rough fit check. We recommend confirming final measurements before placing your order.",
+    q: "How accurate is the room planner?",
+    a: "Visual guidance only. Confirm final measurements before ordering.",
   },
   {
     q: "How do I contact support?",
-    a: "You can reach us through WhatsApp before or after your purchase. Most replies come back within 1 working day.",
+    a: "WhatsApp, before or after purchase. Replies within 1 business day.",
   },
   {
-    q: "Is Avior Living suitable for BTOs and smaller Singapore homes?",
-    a: "Yes. Our furniture selection and planning tools are designed with Singapore homes, BTOs, condos and compact layouts specifically in mind.",
+    q: "Is Avior suitable for BTOs?",
+    a: "Yes. Designed for BTOs, condos, and compact Singapore spaces.",
   },
 ];
 
@@ -47,18 +47,18 @@ export function FAQ() {
         <div className="md:col-span-4">
           <span className="chip mb-3">FAQ</span>
           <h2 className="font-display text-3xl tracking-tight sm:text-4xl md:text-5xl">
-            Questions, answered.
+            Questions answered.
           </h2>
           <p className="mt-3 text-sm text-muted-foreground">
-            Still unsure? Message us on WhatsApp and we will get back to you within 1 working day.
+            Still unsure? Message us on WhatsApp.
           </p>
           <a
             href="https://wa.me/6580000000"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-accent underline-offset-4 hover:underline"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-accent underline-offset-4 hover:underline"
           >
-            Chat with us on WhatsApp
+            Chat on WhatsApp
           </a>
         </div>
 

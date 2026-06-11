@@ -29,11 +29,16 @@ export function BestSellers() {
       <div className="container-page">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-5xl md:text-6xl">
-              $189 Opening Sale
-            </h2>
+            <div className="flex flex-wrap items-center gap-3">
+              <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-5xl md:text-6xl">
+                $189 Opening Sale
+              </h2>
+              <span className="rounded-full bg-accent/10 px-3 py-1 text-sm font-semibold text-accent">
+                Ends 21 Jun
+              </span>
+            </div>
             <p className="mt-3 text-base text-foreground/65 sm:text-lg">
-              Furnish your home for less with selected launch deals starting from $189.
+              Up to 40% off retail. Ends 21 Jun.
             </p>
           </div>
           <a
