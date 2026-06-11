@@ -14,6 +14,7 @@ export function ProductCard({ product, badge }: Props) {
   const image = node.images.edges[0]?.node;
   const addItem = useCartStore((s) => s.addItem);
   const isLoading = useCartStore((s) => s.isLoading);
+  const isAvailable = variant?.availableForSale ?? false;
 
   const price = variant?.price ?? node.priceRange.minVariantPrice;
   // Illustrative retail comparison based on declared "up to 40% below retail"
@@ -64,13 +65,19 @@ export function ProductCard({ product, badge }: Props) {
             -{savingPercent}%
           </span>
         )}
-        <button
-          onClick={handleAdd}
-          disabled={!variant || isLoading}
-          className="absolute bottom-3 right-3 inline-flex h-9 items-center rounded-full bg-primary px-4 text-xs font-medium text-primary-foreground shadow-md transition sm:opacity-0 sm:group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-40"
-        >
-          {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Add to Cart"}
-        </button>
+        {isAvailable ? (
+          <button
+            onClick={handleAdd}
+            disabled={isLoading}
+            className="absolute bottom-3 right-3 inline-flex h-9 items-center rounded-full bg-primary px-4 text-xs font-medium text-primary-foreground shadow-md transition sm:opacity-0 sm:group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-40"
+          >
+            {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Add to Cart"}
+          </button>
+        ) : (
+          <span className="absolute bottom-3 right-3 inline-flex h-9 items-center rounded-full border border-border bg-background/80 px-4 text-xs font-medium text-muted-foreground backdrop-blur-sm sm:opacity-0 sm:group-hover:opacity-100">
+            Out of Stock
+          </span>
+        )}
       </div>
       <div className="mt-3 flex items-start justify-between gap-3">
         <div className="min-w-0">

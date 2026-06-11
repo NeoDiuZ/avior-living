@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { toast } from "sonner";
 import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify/client";
 
 export interface CartItem {
@@ -78,6 +79,9 @@ async function createCart(item: CartItem) {
   const errors = data?.data?.cartCreate?.userErrors ?? [];
   if (errors.length) {
     console.error("cartCreate", errors);
+    toast.error("Could not add to cart", {
+      description: errors[0]?.message ?? "This item may be out of stock.",
+    });
     return null;
   }
   const cart = data?.data?.cartCreate?.cart;
