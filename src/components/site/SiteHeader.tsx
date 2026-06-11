@@ -10,6 +10,9 @@ export function SiteHeader() {
           <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Living</span>
         </Link>
         <nav className="hidden items-center gap-7 text-sm font-medium text-foreground/80 md:flex">
+          <Link href="/products" className="hover:text-accent">
+            All Furniture
+          </Link>
           <a href="#opening-sale" className="hover:text-accent">
             Opening Sale
           </a>

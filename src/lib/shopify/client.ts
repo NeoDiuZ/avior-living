@@ -65,6 +65,26 @@ export interface ShopifyProduct {
   };
 }
 
+export const PAGINATED_PRODUCTS_QUERY = `
+  query GetProductsPaginated($first: Int!, $after: String, $query: String) {
+    products(first: $first, after: $after, query: $query) {
+      pageInfo { hasNextPage endCursor }
+      edges {
+        node {
+          id title handle productType
+          priceRange { minVariantPrice { amount currencyCode } }
+          compareAtPriceRange { minVariantPrice { amount currencyCode } }
+          images(first: 2) { edges { node { url altText } } }
+          variants(first: 10) {
+            edges { node { id title price { amount currencyCode } availableForSale selectedOptions { name value } } }
+          }
+          options { name values }
+        }
+      }
+    }
+  }
+`;
+
 export const PRODUCTS_QUERY = `
   query GetProducts($first: Int!, $query: String) {
     products(first: $first, query: $query) {
