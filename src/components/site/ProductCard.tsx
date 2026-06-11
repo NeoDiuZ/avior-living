@@ -67,7 +67,7 @@ export function ProductCard({ product, badge }: Props) {
         <button
           onClick={handleAdd}
           disabled={!variant || isLoading}
-          className="absolute bottom-3 right-3 inline-flex h-9 items-center rounded-full bg-primary px-4 text-xs font-medium text-primary-foreground opacity-0 shadow-md transition group-hover:opacity-100 disabled:opacity-50 sm:opacity-0"
+          className="absolute bottom-3 right-3 inline-flex h-9 items-center rounded-full bg-primary px-4 text-xs font-medium text-primary-foreground shadow-md transition sm:opacity-0 sm:group-hover:opacity-100 disabled:pointer-events-none disabled:opacity-40"
         >
           {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Add to Cart"}
         </button>

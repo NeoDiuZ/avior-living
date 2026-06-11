@@ -6,7 +6,6 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { Footer } from "@/components/site/Footer";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { ProductCard } from "@/components/site/ProductCard";
-import { CartDrawer } from "@/components/site/CartDrawer";
 import { storefrontApiRequest, PAGINATED_PRODUCTS_QUERY, type ShopifyProduct } from "@/lib/shopify/client";
 import { useCartSync } from "@/hooks/useCartSync";
 
@@ -181,7 +180,6 @@ export function ProductsContent() {
       </main>
 
       <Footer />
-      <CartDrawer />
     </div>
   );
 }
