@@ -82,8 +82,7 @@ async function createCart(item: CartItem) {
   }
   const cart = data?.data?.cartCreate?.cart;
   if (!cart?.checkoutUrl) return null;
-  const lineId = cart.lines.edges[0]?.node?.id;
-  if (!lineId) return null;
+  const lineId: string | null = cart.lines.edges[0]?.node?.id ?? null;
   return { cartId: cart.id as string, checkoutUrl: formatCheckoutUrl(cart.checkoutUrl), lineId };
 }
 
@@ -136,20 +135,26 @@ export const useCartStore = create<CartStore>()(
       setOpen: (open) => set({ isOpen: open }),
 
       addItem: async (item) => {
-        const { items, cartId, clearCart } = get();
+        const { items, cartId } = get();
         const existing = items.find((i) => i.variantId === item.variantId);
         set({ isLoading: true });
+
+        const applyNewCart = async () => {
+          set({ items: [], cartId: null, checkoutUrl: null });
+          const result = await createCart({ ...item, lineId: null });
+          if (result) {
+            set({
+              cartId: result.cartId,
+              checkoutUrl: result.checkoutUrl,
+              items: [{ ...item, lineId: result.lineId }],
+              isOpen: true,
+            });
+          }
+        };
+
         try {
           if (!cartId) {
-            const result = await createCart({ ...item, lineId: null });
-            if (result) {
-              set({
-                cartId: result.cartId,
-                checkoutUrl: result.checkoutUrl,
-                items: [{ ...item, lineId: result.lineId }],
-                isOpen: true,
-              });
-            }
+            await applyNewCart();
           } else if (existing) {
             if (!existing.lineId) return;
             const newQ = existing.quantity + item.quantity;
@@ -162,7 +167,9 @@ export const useCartStore = create<CartStore>()(
                 ),
                 isOpen: true,
               });
-            } else if (r.cartNotFound) clearCart();
+            } else if (r.cartNotFound) {
+              await applyNewCart();
+            }
           } else {
             const r = await addLine(cartId, { ...item, lineId: null });
             if (r.success) {
@@ -171,7 +178,9 @@ export const useCartStore = create<CartStore>()(
                 items: [...current, { ...item, lineId: r.lineId ?? null }],
                 isOpen: true,
               });
-            } else if (r.cartNotFound) clearCart();
+            } else if (r.cartNotFound) {
+              await applyNewCart();
+            }
           }
         } catch (err) {
           console.error(err);
