@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { storefrontApiRequest, PRODUCTS_QUERY, type ShopifyProduct } from "@/lib/shopify/client";
 import { ProductCard } from "./ProductCard";
@@ -31,21 +31,22 @@ export function BestSellers() {
           <div>
             <div className="flex flex-wrap items-center gap-3">
               <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-5xl md:text-6xl">
-                $189 Opening Sale
+                <span className="text-accent">$189</span> Opening Sale
               </h2>
               <span className="rounded-full bg-accent/10 px-3 py-1 text-sm font-semibold text-accent">
-                Ends 21 Jun
+                Ends 31 Jul
               </span>
             </div>
             <p className="mt-3 text-base text-foreground/65 sm:text-lg">
-              Up to 40% off retail. Ends 21 Jun.
+              Up to 40% off retail. Ends 31 Jul.
             </p>
           </div>
           <a
             href="/products"
-            className="text-sm font-semibold text-foreground underline-offset-4 hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-foreground underline-offset-4 hover:underline"
           >
             View All Items
+            <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.5} />
           </a>
         </div>
 

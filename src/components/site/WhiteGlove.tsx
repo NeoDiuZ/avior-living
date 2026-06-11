@@ -1,10 +1,10 @@
-import { Truck, Wrench, MessageCircle, ShieldCheck } from "lucide-react";
+import { Truck, Wrench, MessageCircle, ShieldCheck, PackageX } from "lucide-react";
 
 const services = [
-  { icon: Truck,         line1: "White-Glove",   line2: "Delivery",   value: "$0" },
-  { icon: Wrench,        line1: "Free Assembly", line2: "& Disposal", value: "$0" },
-  { icon: MessageCircle, line1: "WhatsApp",      line2: "Support",    value: "$0" },
-  { icon: ShieldCheck,   line1: "1-Year",        line2: "Warranty",   value: "$0" },
+  { icon: Truck,         line1: "Free",       line2: "Delivery",  value: "$0" },
+  { icon: Wrench,        line1: "Free",       line2: "Assembly",  value: "$0" },
+  { icon: PackageX,      line1: "Packaging",  line2: "Removed",   value: "$0" },
+  { icon: MessageCircle, line1: "WhatsApp",   line2: "Support",   value: "$0" },
 ];
 
 export function WhiteGlove() {
@@ -12,6 +12,9 @@ export function WhiteGlove() {
     <section className="bg-sand py-16 md:py-24">
       <div className="container-page">
         <div className="mx-auto max-w-3xl text-center">
+          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/10">
+            <ShieldCheck className="h-7 w-7 text-accent" strokeWidth={1.75} />
+          </div>
           <h2
             className="font-display font-bold leading-[1.05] tracking-tight text-foreground text-wrap-balance"
             style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)" }}
@@ -36,14 +39,14 @@ export function WhiteGlove() {
               <div className="grid h-11 w-11 place-items-center rounded-xl bg-accent/10 text-accent transition group-hover:bg-accent group-hover:text-accent-foreground">
                 <Icon className="h-5 w-5" strokeWidth={1.75} />
               </div>
-              <p className="mt-3 font-display text-3xl font-bold leading-none text-accent">
-                {value}
-              </p>
               <h3 className="mt-3 font-display text-base font-semibold leading-snug sm:text-lg">
                 {line1}
                 <br />
                 {line2}
               </h3>
+              <p className="mt-3 font-display text-3xl font-bold leading-none text-accent">
+                {value}
+              </p>
             </div>
           ))}
         </div>

@@ -34,6 +34,9 @@ export function WhyAvior() {
 
         {/* Section header */}
         <div className="mx-auto max-w-2xl text-center">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-accent">
+            Why Avior
+          </p>
           <h2
             className="font-display font-bold leading-[0.95] tracking-tight text-balance"
             style={{ fontSize: "clamp(2.75rem, 7vw, 5rem)" }}
@@ -89,7 +92,7 @@ export function WhyAvior() {
                 "radial-gradient(ellipse 60% 80% at 50% 110%, oklch(1 0 0 / 0.14) 0%, transparent 70%)",
             }}
           />
-          <p className="relative text-[10px] font-semibold uppercase tracking-[0.22em] opacity-75">
+          <p className="relative text-sm font-bold uppercase tracking-[0.22em] opacity-75">
             You Save
           </p>
           <p
@@ -98,7 +101,7 @@ export function WhyAvior() {
           >
             $1,000
           </p>
-          <p className="relative mt-4 text-base font-medium opacity-80 sm:text-lg">
+          <p className="relative mt-4 text-lg font-medium opacity-80 sm:text-xl">
             On every sofa, every time.
           </p>
         </div>
@@ -146,7 +149,7 @@ function Column({
           )}
         </span>
         <h3
-          className={`font-display text-xl font-semibold tracking-tight sm:text-2xl ${
+          className={`font-display text-2xl font-bold tracking-tight sm:text-3xl ${
             bad ? "text-foreground/45" : "text-foreground"
           }`}
         >
@@ -194,7 +197,7 @@ function Column({
               {/* Step label + markup badge */}
               <div className="flex flex-1 min-w-0 items-center justify-between gap-2">
                 <span
-                  className={`text-sm leading-tight sm:text-[0.9375rem] ${
+                  className={`text-base font-semibold leading-tight sm:text-[1.0625rem] ${
                     isGood
                       ? "font-semibold text-accent"
                       : isDanger

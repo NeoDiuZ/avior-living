@@ -4,7 +4,7 @@ const heroImg = "/images/hero-living-room.jpg";
 
 const stripStats = [
   { stat: "40%",   label: "Off Retail" },
-  { stat: "10k+",  label: "Singapore Homes" },
+  { stat: "10,000", label: "Singapore Homes" },
   { stat: "$0",    label: "Delivery & Assembly" },
   { stat: "7-Day", label: "WhatsApp Support" },
 ];
