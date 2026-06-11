@@ -50,12 +50,12 @@ export function WhyAvior() {
           </p>
         </div>
 
-        {/* Comparison card — double-bezel architecture */}
+        {/* Comparison card: double-bezel architecture */}
         <div className="mt-12 rounded-[1.75rem] p-[6px] ring-1 ring-border bg-border/50">
           <div className="overflow-hidden rounded-[1.35rem] border border-border bg-background">
             <div className="grid grid-cols-1 sm:grid-cols-2">
 
-              {/* Avior column — first on mobile, second on desktop */}
+              {/* Avior column: first on mobile, second on desktop */}
               <div className="order-first sm:order-last flex flex-col border-b border-border sm:border-b-0 sm:border-l">
                 <Column
                   className="flex-1"
@@ -66,7 +66,7 @@ export function WhyAvior() {
                 />
               </div>
 
-              {/* Competitors column — second on mobile, first on desktop */}
+              {/* Competitors column: second on mobile, first on desktop */}
               <div className="order-last sm:order-first flex flex-col">
                 <Column
                   className="flex-1"

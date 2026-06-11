@@ -8,11 +8,11 @@ import {
 const faqs = [
   {
     q: "How can Avior sell the same quality furniture at 40% below retail?",
-    a: "Traditional furniture retail has four cost layers between factory and customer: manufacturer, distributor, retailer, and showroom. Each adds 20–40% markup to cover their margins, staff, and rent. Avior sources directly from the same factories that produce for established local brands, then ships straight to you — no middlemen, no Orchard Road showroom overhead. The furniture is identical in material and build. The only difference is who's taking the cut.",
+    a: "Traditional furniture retail has four cost layers between factory and customer: manufacturer, distributor, retailer, and showroom. Each adds 20 to 40% markup to cover their margins, staff, and rent. Avior sources directly from the same factories that produce for established local brands, then ships straight to you with no middlemen and no Orchard Road showroom overhead. The furniture is identical in material and build. The only difference is who's taking the cut.",
   },
   {
-    q: "What exactly is included with every order — delivery, assembly, and disposal?",
-    a: "Everything is included at no extra charge. Our team delivers island-wide across all HDBs, condos, and landed properties — including upper floors with no lift access. We carry furniture into the exact room you specify, assemble it fully, and remove every piece of packaging and old carton before we leave. You won't need to arrange a separate handyman or make a trip to the recycling point.",
+    q: "What exactly is included with every order: delivery, assembly, and disposal?",
+    a: "Everything is included at no extra charge. Our team delivers island-wide across all HDBs, condos, and landed properties, including upper floors with no lift access. We carry furniture into the exact room you specify, assemble it fully, and remove every piece of packaging and old carton before we leave. You won't need to arrange a separate handyman or make a trip to the recycling point.",
   },
   {
     q: "How long does delivery take, and what is the process?",
@@ -20,15 +20,15 @@ const faqs = [
   },
   {
     q: "Will the furniture fit my room? How do I check before ordering?",
-    a: "Use our Room Planner on this page — upload your floor plan or enter dimensions and you can visualise how each piece sits in your space. That said, always double-check the product dimensions listed on each item against your actual room measurements, particularly doorway widths and ceiling height for taller pieces. If you're unsure about fit for a specific space (e.g. a narrow BTO corridor), send us a photo on WhatsApp and we'll advise before you order.",
+    a: "Use our Room Planner on this page: upload your floor plan or enter dimensions and you can visualise how each piece sits in your space. That said, always double-check the product dimensions listed on each item against your actual room measurements, particularly doorway widths and ceiling height for taller pieces. If you're unsure about fit for a specific space (e.g. a narrow BTO corridor), send us a photo on WhatsApp and we'll advise before you order.",
   },
   {
     q: "What warranty do I get, and what happens if something arrives damaged?",
-    a: "Every item comes with a 1-year warranty covering manufacturing defects — including structural issues, hardware failure, and surface defects present at delivery. If anything arrives damaged, photograph it before our team leaves and flag it on the spot; we'll arrange a replacement at no cost. For issues that develop after delivery, WhatsApp us with photos and we'll assess within one business day. We don't make you fill in forms or wait weeks for a response.",
+    a: "Every item comes with a 1-year warranty covering manufacturing defects, including structural issues, hardware failure, and surface defects present at delivery. If anything arrives damaged, photograph it before our team leaves and flag it on the spot; we'll arrange a replacement at no cost. For issues that develop after delivery, WhatsApp us with photos and we'll assess within one business day. We don't make you fill in forms or wait weeks for a response.",
   },
   {
     q: "Is Avior furniture suitable for Singapore BTOs, HDBs, and compact spaces?",
-    a: "Yes — our range is designed with Singapore homes in mind. Pieces are sized for typical BTO and HDB room layouts, with dimensions that clear standard doorframes. Many items are available in compact variants suited for 3-room and 4-room flats. We also carry loft beds and multi-function pieces that work well in smaller bedrooms. If you're furnishing a new BTO and want to plan the whole space, our team can advise on what combinations work best together.",
+    a: "Yes, our range is designed with Singapore homes in mind. Pieces are sized for typical BTO and HDB room layouts, with dimensions that clear standard doorframes. Many items are available in compact variants suited for 3-room and 4-room flats. We also carry loft beds and multi-function pieces that work well in smaller bedrooms. If you're furnishing a new BTO and want to plan the whole space, our team can advise on what combinations work best together.",
   },
 ];
 
