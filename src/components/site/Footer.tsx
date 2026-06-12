@@ -13,9 +13,27 @@ export function Footer() {
             Factory-direct furniture for Singapore homes. Delivery, assembly, and disposal always included.
           </p>
         </div>
-        <Col title="Shop" links={["Best Sellers", "Sofas", "Beds", "Dining", "Storage"]} />
-        <Col title="Help" links={["Delivery", "Assembly", "Warranty", "Returns", "WhatsApp Us"]} />
-        <Col title="Avior" links={["Why Avior", "Room Planner", "Reviews", "FAQ", "Contact"]} />
+        <Col title="Shop" links={[
+          { label: "Best Sellers", href: "/#opening-sale" },
+          { label: "Coffee Tables", href: "/products" },
+          { label: "TV Consoles", href: "/products" },
+          { label: "Side Tables", href: "/products" },
+          { label: "Loft Beds", href: "/products" },
+        ]} />
+        <Col title="Help" links={[
+          { label: "Delivery Info", href: "/#faq" },
+          { label: "Assembly", href: "/#faq" },
+          { label: "Warranty", href: "/#faq" },
+          { label: "Returns", href: "/#faq" },
+          { label: "WhatsApp Us", href: "https://wa.me/6580000000" },
+        ]} />
+        <Col title="Avior" links={[
+          { label: "Why Avior", href: "/#why-avior" },
+          { label: "Room Planner", href: "/#room-planner" },
+          { label: "All Products", href: "/products" },
+          { label: "FAQ", href: "/#faq" },
+          { label: "Contact", href: "https://wa.me/6580000000" },
+        ]} />
       </div>
       <div className="border-t border-border">
         <div className="container-page flex flex-wrap items-center justify-between gap-3 py-5 text-xs text-muted-foreground">
@@ -27,17 +45,17 @@ export function Footer() {
   );
 }
 
-function Col({ title, links }: { title: string; links: string[] }) {
+function Col({ title, links }: { title: string; links: { label: string; href: string }[] }) {
   return (
     <div className="md:col-span-2">
       <h4 className="text-xs font-semibold uppercase tracking-widest text-foreground/80">
         {title}
       </h4>
       <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-        {links.map((l) => (
-          <li key={l}>
-            <a href="#" className="hover:text-foreground">
-              {l}
+        {links.map(({ label, href }) => (
+          <li key={label}>
+            <a href={href} className="hover:text-foreground">
+              {label}
             </a>
           </li>
         ))}

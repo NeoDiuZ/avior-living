@@ -45,6 +45,7 @@ export interface ShopifyVariant {
   id: string;
   title: string;
   price: { amount: string; currencyCode: string };
+  compareAtPrice?: { amount: string; currencyCode: string } | null;
   availableForSale: boolean;
   selectedOptions: Array<{ name: string; value: string }>;
 }
@@ -135,6 +136,7 @@ export const PRODUCT_BY_HANDLE_QUERY = `
             id
             title
             price { amount currencyCode }
+            compareAtPrice { amount currencyCode }
             availableForSale
             selectedOptions { name value }
           }

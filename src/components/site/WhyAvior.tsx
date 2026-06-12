@@ -138,7 +138,7 @@ function Column({
         <span
           className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors ${
             bad
-              ? "bg-foreground/8 text-foreground/40"
+              ? "bg-destructive/15 text-destructive"
               : "bg-accent text-accent-foreground"
           }`}
         >
@@ -226,14 +226,26 @@ function Column({
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           {priceLabel}
         </p>
-        <p
-          className={`mt-1 font-display font-bold leading-none tracking-tight ${
-            bad ? "text-foreground/30 line-through decoration-2" : "text-accent"
-          }`}
-          style={{ fontSize: "clamp(2.5rem, 6vw, 3.5rem)" }}
-        >
-          {price}
-        </p>
+        <div className="mt-1 flex items-center gap-3">
+          <p
+            className={`font-display font-bold leading-none tracking-tight ${
+              bad ? "text-destructive line-through decoration-2" : "text-emerald-600"
+            }`}
+            style={{ fontSize: "clamp(2.5rem, 6vw, 3.5rem)" }}
+          >
+            {price}
+          </p>
+          <span
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+              bad ? "bg-destructive/10 text-destructive" : "bg-emerald-50 text-emerald-600"
+            }`}
+          >
+            {bad
+              ? <X className="h-4 w-4" strokeWidth={2.5} />
+              : <Check className="h-4 w-4" strokeWidth={2.5} />
+            }
+          </span>
+        </div>
       </div>
 
     </div>

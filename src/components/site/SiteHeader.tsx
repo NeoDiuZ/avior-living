@@ -13,16 +13,16 @@ export function SiteHeader() {
           <Link href="/products" className="hover:text-accent">
             All Furniture
           </Link>
-          <a href="#opening-sale" className="hover:text-accent">
+          <a href="/#opening-sale" className="hover:text-accent">
             Opening Sale
           </a>
-          <a href="#why-avior" className="hover:text-accent">
+          <a href="/#why-avior" className="hover:text-accent">
             Why Avior
           </a>
-          <a href="#room-planner" className="hover:text-accent">
+          <a href="/#room-planner" className="hover:text-accent">
             Room Planner
           </a>
-          <a href="#faq" className="hover:text-accent">
+          <a href="/#faq" className="hover:text-accent">
             FAQ
           </a>
         </nav>

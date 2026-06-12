@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
-const SALE_END = new Date("2026-06-21T23:59:59+08:00");
+const SALE_END = new Date("2026-07-31T23:59:59+08:00");
 
 function useCountdown(target: Date) {
   const [ms, setMs] = useState(() => Math.max(0, target.getTime() - Date.now()));

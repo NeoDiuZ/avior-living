@@ -17,9 +17,13 @@ export function ProductCard({ product, badge }: Props) {
   const isAvailable = variant?.availableForSale ?? false;
 
   const price = variant?.price ?? node.priceRange.minVariantPrice;
-  // Illustrative retail comparison based on declared "up to 40% below retail"
   const numericPrice = parseFloat(price.amount);
-  const retailPrice = Math.round(numericPrice / 0.62 / 10) * 10;
+  const compareAtAmount = node.compareAtPriceRange?.minVariantPrice?.amount
+    ? parseFloat(node.compareAtPriceRange.minVariantPrice.amount)
+    : 0;
+  const retailPrice = compareAtAmount > numericPrice
+    ? compareAtAmount
+    : Math.round(numericPrice / 0.62 / 10) * 10;
   const hasSavings = retailPrice > numericPrice;
   const savingAmount = hasSavings ? retailPrice - numericPrice : 0;
   const savingPercent = hasSavings ? Math.round((savingAmount / retailPrice) * 100) : 0;
