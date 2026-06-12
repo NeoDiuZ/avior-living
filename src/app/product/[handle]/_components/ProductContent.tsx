@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, ChevronLeft, Truck, Wrench, Recycle } from "lucide-react";
+import { Loader2, ChevronLeft, Truck, Wrench, Recycle, Ruler } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import {
 } from "@/lib/shopify/client";
 import { useCartStore } from "@/stores/cartStore";
 import { useCartSync } from "@/hooks/useCartSync";
+import { RoomPlannerModal } from "@/components/site/RoomPlannerModal";
 
 interface ProductDetail {
   id: string;
@@ -48,6 +49,8 @@ export function ProductContent({ handle }: { handle: string }) {
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [selectedImageIdx, setSelectedImageIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
+
+  const [plannerOpen, setPlannerOpen] = useState(false);
 
   const addItem = useCartStore((s) => s.addItem);
   const isLoading = useCartStore((s) => s.isLoading);
@@ -126,6 +129,16 @@ export function ProductContent({ handle }: { handle: string }) {
       options: product.options,
     },
   };
+
+  // Demo dimensions keyed by product type — replace with Shopify metafields once added
+  const DEMO_DIMS: Record<string, { widthM: number; depthM: number }> = {
+    "Coffee Table":   { widthM: 1.2, depthM: 0.6 },
+    "TV Console":     { widthM: 1.8, depthM: 0.45 },
+    "Side Table":     { widthM: 0.5, depthM: 0.5 },
+    "Bed Side Table": { widthM: 0.5, depthM: 0.45 },
+    "Loft Bed":       { widthM: 2.0, depthM: 0.95 },
+  };
+  const dims = DEMO_DIMS[product.productType ?? ""] ?? { widthM: 1.0, depthM: 0.8 };
 
   const handleAdd = async () => {
     if (!variant) return;
@@ -264,6 +277,16 @@ export function ProductContent({ handle }: { handle: string }) {
               </Button>
             </div>
 
+            <Button
+              variant="outline"
+              size="lg"
+              className="mt-3 h-11 w-full border-foreground/15 bg-background font-medium"
+              onClick={() => setPlannerOpen(true)}
+            >
+              <Ruler className="mr-2 h-4 w-4 text-accent" />
+              Preview in Room Planner
+            </Button>
+
             <div className="mt-7 space-y-3 rounded-xl border border-border bg-cream p-5 text-sm">
               <Row icon={Truck} label="White-glove delivery included islandwide" />
               <Row icon={Wrench} label="Full assembly by our two-person team" />
@@ -287,6 +310,14 @@ export function ProductContent({ handle }: { handle: string }) {
           Retry
         </button>
       </div>
+
+      <RoomPlannerModal
+        open={plannerOpen}
+        onClose={() => setPlannerOpen(false)}
+        productName={product.title}
+        widthM={dims.widthM}
+        depthM={dims.depthM}
+      />
     </Shell>
   );
 }
