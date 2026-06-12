@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   },
   description:
     "Factory-direct furniture for Singapore homes. Save up to 40% off retail. Free white-glove delivery, assembly, and packaging disposal.",
+  icons: {
+    icon: "/images/avior logo.png",
+    apple: "/images/avior logo.png",
+  },
   openGraph: {
     title: "Avior Living | Factory-Direct Furniture, Singapore",
     description:

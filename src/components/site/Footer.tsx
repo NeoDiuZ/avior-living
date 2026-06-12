@@ -3,12 +3,12 @@ export function Footer() {
     <footer className="border-t border-border bg-cream">
       <div className="container-page grid gap-10 py-14 md:grid-cols-12">
         <div className="md:col-span-4">
-          <div className="flex items-baseline gap-2">
-            <span className="font-display text-2xl">Avior</span>
-            <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
-              Living
-            </span>
-          </div>
+          <img
+            src="/images/avior logo.png"
+            alt="Avior Living"
+            className="h-12 w-auto"
+            style={{ mixBlendMode: "multiply" }}
+          />
           <p className="mt-3 max-w-sm text-sm text-muted-foreground">
             Factory-direct furniture for Singapore homes. Delivery, assembly, and disposal always included.
           </p>
