@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { toast } from "sonner";
-import { storefrontApiRequest, SHOPIFY_STORE_PERMANENT_DOMAIN, type ShopifyProduct } from "@/lib/shopify/client";
+import { storefrontApiRequest, type ShopifyProduct } from "@/lib/shopify/client";
 
 export interface CartItem {
   lineId: string | null;
@@ -56,8 +56,6 @@ const CART_LINES_REMOVE = `
 function formatCheckoutUrl(url: string) {
   try {
     const u = new URL(url);
-    // Use the always-active myshopify.com domain until the custom domain is live
-    u.hostname = SHOPIFY_STORE_PERMANENT_DOMAIN;
     u.searchParams.set("channel", "online_store");
     return u.toString();
   } catch {
