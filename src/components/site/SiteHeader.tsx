@@ -5,13 +5,17 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center gap-2.5">
           <img
             src="/images/avior logo.png"
-            alt="Avior Living"
+            alt=""
             className="h-10 w-auto"
             style={{ mixBlendMode: "multiply" }}
           />
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-display text-2xl tracking-tight">Avior</span>
+            <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Living</span>
+          </div>
         </Link>
         <nav className="hidden items-center gap-7 text-sm font-medium text-foreground/80 md:flex">
           <Link href="/products" className="hover:text-accent">
