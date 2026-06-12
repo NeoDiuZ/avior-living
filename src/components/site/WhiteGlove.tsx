@@ -3,7 +3,7 @@ import { Truck, Wrench, MessageCircle, ShieldCheck, PackageX } from "lucide-reac
 const services = [
   { icon: Truck,         line1: "Free",       line2: "Delivery",  value: "$0" },
   { icon: Wrench,        line1: "Free",       line2: "Assembly",  value: "$0" },
-  { icon: PackageX,      line1: "Packaging",  line2: "Removed",   value: "$0" },
+  { icon: PackageX,      line1: "Packaging",  line2: "Removal",   value: "$0" },
   { icon: MessageCircle, line1: "WhatsApp",   line2: "Support",   value: "$0" },
 ];
 
