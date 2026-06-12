@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Upload, RotateCw, Minus, Plus, Trash2, Info } from "lucide-react";
+import { Upload, RotateCw, Minus, Plus, Trash2, Crosshair, ZoomIn, ZoomOut } from "lucide-react";
 
 interface PlacedItem {
   id: string;
@@ -23,6 +23,12 @@ interface DragState {
   iy: number;
 }
 
+type CalibPhase =
+  | { phase: "idle" }
+  | { phase: "pick1" }
+  | { phase: "pick2"; p1: { x: number; y: number } }
+  | { phase: "input"; p1: { x: number; y: number }; p2: { x: number; y: number }; pxDist: number };
+
 export interface RoomPlannerModalProps {
   open: boolean;
   onClose: () => void;
@@ -33,8 +39,12 @@ export interface RoomPlannerModalProps {
 
 const PX_DEFAULT = 80;
 const PX_STEP = 10;
-const PX_MIN = 30;
-const PX_MAX = 220;
+const PX_MIN = 20;
+const PX_MAX = 400;
+
+const ZOOM_MIN = 0.25;
+const ZOOM_MAX = 4;
+const ZOOM_STEP = 1.2;
 
 let _id = 0;
 
@@ -48,12 +58,31 @@ export function RoomPlannerModal({
   const [floorPlan, setFloorPlan] = useState<string | null>(null);
   const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null);
   const [scale, setScale] = useState(PX_DEFAULT);
+  const [zoom, setZoom] = useState(1);
   const [items, setItems] = useState<PlacedItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
+  const [calib, setCalib] = useState<CalibPhase>({ phase: "idle" });
+  const [calibMm, setCalibMm] = useState("");
 
   const fileRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const planRef = useRef<HTMLDivElement>(null);
+  const imgLoadedRef = useRef(false);
+
+  // Non-passive wheel listener for zoom (passive:false needed to preventDefault)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const handler = (e: WheelEvent) => {
+      if (!imgLoadedRef.current) return;
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP;
+      setZoom((z) => Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, z * factor)));
+    };
+    canvas.addEventListener("wheel", handler, { passive: false });
+    return () => canvas.removeEventListener("wheel", handler);
+  }, []);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -65,6 +94,9 @@ export function RoomPlannerModal({
     setImgSize(null);
     setItems([]);
     setSelectedId(null);
+    setCalib({ phase: "idle" });
+    setZoom(1);
+    imgLoadedRef.current = false;
     e.target.value = "";
   };
 
@@ -80,6 +112,7 @@ export function RoomPlannerModal({
       w: Math.round(img.naturalWidth * ratio),
       h: Math.round(img.naturalHeight * ratio),
     });
+    imgLoadedRef.current = true;
   };
 
   const addItem = () => {
@@ -91,12 +124,14 @@ export function RoomPlannerModal({
     setSelectedId(id);
   };
 
+  // Base pixel size of a furniture item (zoom-independent; zoom applied at render)
   const pxSize = (item: PlacedItem) => ({
     w: (item.rotated ? item.depthM : item.widthM) * scale,
     h: (item.rotated ? item.widthM : item.depthM) * scale,
   });
 
   const startDrag = (e: React.MouseEvent, id: string) => {
+    if (calib.phase !== "idle") return;
     e.preventDefault();
     e.stopPropagation();
     setSelectedId(id);
@@ -104,18 +139,24 @@ export function RoomPlannerModal({
     setDrag({ id, ox: e.clientX, oy: e.clientY, ix: item.x, iy: item.y });
   };
 
+  // Drag deltas are divided by zoom so item positions stay in base (zoom=1) coordinates
   const moveDrag = (e: React.MouseEvent) => {
     if (!drag) return;
     setItems((prev) =>
       prev.map((it) =>
         it.id === drag.id
-          ? { ...it, x: drag.ix + (e.clientX - drag.ox), y: drag.iy + (e.clientY - drag.oy) }
+          ? {
+              ...it,
+              x: drag.ix + (e.clientX - drag.ox) / zoom,
+              y: drag.iy + (e.clientY - drag.oy) / zoom,
+            }
           : it
       )
     );
   };
 
   const startTouchDrag = (e: React.TouchEvent, id: string) => {
+    if (calib.phase !== "idle") return;
     e.stopPropagation();
     setSelectedId(id);
     const t = e.touches[0];
@@ -129,7 +170,11 @@ export function RoomPlannerModal({
     setItems((prev) =>
       prev.map((it) =>
         it.id === drag.id
-          ? { ...it, x: drag.ix + (t.clientX - drag.ox), y: drag.iy + (t.clientY - drag.oy) }
+          ? {
+              ...it,
+              x: drag.ix + (t.clientX - drag.ox) / zoom,
+              y: drag.iy + (t.clientY - drag.oy) / zoom,
+            }
           : it
       )
     );
@@ -150,13 +195,60 @@ export function RoomPlannerModal({
     setSelectedId(null);
   };
 
+  // Calibration clicks: convert screen coords to base (zoom=1) plan coordinates
+  const handlePlanClick = (e: React.MouseEvent) => {
+    if (calib.phase === "idle") {
+      setSelectedId(null);
+      return;
+    }
+    e.stopPropagation();
+    const rect = planRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = (e.clientX - rect.left) / zoom;
+    const y = (e.clientY - rect.top) / zoom;
+
+    if (calib.phase === "pick1") {
+      setCalib({ phase: "pick2", p1: { x, y } });
+    } else if (calib.phase === "pick2") {
+      const dx = x - calib.p1.x;
+      const dy = y - calib.p1.y;
+      const pxDist = Math.sqrt(dx * dx + dy * dy);
+      setCalib({ phase: "input", p1: calib.p1, p2: { x, y }, pxDist });
+      setCalibMm("");
+    }
+  };
+
+  const applyCalibration = () => {
+    if (calib.phase !== "input") return;
+    const mm = parseFloat(calibMm);
+    if (!mm || mm <= 0) return;
+    setScale(calib.pxDist / (mm / 1000));
+    setCalib({ phase: "idle" });
+    setCalibMm("");
+  };
+
+  const cancelCalib = () => {
+    setCalib({ phase: "idle" });
+    setCalibMm("");
+  };
+
   const selected = items.find((it) => it.id === selectedId);
+  const isCalibrating = calib.phase !== "idle";
+  const zoomPct = Math.round(zoom * 100);
 
   const footerHint = !floorPlan
     ? "Upload a floor plan image to begin."
+    : calib.phase === "pick1"
+    ? "Click the first end of a known dimension on your floor plan."
+    : calib.phase === "pick2"
+    ? "Now click the other end of that same dimension."
+    : calib.phase === "input"
+    ? "Type the dimension label from the plan (mm). e.g. \"3600\" = 3.6 m."
     : items.length === 0
-    ? `Click "+ Add to Plan" in the toolbar to place the ${productName}.`
-    : "Click a piece to select it. Drag to reposition, rotate to change orientation.";
+    ? `Calibrate the scale, then click "+ Add to Plan" to place the ${productName}.`
+    : "Click a piece to select it. Drag to reposition. Scroll to zoom.";
+
+  const scaleDisplay = Number.isInteger(scale) ? `${scale}` : scale.toFixed(1);
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
@@ -166,7 +258,7 @@ export function RoomPlannerModal({
         <DialogHeader className="flex-shrink-0 border-b border-border px-6 py-4">
           <DialogTitle className="font-display text-xl">Room Planner</DialogTitle>
           <p className="text-sm text-muted-foreground">
-            Upload your floor plan and drag furniture to preview placement.
+            Upload your floor plan, calibrate the scale, then drag furniture to preview.
           </p>
         </DialogHeader>
 
@@ -178,22 +270,45 @@ export function RoomPlannerModal({
           </Button>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
 
+          {floorPlan && (
+            <>
+              <div className="hidden h-5 w-px bg-border sm:block" />
+              {isCalibrating ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={cancelCalib}
+                  className="border-destructive/40 text-destructive hover:text-destructive"
+                >
+                  Cancel Calibration
+                </Button>
+              ) : (
+                <Button size="sm" variant="outline" onClick={() => setCalib({ phase: "pick1" })}>
+                  <Crosshair className="mr-1.5 h-3.5 w-3.5" />
+                  Calibrate Scale
+                </Button>
+              )}
+            </>
+          )}
+
           <div className="hidden h-5 w-px bg-border sm:block" />
 
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-muted-foreground">Scale:</span>
             <button
               onClick={() => setScale((s) => Math.max(PX_MIN, s - PX_STEP))}
-              className="grid h-6 w-6 place-items-center rounded border border-border bg-background hover:bg-secondary"
+              disabled={isCalibrating}
+              className="grid h-6 w-6 place-items-center rounded border border-border bg-background hover:bg-secondary disabled:opacity-40"
             >
               <Minus className="h-3 w-3" />
             </button>
             <span className="w-[5.5rem] text-center text-[11px] tabular-nums text-foreground/70">
-              {scale} px = 1 m
+              {scaleDisplay} px = 1 m
             </span>
             <button
               onClick={() => setScale((s) => Math.min(PX_MAX, s + PX_STEP))}
-              className="grid h-6 w-6 place-items-center rounded border border-border bg-background hover:bg-secondary"
+              disabled={isCalibrating}
+              className="grid h-6 w-6 place-items-center rounded border border-border bg-background hover:bg-secondary disabled:opacity-40"
             >
               <Plus className="h-3 w-3" />
             </button>
@@ -201,11 +316,11 @@ export function RoomPlannerModal({
 
           <div className="hidden h-5 w-px bg-border sm:block" />
 
-          <Button size="sm" onClick={addItem} disabled={!floorPlan}>
+          <Button size="sm" onClick={addItem} disabled={!floorPlan || isCalibrating}>
             + Add to Plan
           </Button>
 
-          {selected && (
+          {selected && !isCalibrating && (
             <>
               <div className="hidden h-5 w-px bg-border sm:block" />
               <Button size="sm" variant="outline" onClick={rotateSelected}>
@@ -223,11 +338,6 @@ export function RoomPlannerModal({
               </Button>
             </>
           )}
-
-          <div className="ml-auto flex items-center gap-1.5 text-[10px] text-muted-foreground">
-            <Info className="h-3 w-3 shrink-0" />
-            Using demo dimensions — real sizes from Shopify soon
-          </div>
         </div>
 
         {/* Canvas */}
@@ -239,7 +349,6 @@ export function RoomPlannerModal({
           onMouseLeave={stopDrag}
           onTouchMove={moveTouchDrag}
           onTouchEnd={stopDrag}
-          onClick={() => setSelectedId(null)}
         >
           {!floorPlan ? (
             <div
@@ -254,10 +363,19 @@ export function RoomPlannerModal({
             </div>
           ) : (
             <div
+              ref={planRef}
               className="relative select-none"
-              style={{ cursor: drag ? "grabbing" : "default" }}
+              style={{
+                cursor:
+                  isCalibrating && calib.phase !== "input"
+                    ? "crosshair"
+                    : drag
+                    ? "grabbing"
+                    : "default",
+              }}
+              onClick={handlePlanClick}
             >
-              {/* Hidden img used solely to trigger onLoad and compute fit size */}
+              {/* Hidden img to trigger onLoad and compute base fit dimensions */}
               {!imgSize && (
                 <img
                   src={floorPlan}
@@ -268,17 +386,102 @@ export function RoomPlannerModal({
                 />
               )}
 
-              {/* Visible img rendered at fitted size */}
               {imgSize && (
                 <>
+                  {/* Floor plan image: rendered at base size × zoom */}
                   <img
                     src={floorPlan}
                     alt="Floor plan"
                     draggable={false}
                     className="block"
-                    style={{ width: imgSize.w, height: imgSize.h }}
+                    style={{ width: imgSize.w * zoom, height: imgSize.h * zoom }}
                   />
 
+                  {/* Calibration overlay: SVG viewBox in base coords, rendered at zoomed size */}
+                  {calib.phase !== "idle" && (
+                    <svg
+                      className="pointer-events-none absolute inset-0"
+                      viewBox={`0 0 ${imgSize.w} ${imgSize.h}`}
+                      style={{ width: imgSize.w * zoom, height: imgSize.h * zoom }}
+                    >
+                      {calib.phase === "input" && (
+                        <line
+                          x1={calib.p1.x}
+                          y1={calib.p1.y}
+                          x2={calib.p2.x}
+                          y2={calib.p2.y}
+                          stroke="#ef4444"
+                          strokeWidth={2 / zoom}
+                          strokeDasharray={`${6 / zoom} ${3 / zoom}`}
+                        />
+                      )}
+                      {(calib.phase === "pick2" || calib.phase === "input") && (
+                        <>
+                          <circle cx={calib.p1.x} cy={calib.p1.y} r={6 / zoom} fill="#ef4444" fillOpacity={0.9} />
+                          <text x={calib.p1.x + 9 / zoom} y={calib.p1.y + 4 / zoom} fontSize={11 / zoom} fill="#ef4444" fontWeight="bold">1</text>
+                        </>
+                      )}
+                      {calib.phase === "input" && (
+                        <>
+                          <circle cx={calib.p2.x} cy={calib.p2.y} r={6 / zoom} fill="#ef4444" fillOpacity={0.9} />
+                          <text x={calib.p2.x + 9 / zoom} y={calib.p2.y + 4 / zoom} fontSize={11 / zoom} fill="#ef4444" fontWeight="bold">2</text>
+                        </>
+                      )}
+                    </svg>
+                  )}
+
+                  {/* Calibration input card: positioned in zoomed pixel space */}
+                  {calib.phase === "input" && (() => {
+                    const midX = (calib.p1.x + calib.p2.x) / 2 * zoom;
+                    const midY = (calib.p1.y + calib.p2.y) / 2 * zoom;
+                    const cardW = 268;
+                    const left = Math.max(4, Math.min(imgSize.w * zoom - cardW - 4, midX - cardW / 2));
+                    const top = Math.min(imgSize.h * zoom - 170, midY + 16);
+                    return (
+                      <div
+                        className="pointer-events-auto absolute z-10 rounded-xl border border-border bg-background p-4 shadow-xl"
+                        style={{ left, top, width: cardW }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <p className="mb-1 text-xs font-semibold text-foreground">
+                          What is this distance?
+                        </p>
+                        <p className="mb-3 text-[11px] leading-relaxed text-muted-foreground">
+                          Find the dimension label on your floor plan between those two points. Singapore plans use mm — e.g. "3600" = 3.6 m.
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            value={calibMm}
+                            onChange={(e) => setCalibMm(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") applyCalibration();
+                              if (e.key === "Escape") cancelCalib();
+                            }}
+                            placeholder="e.g. 3600"
+                            autoFocus
+                            className="h-8 flex-1 rounded-md border border-border bg-background px-2 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-accent"
+                          />
+                          <span className="shrink-0 text-xs text-muted-foreground">mm</span>
+                        </div>
+                        <div className="mt-3 flex justify-end gap-2">
+                          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={cancelCalib}>
+                            Cancel
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="h-7 px-3 text-xs"
+                            onClick={applyCalibration}
+                            disabled={!calibMm || parseFloat(calibMm) <= 0}
+                          >
+                            Apply
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Furniture items: position and size in zoomed pixel space */}
                   {items.map((item) => {
                     const { w, h } = pxSize(item);
                     const isSel = item.id === selectedId;
@@ -287,10 +490,10 @@ export function RoomPlannerModal({
                         key={item.id}
                         style={{
                           position: "absolute",
-                          left: item.x,
-                          top: item.y,
-                          width: w,
-                          height: h,
+                          left: item.x * zoom,
+                          top: item.y * zoom,
+                          width: w * zoom,
+                          height: h * zoom,
                           cursor: drag?.id === item.id ? "grabbing" : "grab",
                           touchAction: "none",
                         }}
@@ -301,17 +504,20 @@ export function RoomPlannerModal({
                         }`}
                         onMouseDown={(e) => { e.stopPropagation(); startDrag(e, item.id); }}
                         onTouchStart={(e) => { e.stopPropagation(); startTouchDrag(e, item.id); }}
-                        onClick={(e) => { e.stopPropagation(); setSelectedId(item.id); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!isCalibrating) setSelectedId(item.id);
+                        }}
                       >
                         <span
                           className="block w-full truncate px-1 text-center font-bold leading-tight"
-                          style={{ fontSize: Math.max(8, Math.min(12, w / 10)) }}
+                          style={{ fontSize: Math.max(8, Math.min(12, (w * zoom) / 10)) }}
                         >
                           {item.label}
                         </span>
                         <span
                           className="mt-0.5 text-foreground/55"
-                          style={{ fontSize: Math.max(7, Math.min(10, w / 13)) }}
+                          style={{ fontSize: Math.max(7, Math.min(10, (w * zoom) / 13)) }}
                         >
                           {item.rotated
                             ? `${item.depthM}m × ${item.widthM}m`
@@ -322,6 +528,33 @@ export function RoomPlannerModal({
                   })}
                 </>
               )}
+            </div>
+          )}
+
+          {/* Floating zoom controls */}
+          {floorPlan && imgSize && (
+            <div className="absolute bottom-4 right-4 z-10 flex flex-col items-center gap-1">
+              <button
+                onClick={() => setZoom((z) => Math.min(ZOOM_MAX, z * ZOOM_STEP))}
+                className="grid h-8 w-8 place-items-center rounded-md border border-border bg-background shadow-sm hover:bg-secondary"
+                title="Zoom in"
+              >
+                <ZoomIn className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setZoom(1)}
+                className="grid h-8 w-8 place-items-center rounded-md border border-border bg-background text-[11px] tabular-nums shadow-sm hover:bg-secondary"
+                title="Reset zoom"
+              >
+                {zoomPct}%
+              </button>
+              <button
+                onClick={() => setZoom((z) => Math.max(ZOOM_MIN, z / ZOOM_STEP))}
+                className="grid h-8 w-8 place-items-center rounded-md border border-border bg-background shadow-sm hover:bg-secondary"
+                title="Zoom out"
+              >
+                <ZoomOut className="h-4 w-4" />
+              </button>
             </div>
           )}
         </div>
