@@ -46,12 +46,14 @@ export function RoomPlannerModal({
   depthM,
 }: RoomPlannerModalProps) {
   const [floorPlan, setFloorPlan] = useState<string | null>(null);
+  const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null);
   const [scale, setScale] = useState(PX_DEFAULT);
   const [items, setItems] = useState<PlacedItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -60,9 +62,24 @@ export function RoomPlannerModal({
       if (prev) URL.revokeObjectURL(prev);
       return URL.createObjectURL(file);
     });
+    setImgSize(null);
     setItems([]);
     setSelectedId(null);
     e.target.value = "";
+  };
+
+  const handleImgLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    const container = canvasRef.current;
+    if (!container) return;
+    const pad = 48;
+    const maxW = container.clientWidth - pad;
+    const maxH = container.clientHeight - pad;
+    const ratio = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight, 1);
+    setImgSize({
+      w: Math.round(img.naturalWidth * ratio),
+      h: Math.round(img.naturalHeight * ratio),
+    });
   };
 
   const addItem = () => {
@@ -89,11 +106,11 @@ export function RoomPlannerModal({
 
   const moveDrag = (e: React.MouseEvent) => {
     if (!drag) return;
-    const dx = e.clientX - drag.ox;
-    const dy = e.clientY - drag.oy;
     setItems((prev) =>
       prev.map((it) =>
-        it.id === drag.id ? { ...it, x: drag.ix + dx, y: drag.iy + dy } : it
+        it.id === drag.id
+          ? { ...it, x: drag.ix + (e.clientX - drag.ox), y: drag.iy + (e.clientY - drag.oy) }
+          : it
       )
     );
   };
@@ -109,11 +126,11 @@ export function RoomPlannerModal({
   const moveTouchDrag = (e: React.TouchEvent) => {
     if (!drag) return;
     const t = e.touches[0];
-    const dx = t.clientX - drag.ox;
-    const dy = t.clientY - drag.oy;
     setItems((prev) =>
       prev.map((it) =>
-        it.id === drag.id ? { ...it, x: drag.ix + dx, y: drag.iy + dy } : it
+        it.id === drag.id
+          ? { ...it, x: drag.ix + (t.clientX - drag.ox), y: drag.iy + (t.clientY - drag.oy) }
+          : it
       )
     );
   };
@@ -123,9 +140,7 @@ export function RoomPlannerModal({
   const rotateSelected = () => {
     if (!selectedId) return;
     setItems((prev) =>
-      prev.map((it) =>
-        it.id === selectedId ? { ...it, rotated: !it.rotated } : it
-      )
+      prev.map((it) => (it.id === selectedId ? { ...it, rotated: !it.rotated } : it))
     );
   };
 
@@ -165,7 +180,6 @@ export function RoomPlannerModal({
 
           <div className="hidden h-5 w-px bg-border sm:block" />
 
-          {/* Scale control */}
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-muted-foreground">Scale:</span>
             <button
@@ -210,7 +224,6 @@ export function RoomPlannerModal({
             </>
           )}
 
-          {/* Demo notice */}
           <div className="ml-auto flex items-center gap-1.5 text-[10px] text-muted-foreground">
             <Info className="h-3 w-3 shrink-0" />
             Using demo dimensions — real sizes from Shopify soon
@@ -219,7 +232,8 @@ export function RoomPlannerModal({
 
         {/* Canvas */}
         <div
-          className="relative flex-1 overflow-auto bg-[#ede9e3]"
+          ref={canvasRef}
+          className="relative flex flex-1 items-center justify-center overflow-auto bg-[#ede9e3]"
           onMouseMove={moveDrag}
           onMouseUp={stopDrag}
           onMouseLeave={stopDrag}
@@ -228,9 +242,8 @@ export function RoomPlannerModal({
           onClick={() => setSelectedId(null)}
         >
           {!floorPlan ? (
-            /* Upload prompt */
             <div
-              className="flex h-full min-h-[280px] cursor-pointer items-center justify-center p-8"
+              className="cursor-pointer"
               onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
             >
               <div className="rounded-2xl border-2 border-dashed border-border bg-background px-14 py-12 text-center">
@@ -240,59 +253,75 @@ export function RoomPlannerModal({
               </div>
             </div>
           ) : (
-            /* Floor plan + draggable items */
             <div
-              className="relative inline-block select-none"
+              className="relative select-none"
               style={{ cursor: drag ? "grabbing" : "default" }}
             >
-              <img
-                src={floorPlan}
-                alt="Floor plan"
-                draggable={false}
-                className="block max-w-none"
-              />
+              {/* Hidden img used solely to trigger onLoad and compute fit size */}
+              {!imgSize && (
+                <img
+                  src={floorPlan}
+                  alt=""
+                  className="invisible absolute"
+                  draggable={false}
+                  onLoad={handleImgLoad}
+                />
+              )}
 
-              {items.map((item) => {
-                const { w, h } = pxSize(item);
-                const isSel = item.id === selectedId;
-                return (
-                  <div
-                    key={item.id}
-                    style={{
-                      position: "absolute",
-                      left: item.x,
-                      top: item.y,
-                      width: w,
-                      height: h,
-                      cursor: drag?.id === item.id ? "grabbing" : "grab",
-                      touchAction: "none",
-                    }}
-                    className={`flex flex-col items-center justify-center overflow-hidden border-2 transition-shadow ${
-                      isSel
-                        ? "border-accent bg-accent/25 shadow-[0_0_0_3px_oklch(var(--accent)/0.25)]"
-                        : "border-foreground/50 bg-white/70 hover:border-accent hover:bg-accent/10"
-                    }`}
-                    onMouseDown={(e) => { e.stopPropagation(); startDrag(e, item.id); }}
-                    onTouchStart={(e) => { e.stopPropagation(); startTouchDrag(e, item.id); }}
-                    onClick={(e) => { e.stopPropagation(); setSelectedId(item.id); }}
-                  >
-                    <span
-                      className="block w-full truncate px-1 text-center font-bold leading-tight"
-                      style={{ fontSize: Math.max(8, Math.min(12, w / 10)) }}
-                    >
-                      {item.label}
-                    </span>
-                    <span
-                      className="mt-0.5 text-foreground/55"
-                      style={{ fontSize: Math.max(7, Math.min(10, w / 13)) }}
-                    >
-                      {item.rotated
-                        ? `${item.depthM}m × ${item.widthM}m`
-                        : `${item.widthM}m × ${item.depthM}m`}
-                    </span>
-                  </div>
-                );
-              })}
+              {/* Visible img rendered at fitted size */}
+              {imgSize && (
+                <>
+                  <img
+                    src={floorPlan}
+                    alt="Floor plan"
+                    draggable={false}
+                    className="block"
+                    style={{ width: imgSize.w, height: imgSize.h }}
+                  />
+
+                  {items.map((item) => {
+                    const { w, h } = pxSize(item);
+                    const isSel = item.id === selectedId;
+                    return (
+                      <div
+                        key={item.id}
+                        style={{
+                          position: "absolute",
+                          left: item.x,
+                          top: item.y,
+                          width: w,
+                          height: h,
+                          cursor: drag?.id === item.id ? "grabbing" : "grab",
+                          touchAction: "none",
+                        }}
+                        className={`flex flex-col items-center justify-center overflow-hidden border-2 transition-shadow ${
+                          isSel
+                            ? "border-accent bg-accent/25 shadow-[0_0_0_3px_oklch(var(--accent)/0.25)]"
+                            : "border-foreground/50 bg-white/70 hover:border-accent hover:bg-accent/10"
+                        }`}
+                        onMouseDown={(e) => { e.stopPropagation(); startDrag(e, item.id); }}
+                        onTouchStart={(e) => { e.stopPropagation(); startTouchDrag(e, item.id); }}
+                        onClick={(e) => { e.stopPropagation(); setSelectedId(item.id); }}
+                      >
+                        <span
+                          className="block w-full truncate px-1 text-center font-bold leading-tight"
+                          style={{ fontSize: Math.max(8, Math.min(12, w / 10)) }}
+                        >
+                          {item.label}
+                        </span>
+                        <span
+                          className="mt-0.5 text-foreground/55"
+                          style={{ fontSize: Math.max(7, Math.min(10, w / 13)) }}
+                        >
+                          {item.rotated
+                            ? `${item.depthM}m × ${item.widthM}m`
+                            : `${item.widthM}m × ${item.depthM}m`}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
             </div>
           )}
         </div>
