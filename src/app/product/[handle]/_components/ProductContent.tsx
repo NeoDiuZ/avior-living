@@ -11,6 +11,7 @@ import {
   storefrontApiRequest,
   PRODUCT_BY_HANDLE_QUERY,
   formatPrice,
+  parseDimensionsMetafield,
   type ShopifyProduct,
 } from "@/lib/shopify/client";
 import { useCartStore } from "@/stores/cartStore";
@@ -39,6 +40,7 @@ interface ProductDetail {
     }>;
   };
   options: Array<{ name: string; values: string[] }>;
+  metafields: Array<{ namespace: string; key: string; value: string } | null>;
 }
 
 export function ProductContent({ handle }: { handle: string }) {
@@ -130,15 +132,18 @@ export function ProductContent({ handle }: { handle: string }) {
     },
   };
 
-  // Demo dimensions keyed by product type — replace with Shopify metafields once added
-  const DEMO_DIMS: Record<string, { widthM: number; depthM: number }> = {
+  const dimsMeta = product.metafields.find(
+    (m) => m?.namespace === "custom" && m?.key === "dimensions"
+  );
+  const parsedDims = parseDimensionsMetafield(dimsMeta?.value);
+  const FALLBACK_DIMS: Record<string, { widthM: number; depthM: number }> = {
     "Coffee Table":   { widthM: 1.2, depthM: 0.6 },
     "TV Console":     { widthM: 1.8, depthM: 0.45 },
     "Side Table":     { widthM: 0.5, depthM: 0.5 },
     "Bed Side Table": { widthM: 0.5, depthM: 0.45 },
     "Loft Bed":       { widthM: 2.0, depthM: 0.95 },
   };
-  const dims = DEMO_DIMS[product.productType ?? ""] ?? { widthM: 1.0, depthM: 0.8 };
+  const dims = parsedDims ?? FALLBACK_DIMS[product.productType ?? ""] ?? { widthM: 1.0, depthM: 0.8 };
 
   const handleAdd = async () => {
     if (!variant) return;
