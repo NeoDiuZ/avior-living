@@ -72,7 +72,7 @@ export function RoomPlanner() {
             <div className="mt-7 flex flex-wrap gap-3">
               <Button
                 size="lg"
-                className="h-14 bg-primary px-8 text-base font-semibold text-primary-foreground hover:bg-primary/90"
+                className="h-14 bg-accent px-8 text-base font-semibold text-accent-foreground hover:bg-accent/90"
               >
                 Try Room Planner
               </Button>
