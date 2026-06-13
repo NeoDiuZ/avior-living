@@ -117,8 +117,8 @@ export function RoomPlannerModal({
   const planRef = useRef<HTMLDivElement>(null);
   const imgLoadedRef = useRef(false);
   const imgSizeRef = useRef<{ w: number; h: number } | null>(null);
-  // undefined = not yet responded; null = AI failed; number = detected widthM
-  const detectedWidthRef = useRef<number | null | undefined>(undefined);
+  // undefined = pending; null = AI failed; object = AI result
+  const calibResultRef = useRef<{ widthM: number; fraction: number } | null | undefined>(undefined);
   const footprintCache = useRef<Record<string, FootprintPiece[]>>({});
 
   // Non-passive wheel zoom
@@ -147,7 +147,7 @@ export function RoomPlannerModal({
       setZoom(1);
       imgLoadedRef.current = false;
       imgSizeRef.current = null;
-      detectedWidthRef.current = undefined;
+      calibResultRef.current = undefined;
     }, 300);
     return () => clearTimeout(t);
   }, [open]);
@@ -155,14 +155,14 @@ export function RoomPlannerModal({
   // Apply scale once BOTH image size and API result are available
   const tryApplyScale = () => {
     const size = imgSizeRef.current;
-    const detected = detectedWidthRef.current;
-    if (!size || detected === undefined) return; // one side not ready yet
+    const result = calibResultRef.current;
+    if (!size || result === undefined) return; // one side not ready yet
 
-    if (detected !== null && detected > 0) {
-      setScale(size.w / detected);
+    if (result !== null) {
+      // Multiply rendered width by drawing fraction to exclude whitespace margins
+      setScale((size.w * result.fraction) / result.widthM);
       setCalibState({ status: "done", auto: true });
     } else {
-      // AI failed — keep default 80 px/m, let user nudge with ± if needed
       setCalibState({ status: "done", auto: false });
     }
   };
@@ -199,7 +199,7 @@ export function RoomPlannerModal({
     setZoom(1);
     imgLoadedRef.current = false;
     imgSizeRef.current = null;
-    detectedWidthRef.current = undefined; // mark both sides as pending
+    calibResultRef.current = undefined; // mark both sides as pending
 
     // Fire both simultaneously: image load (handled by onLoad) + AI calibration
     try {
@@ -210,9 +210,12 @@ export function RoomPlannerModal({
         body: JSON.stringify({ imageBase64: base64, mimeType: "image/jpeg" }),
       });
       const data = await res.json();
-      detectedWidthRef.current = data.detected && data.widthM > 0 ? data.widthM : null;
+      calibResultRef.current =
+        data.detected && data.widthM > 0
+          ? { widthM: data.widthM, fraction: data.drawingWidthFraction ?? 1 }
+          : null;
     } catch {
-      detectedWidthRef.current = null;
+      calibResultRef.current = null;
     }
 
     // Try to apply now; if image hasn't loaded yet tryApplyScale will return early

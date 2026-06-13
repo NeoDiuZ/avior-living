@@ -16,7 +16,7 @@ function toMeters(value: number, unit: string): number {
     case "cm": return value / 100;
     case "ft": return value * 0.3048;
     case "in": return value * 0.0254;
-    default:   return value; // already meters
+    default:   return value;
   }
 }
 
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
     const response = await client.chat.completions.create({
       model: "gpt-4o-mini",
-      max_tokens: 512,
+      max_tokens: 600,
       temperature: 0,
       messages: [
         {
@@ -42,35 +42,39 @@ export async function POST(req: NextRequest) {
             },
             {
               type: "text",
-              text: `This is an architectural floor plan. Find the overall room dimensions.
+              text: `This is an architectural floor plan image. Complete four tasks:
 
-STEP 1 — HORIZONTAL WIDTH:
-Look at the TOP and BOTTOM outer edges. There may be TWO levels of numbers:
-- An OUTER total (one large number spanning the full width, e.g. 12350)
-- INNER segments below/above it (multiple smaller numbers e.g. 3300, 2800, 2825, 3425)
+TASK A — HORIZONTAL WIDTH:
+Look at the top and bottom outer edges for dimension numbers.
+Floor plans often have TWO levels: one large TOTAL spanning the full width (e.g. 12350) and smaller segments below it (e.g. 3300, 2800, 2825, 3425).
+→ If you see a single outermost total, set "widthTotal".
+→ Also list any inner segment numbers in "widthSegments".
 
-If you see a single outermost total number spanning the full width → use it as "horizontalTotal".
-Also list any inner segment numbers as "horizontalSegments".
+TASK B — VERTICAL DEPTH:
+Same for left and right outer edges → "depthTotal" and/or "depthSegments".
 
-STEP 2 — VERTICAL DEPTH:
-Same logic for LEFT and RIGHT outer edges.
-If you see a single outermost total → use "verticalTotal".
-Also list inner segments as "verticalSegments".
+TASK C — UNIT:
+Identify the unit used for all numbers: "mm", "cm", "m", "ft", or "in".
 
-STEP 3 — UNIT: identify "mm", "cm", "m", or "ft".
+TASK D — DRAWING BOUNDS:
+The image may have white margins around the actual floor plan drawing.
+Estimate what fraction of the total image the drawing itself occupies:
+→ "drawingWidthFraction": 0.0–1.0 (drawing width ÷ image width)
+→ "drawingHeightFraction": 0.0–1.0 (drawing height ÷ image height)
 
-Return ONLY valid JSON (include all fields you found, omit ones not present):
+Return ONLY valid JSON:
 {
   "detected": true,
   "unit": "mm",
-  "horizontalTotal": 12350,
-  "horizontalSegments": [3300, 2800, 2825, 3425],
-  "verticalTotal": 9450,
-  "verticalSegments": [4800, 3200, 1450]
+  "widthTotal": 12350,
+  "widthSegments": [3300, 2800, 2825, 3425],
+  "depthTotal": 9500,
+  "depthSegments": [4800, 3200, 1500],
+  "drawingWidthFraction": 0.75,
+  "drawingHeightFraction": 0.82
 }
 
-If you cannot read any dimension numbers clearly:
-{"detected": false}`,
+If you cannot read any dimension numbers at all: {"detected": false}`,
             },
           ],
         },
@@ -84,27 +88,39 @@ If you cannot read any dimension numbers clearly:
 
       const unit = typeof result.unit === "string" ? result.unit : "mm";
 
-      // Prefer the outermost total annotation; fall back to summing segments
+      // Prefer outermost total annotation; fall back to summing segments
       let widthM = 0;
-      if (typeof result.horizontalTotal === "number" && result.horizontalTotal > 0) {
-        widthM = toMeters(result.horizontalTotal, unit);
-      } else if (Array.isArray(result.horizontalSegments) && result.horizontalSegments.length > 0) {
-        widthM = (result.horizontalSegments as number[]).reduce((s, n) => s + toMeters(Number(n), unit), 0);
+      if (typeof result.widthTotal === "number" && result.widthTotal > 0) {
+        widthM = toMeters(result.widthTotal, unit);
+      } else if (Array.isArray(result.widthSegments) && result.widthSegments.length > 0) {
+        widthM = (result.widthSegments as number[]).reduce((s, n) => s + toMeters(Number(n), unit), 0);
       }
 
       let depthM = 0;
-      if (typeof result.verticalTotal === "number" && result.verticalTotal > 0) {
-        depthM = toMeters(result.verticalTotal, unit);
-      } else if (Array.isArray(result.verticalSegments) && result.verticalSegments.length > 0) {
-        depthM = (result.verticalSegments as number[]).reduce((s, n) => s + toMeters(Number(n), unit), 0);
+      if (typeof result.depthTotal === "number" && result.depthTotal > 0) {
+        depthM = toMeters(result.depthTotal, unit);
+      } else if (Array.isArray(result.depthSegments) && result.depthSegments.length > 0) {
+        depthM = (result.depthSegments as number[]).reduce((s, n) => s + toMeters(Number(n), unit), 0);
       }
 
       if (!(widthM > 0)) return NextResponse.json({ detected: false });
 
+      const drawingWidthFraction =
+        typeof result.drawingWidthFraction === "number"
+          ? Math.max(0.1, Math.min(1, result.drawingWidthFraction))
+          : 1;
+
+      const drawingHeightFraction =
+        typeof result.drawingHeightFraction === "number"
+          ? Math.max(0.1, Math.min(1, result.drawingHeightFraction))
+          : 1;
+
       return NextResponse.json({
         detected: true,
-        widthM: Math.round(widthM * 10) / 10,
-        depthM: depthM > 0 ? Math.round(depthM * 10) / 10 : null,
+        widthM: Math.round(widthM * 100) / 100,
+        depthM: depthM > 0 ? Math.round(depthM * 100) / 100 : null,
+        drawingWidthFraction,
+        drawingHeightFraction,
       });
     } catch {
       return NextResponse.json({ detected: false });
