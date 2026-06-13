@@ -3,7 +3,19 @@
 import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Upload, RotateCw, Minus, Plus, Trash2, Crosshair, ZoomIn, ZoomOut } from "lucide-react";
+import { Upload, RotateCw, Minus, Plus, Trash2, ZoomIn, ZoomOut, Loader2 } from "lucide-react";
+
+// ---------- types ----------
+
+interface FootprintPiece {
+  id: string;
+  label: string;
+  widthM: number;
+  depthM: number;
+  vertices: [number, number][];
+  offsetXm: number;
+  offsetYm: number;
+}
 
 interface PlacedItem {
   id: string;
@@ -12,7 +24,8 @@ interface PlacedItem {
   depthM: number;
   x: number;
   y: number;
-  rotated: boolean;
+  pieces: FootprintPiece[];
+  footprintLoading: boolean;
 }
 
 interface DragState {
@@ -23,11 +36,11 @@ interface DragState {
   iy: number;
 }
 
-type CalibPhase =
-  | { phase: "idle" }
-  | { phase: "pick1" }
-  | { phase: "pick2"; p1: { x: number; y: number } }
-  | { phase: "input"; p1: { x: number; y: number }; p2: { x: number; y: number }; pxDist: number };
+// "auto" = AI detected scale correctly; "fallback" = AI failed, using default 80 px/m
+type CalibState =
+  | { status: "idle" }
+  | { status: "analyzing" }
+  | { status: "done"; auto: boolean };
 
 export interface RoomPlannerModalProps {
   open: boolean;
@@ -35,18 +48,52 @@ export interface RoomPlannerModalProps {
   productName: string;
   widthM: number;
   depthM: number;
+  productImageUrl?: string;
 }
+
+// ---------- constants ----------
 
 const PX_DEFAULT = 80;
 const PX_STEP = 10;
 const PX_MIN = 20;
 const PX_MAX = 400;
-
 const ZOOM_MIN = 0.25;
 const ZOOM_MAX = 4;
 const ZOOM_STEP = 1.2;
 
 let _id = 0;
+
+// ---------- helpers ----------
+
+const RECT_VERTICES: [number, number][] = [[0, 0], [1, 0], [1, 1], [0, 1]];
+
+function makeDefaultPiece(label: string, widthM: number, depthM: number): FootprintPiece {
+  return { id: "1", label, widthM, depthM, vertices: RECT_VERTICES, offsetXm: 0, offsetYm: 0 };
+}
+
+function toSvgPath(vertices: [number, number][]): string {
+  return vertices.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x},${y}`).join(" ") + " Z";
+}
+
+async function resizeToBase64(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const MAX = 1600;
+      const r = Math.min(MAX / img.width, MAX / img.height, 1);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * r);
+      canvas.height = Math.round(img.height * r);
+      canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/jpeg", 0.85).split(",")[1]);
+    };
+    img.src = url;
+  });
+}
+
+// ---------- component ----------
 
 export function RoomPlannerModal({
   open,
@@ -54,6 +101,7 @@ export function RoomPlannerModal({
   productName,
   widthM,
   depthM,
+  productImageUrl,
 }: RoomPlannerModalProps) {
   const [floorPlan, setFloorPlan] = useState<string | null>(null);
   const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null);
@@ -62,42 +110,61 @@ export function RoomPlannerModal({
   const [items, setItems] = useState<PlacedItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
-  const [calib, setCalib] = useState<CalibPhase>({ phase: "idle" });
-  const [calibMm, setCalibMm] = useState("");
+  const [calibState, setCalibState] = useState<CalibState>({ status: "idle" });
 
   const fileRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const planRef = useRef<HTMLDivElement>(null);
   const imgLoadedRef = useRef(false);
+  const imgSizeRef = useRef<{ w: number; h: number } | null>(null);
+  // undefined = not yet responded; null = AI failed; number = detected widthM
+  const detectedWidthRef = useRef<number | null | undefined>(undefined);
+  const footprintCache = useRef<Record<string, FootprintPiece[]>>({});
 
-  // Non-passive wheel listener for zoom (passive:false needed to preventDefault)
+  // Non-passive wheel zoom
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const el = canvasRef.current;
+    if (!el) return;
     const handler = (e: WheelEvent) => {
       if (!imgLoadedRef.current) return;
       e.preventDefault();
-      const factor = e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP;
-      setZoom((z) => Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, z * factor)));
+      setZoom((z) => Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, z * (e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP))));
     };
-    canvas.addEventListener("wheel", handler, { passive: false });
-    return () => canvas.removeEventListener("wheel", handler);
+    el.addEventListener("wheel", handler, { passive: false });
+    return () => el.removeEventListener("wheel", handler);
   }, []);
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setFloorPlan((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return URL.createObjectURL(file);
-    });
-    setImgSize(null);
-    setItems([]);
-    setSelectedId(null);
-    setCalib({ phase: "idle" });
-    setZoom(1);
-    imgLoadedRef.current = false;
-    e.target.value = "";
+  // Reset on modal close
+  useEffect(() => {
+    if (open) return;
+    const t = setTimeout(() => {
+      setFloorPlan((prev) => { if (prev) URL.revokeObjectURL(prev); return null; });
+      setImgSize(null);
+      setItems([]);
+      setSelectedId(null);
+      setCalibState({ status: "idle" });
+      setScale(PX_DEFAULT);
+      setZoom(1);
+      imgLoadedRef.current = false;
+      imgSizeRef.current = null;
+      detectedWidthRef.current = undefined;
+    }, 300);
+    return () => clearTimeout(t);
+  }, [open]);
+
+  // Apply scale once BOTH image size and API result are available
+  const tryApplyScale = () => {
+    const size = imgSizeRef.current;
+    const detected = detectedWidthRef.current;
+    if (!size || detected === undefined) return; // one side not ready yet
+
+    if (detected !== null && detected > 0) {
+      setScale(size.w / detected);
+      setCalibState({ status: "done", auto: true });
+    } else {
+      // AI failed — keep default 80 px/m, let user nudge with ± if needed
+      setCalibState({ status: "done", auto: false });
+    }
   };
 
   const handleImgLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -105,33 +172,98 @@ export function RoomPlannerModal({
     const container = canvasRef.current;
     if (!container) return;
     const pad = 48;
-    const maxW = container.clientWidth - pad;
-    const maxH = container.clientHeight - pad;
-    const ratio = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight, 1);
-    setImgSize({
-      w: Math.round(img.naturalWidth * ratio),
-      h: Math.round(img.naturalHeight * ratio),
-    });
+    const ratio = Math.min(
+      (container.clientWidth - pad) / img.naturalWidth,
+      (container.clientHeight - pad) / img.naturalHeight,
+      1,
+    );
+    const size = { w: Math.round(img.naturalWidth * ratio), h: Math.round(img.naturalHeight * ratio) };
+    setImgSize(size);
+    imgSizeRef.current = size;
     imgLoadedRef.current = true;
+    tryApplyScale();
   };
 
-  const addItem = () => {
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = "";
+
+    // Reset everything for the new plan
+    setFloorPlan((prev) => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(file); });
+    setImgSize(null);
+    setItems([]);
+    setSelectedId(null);
+    setCalibState({ status: "analyzing" });
+    setScale(PX_DEFAULT);
+    setZoom(1);
+    imgLoadedRef.current = false;
+    imgSizeRef.current = null;
+    detectedWidthRef.current = undefined; // mark both sides as pending
+
+    // Fire both simultaneously: image load (handled by onLoad) + AI calibration
+    try {
+      const base64 = await resizeToBase64(file);
+      const res = await fetch("/api/calibrate-floor-plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: base64, mimeType: "image/jpeg" }),
+      });
+      const data = await res.json();
+      detectedWidthRef.current = data.detected && data.widthM > 0 ? data.widthM : null;
+    } catch {
+      detectedWidthRef.current = null;
+    }
+
+    // Try to apply now; if image hasn't loaded yet tryApplyScale will return early
+    // and handleImgLoad will call it again once the image is ready
+    tryApplyScale();
+  };
+
+  const addItem = async () => {
     const id = `fp-${++_id}`;
-    setItems((prev) => [
-      ...prev,
-      { id, label: productName, widthM, depthM, x: 32, y: 32, rotated: false },
-    ]);
-    setSelectedId(id);
-  };
+    const cacheKey = `${productName}|${widthM}|${depthM}`;
+    const cached = footprintCache.current[cacheKey];
 
-  // Base pixel size of a furniture item (zoom-independent; zoom applied at render)
-  const pxSize = (item: PlacedItem) => ({
-    w: (item.rotated ? item.depthM : item.widthM) * scale,
-    h: (item.rotated ? item.widthM : item.depthM) * scale,
-  });
+    const newItem: PlacedItem = {
+      id,
+      label: productName,
+      widthM,
+      depthM,
+      x: 32,
+      y: 32,
+      pieces: cached ?? [makeDefaultPiece(productName, widthM, depthM)],
+      footprintLoading: !cached && !!productImageUrl,
+    };
+    setItems((prev) => [...prev, newItem]);
+    setSelectedId(id);
+
+    if (!cached && productImageUrl) {
+      try {
+        const optimized = productImageUrl.includes("cdn.shopify.com")
+          ? `${productImageUrl.split("?")[0]}?width=800`
+          : productImageUrl;
+        const res = await fetch("/api/generate-footprint", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageUrl: optimized, widthM, depthM, productName }),
+        });
+        const data = await res.json();
+        if (Array.isArray(data.pieces) && data.pieces.length > 0) {
+          footprintCache.current[cacheKey] = data.pieces;
+          setItems((prev) =>
+            prev.map((it) => (it.id === id ? { ...it, pieces: data.pieces, footprintLoading: false } : it)),
+          );
+        } else {
+          setItems((prev) => prev.map((it) => (it.id === id ? { ...it, footprintLoading: false } : it)));
+        }
+      } catch {
+        setItems((prev) => prev.map((it) => (it.id === id ? { ...it, footprintLoading: false } : it)));
+      }
+    }
+  };
 
   const startDrag = (e: React.MouseEvent, id: string) => {
-    if (calib.phase !== "idle") return;
     e.preventDefault();
     e.stopPropagation();
     setSelectedId(id);
@@ -139,24 +271,18 @@ export function RoomPlannerModal({
     setDrag({ id, ox: e.clientX, oy: e.clientY, ix: item.x, iy: item.y });
   };
 
-  // Drag deltas are divided by zoom so item positions stay in base (zoom=1) coordinates
   const moveDrag = (e: React.MouseEvent) => {
     if (!drag) return;
     setItems((prev) =>
       prev.map((it) =>
         it.id === drag.id
-          ? {
-              ...it,
-              x: drag.ix + (e.clientX - drag.ox) / zoom,
-              y: drag.iy + (e.clientY - drag.oy) / zoom,
-            }
-          : it
-      )
+          ? { ...it, x: drag.ix + (e.clientX - drag.ox) / zoom, y: drag.iy + (e.clientY - drag.oy) / zoom }
+          : it,
+      ),
     );
   };
 
   const startTouchDrag = (e: React.TouchEvent, id: string) => {
-    if (calib.phase !== "idle") return;
     e.stopPropagation();
     setSelectedId(id);
     const t = e.touches[0];
@@ -170,13 +296,9 @@ export function RoomPlannerModal({
     setItems((prev) =>
       prev.map((it) =>
         it.id === drag.id
-          ? {
-              ...it,
-              x: drag.ix + (t.clientX - drag.ox) / zoom,
-              y: drag.iy + (t.clientY - drag.oy) / zoom,
-            }
-          : it
-      )
+          ? { ...it, x: drag.ix + (t.clientX - drag.ox) / zoom, y: drag.iy + (t.clientY - drag.oy) / zoom }
+          : it,
+      ),
     );
   };
 
@@ -185,7 +307,23 @@ export function RoomPlannerModal({
   const rotateSelected = () => {
     if (!selectedId) return;
     setItems((prev) =>
-      prev.map((it) => (it.id === selectedId ? { ...it, rotated: !it.rotated } : it))
+      prev.map((it) => {
+        if (it.id !== selectedId) return it;
+        const oldH = it.depthM;
+        return {
+          ...it,
+          widthM: it.depthM,
+          depthM: it.widthM,
+          pieces: it.pieces.map((p) => ({
+            ...p,
+            widthM: p.depthM,
+            depthM: p.widthM,
+            vertices: p.vertices.map(([x, y]) => [y, 1 - x] as [number, number]),
+            offsetXm: oldH - p.offsetYm - p.depthM,
+            offsetYm: p.offsetXm,
+          })),
+        };
+      }),
     );
   };
 
@@ -195,60 +333,22 @@ export function RoomPlannerModal({
     setSelectedId(null);
   };
 
-  // Calibration clicks: convert screen coords to base (zoom=1) plan coordinates
-  const handlePlanClick = (e: React.MouseEvent) => {
-    if (calib.phase === "idle") {
-      setSelectedId(null);
-      return;
-    }
-    e.stopPropagation();
-    const rect = planRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const x = (e.clientX - rect.left) / zoom;
-    const y = (e.clientY - rect.top) / zoom;
-
-    if (calib.phase === "pick1") {
-      setCalib({ phase: "pick2", p1: { x, y } });
-    } else if (calib.phase === "pick2") {
-      const dx = x - calib.p1.x;
-      const dy = y - calib.p1.y;
-      const pxDist = Math.sqrt(dx * dx + dy * dy);
-      setCalib({ phase: "input", p1: calib.p1, p2: { x, y }, pxDist });
-      setCalibMm("");
-    }
-  };
-
-  const applyCalibration = () => {
-    if (calib.phase !== "input") return;
-    const mm = parseFloat(calibMm);
-    if (!mm || mm <= 0) return;
-    setScale(calib.pxDist / (mm / 1000));
-    setCalib({ phase: "idle" });
-    setCalibMm("");
-  };
-
-  const cancelCalib = () => {
-    setCalib({ phase: "idle" });
-    setCalibMm("");
-  };
-
+  const calibDone = calibState.status === "done";
   const selected = items.find((it) => it.id === selectedId);
-  const isCalibrating = calib.phase !== "idle";
   const zoomPct = Math.round(zoom * 100);
+  const scaleDisplay = Number.isInteger(scale) ? `${scale}` : scale.toFixed(1);
 
   const footerHint = !floorPlan
     ? "Upload a floor plan image to begin."
-    : calib.phase === "pick1"
-    ? "Click the first end of a known dimension on your floor plan."
-    : calib.phase === "pick2"
-    ? "Now click the other end of that same dimension."
-    : calib.phase === "input"
-    ? "Type the dimension label from the plan (mm). e.g. \"3600\" = 3.6 m."
+    : calibState.status === "analyzing"
+    ? "Detecting scale from floor plan…"
+    : calibState.status === "done" && !calibState.auto
+    ? `Couldn't read scale — scale is approximate. Use + / − to adjust, then click "+ Add to Plan".`
     : items.length === 0
-    ? `Calibrate the scale, then click "+ Add to Plan" to place the ${productName}.`
+    ? `Scale set automatically. Click "+ Add to Plan" to place the ${productName}.`
+    : selected
+    ? "Drag to reposition. Use the toolbar to rotate or remove. Scroll to zoom."
     : "Click a piece to select it. Drag to reposition. Scroll to zoom.";
-
-  const scaleDisplay = Number.isInteger(scale) ? `${scale}` : scale.toFixed(1);
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
@@ -258,9 +358,17 @@ export function RoomPlannerModal({
         <DialogHeader className="flex-shrink-0 border-b border-border px-6 py-4">
           <DialogTitle className="font-display text-xl">Room Planner</DialogTitle>
           <p className="text-sm text-muted-foreground">
-            Upload your floor plan, calibrate the scale, then drag furniture to preview.
+            Upload your floor plan — AI detects the scale and furniture shapes automatically.
           </p>
         </DialogHeader>
+
+        {/* Analyzing banner — only while waiting, disappears automatically */}
+        {calibState.status === "analyzing" && (
+          <div className="flex flex-shrink-0 items-center gap-2.5 border-b border-border bg-blue-50/60 px-5 py-2 dark:bg-blue-950/30">
+            <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0 text-blue-500" />
+            <span className="text-xs text-foreground/60">Detecting floor plan scale…</span>
+          </div>
+        )}
 
         {/* Toolbar */}
         <div className="flex flex-shrink-0 flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-secondary/40 px-5 py-3">
@@ -270,35 +378,14 @@ export function RoomPlannerModal({
           </Button>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
 
-          {floorPlan && (
-            <>
-              <div className="hidden h-5 w-px bg-border sm:block" />
-              {isCalibrating ? (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={cancelCalib}
-                  className="border-destructive/40 text-destructive hover:text-destructive"
-                >
-                  Cancel Calibration
-                </Button>
-              ) : (
-                <Button size="sm" variant="outline" onClick={() => setCalib({ phase: "pick1" })}>
-                  <Crosshair className="mr-1.5 h-3.5 w-3.5" />
-                  Calibrate Scale
-                </Button>
-              )}
-            </>
-          )}
-
           <div className="hidden h-5 w-px bg-border sm:block" />
 
+          {/* Scale fine-tune — available after calibration for optional adjustment */}
           <div className="flex items-center gap-1.5">
             <span className="text-xs text-muted-foreground">Scale:</span>
             <button
               onClick={() => setScale((s) => Math.max(PX_MIN, s - PX_STEP))}
-              disabled={isCalibrating}
-              className="grid h-6 w-6 place-items-center rounded border border-border bg-background hover:bg-secondary disabled:opacity-40"
+              className="grid h-6 w-6 place-items-center rounded border border-border bg-background hover:bg-secondary"
             >
               <Minus className="h-3 w-3" />
             </button>
@@ -307,8 +394,7 @@ export function RoomPlannerModal({
             </span>
             <button
               onClick={() => setScale((s) => Math.min(PX_MAX, s + PX_STEP))}
-              disabled={isCalibrating}
-              className="grid h-6 w-6 place-items-center rounded border border-border bg-background hover:bg-secondary disabled:opacity-40"
+              className="grid h-6 w-6 place-items-center rounded border border-border bg-background hover:bg-secondary"
             >
               <Plus className="h-3 w-3" />
             </button>
@@ -316,11 +402,11 @@ export function RoomPlannerModal({
 
           <div className="hidden h-5 w-px bg-border sm:block" />
 
-          <Button size="sm" onClick={addItem} disabled={!floorPlan || isCalibrating}>
+          <Button size="sm" onClick={addItem} disabled={!floorPlan || !calibDone}>
             + Add to Plan
           </Button>
 
-          {selected && !isCalibrating && (
+          {selected && (
             <>
               <div className="hidden h-5 w-px bg-border sm:block" />
               <Button size="sm" variant="outline" onClick={rotateSelected}>
@@ -349,6 +435,7 @@ export function RoomPlannerModal({
           onMouseLeave={stopDrag}
           onTouchMove={moveTouchDrag}
           onTouchEnd={stopDrag}
+          onClick={() => setSelectedId(null)}
         >
           {!floorPlan ? (
             <div
@@ -365,30 +452,15 @@ export function RoomPlannerModal({
             <div
               ref={planRef}
               className="relative select-none"
-              style={{
-                cursor:
-                  isCalibrating && calib.phase !== "input"
-                    ? "crosshair"
-                    : drag
-                    ? "grabbing"
-                    : "default",
-              }}
-              onClick={handlePlanClick}
+              style={{ cursor: drag ? "grabbing" : "default" }}
+              onClick={(e) => e.stopPropagation()}
             >
-              {/* Hidden img to trigger onLoad and compute base fit dimensions */}
               {!imgSize && (
-                <img
-                  src={floorPlan}
-                  alt=""
-                  className="invisible absolute"
-                  draggable={false}
-                  onLoad={handleImgLoad}
-                />
+                <img src={floorPlan} alt="" className="invisible absolute" draggable={false} onLoad={handleImgLoad} />
               )}
 
               {imgSize && (
                 <>
-                  {/* Floor plan image: rendered at base size × zoom */}
                   <img
                     src={floorPlan}
                     alt="Floor plan"
@@ -397,94 +469,11 @@ export function RoomPlannerModal({
                     style={{ width: imgSize.w * zoom, height: imgSize.h * zoom }}
                   />
 
-                  {/* Calibration overlay: SVG viewBox in base coords, rendered at zoomed size */}
-                  {calib.phase !== "idle" && (
-                    <svg
-                      className="pointer-events-none absolute inset-0"
-                      viewBox={`0 0 ${imgSize.w} ${imgSize.h}`}
-                      style={{ width: imgSize.w * zoom, height: imgSize.h * zoom }}
-                    >
-                      {calib.phase === "input" && (
-                        <line
-                          x1={calib.p1.x}
-                          y1={calib.p1.y}
-                          x2={calib.p2.x}
-                          y2={calib.p2.y}
-                          stroke="#ef4444"
-                          strokeWidth={2 / zoom}
-                          strokeDasharray={`${6 / zoom} ${3 / zoom}`}
-                        />
-                      )}
-                      {(calib.phase === "pick2" || calib.phase === "input") && (
-                        <>
-                          <circle cx={calib.p1.x} cy={calib.p1.y} r={6 / zoom} fill="#ef4444" fillOpacity={0.9} />
-                          <text x={calib.p1.x + 9 / zoom} y={calib.p1.y + 4 / zoom} fontSize={11 / zoom} fill="#ef4444" fontWeight="bold">1</text>
-                        </>
-                      )}
-                      {calib.phase === "input" && (
-                        <>
-                          <circle cx={calib.p2.x} cy={calib.p2.y} r={6 / zoom} fill="#ef4444" fillOpacity={0.9} />
-                          <text x={calib.p2.x + 9 / zoom} y={calib.p2.y + 4 / zoom} fontSize={11 / zoom} fill="#ef4444" fontWeight="bold">2</text>
-                        </>
-                      )}
-                    </svg>
-                  )}
-
-                  {/* Calibration input card: positioned in zoomed pixel space */}
-                  {calib.phase === "input" && (() => {
-                    const midX = (calib.p1.x + calib.p2.x) / 2 * zoom;
-                    const midY = (calib.p1.y + calib.p2.y) / 2 * zoom;
-                    const cardW = 268;
-                    const left = Math.max(4, Math.min(imgSize.w * zoom - cardW - 4, midX - cardW / 2));
-                    const top = Math.min(imgSize.h * zoom - 170, midY + 16);
-                    return (
-                      <div
-                        className="pointer-events-auto absolute z-10 rounded-xl border border-border bg-background p-4 shadow-xl"
-                        style={{ left, top, width: cardW }}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <p className="mb-1 text-xs font-semibold text-foreground">
-                          What is this distance?
-                        </p>
-                        <p className="mb-3 text-[11px] leading-relaxed text-muted-foreground">
-                          Find the dimension label on your floor plan between those two points. Singapore plans use mm — e.g. "3600" = 3.6 m.
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="number"
-                            value={calibMm}
-                            onChange={(e) => setCalibMm(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") applyCalibration();
-                              if (e.key === "Escape") cancelCalib();
-                            }}
-                            placeholder="e.g. 3600"
-                            autoFocus
-                            className="h-8 flex-1 rounded-md border border-border bg-background px-2 text-sm tabular-nums focus:outline-none focus:ring-2 focus:ring-accent"
-                          />
-                          <span className="shrink-0 text-xs text-muted-foreground">mm</span>
-                        </div>
-                        <div className="mt-3 flex justify-end gap-2">
-                          <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={cancelCalib}>
-                            Cancel
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="h-7 px-3 text-xs"
-                            onClick={applyCalibration}
-                            disabled={!calibMm || parseFloat(calibMm) <= 0}
-                          >
-                            Apply
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })()}
-
-                  {/* Furniture items: position and size in zoomed pixel space */}
                   {items.map((item) => {
-                    const { w, h } = pxSize(item);
                     const isSel = item.id === selectedId;
+                    const bW = item.widthM * scale * zoom;
+                    const bH = item.depthM * scale * zoom;
+
                     return (
                       <div
                         key={item.id}
@@ -492,37 +481,74 @@ export function RoomPlannerModal({
                           position: "absolute",
                           left: item.x * zoom,
                           top: item.y * zoom,
-                          width: w * zoom,
-                          height: h * zoom,
+                          width: bW,
+                          height: bH,
                           cursor: drag?.id === item.id ? "grabbing" : "grab",
                           touchAction: "none",
                         }}
-                        className={`flex flex-col items-center justify-center overflow-hidden border-2 transition-shadow ${
-                          isSel
-                            ? "border-accent bg-accent/25 shadow-[0_0_0_3px_oklch(var(--accent)/0.25)]"
-                            : "border-foreground/50 bg-white/70 hover:border-accent hover:bg-accent/10"
-                        }`}
                         onMouseDown={(e) => { e.stopPropagation(); startDrag(e, item.id); }}
                         onTouchStart={(e) => { e.stopPropagation(); startTouchDrag(e, item.id); }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!isCalibrating) setSelectedId(item.id);
-                        }}
+                        onClick={(e) => { e.stopPropagation(); setSelectedId(item.id); }}
                       >
-                        <span
-                          className="block w-full truncate px-1 text-center font-bold leading-tight"
-                          style={{ fontSize: Math.max(8, Math.min(12, (w * zoom) / 10)) }}
-                        >
-                          {item.label}
-                        </span>
-                        <span
-                          className="mt-0.5 text-foreground/55"
-                          style={{ fontSize: Math.max(7, Math.min(10, (w * zoom) / 13)) }}
-                        >
-                          {item.rotated
-                            ? `${item.depthM}m × ${item.widthM}m`
-                            : `${item.widthM}m × ${item.depthM}m`}
-                        </span>
+                        {item.footprintLoading ? (
+                          <div className="flex h-full w-full flex-col items-center justify-center rounded border-2 border-dashed border-accent/60 bg-accent/10">
+                            <Loader2 className="h-4 w-4 animate-spin text-accent" />
+                            <span className="mt-1 text-accent/70" style={{ fontSize: 9 }}>
+                              Analyzing shape…
+                            </span>
+                          </div>
+                        ) : (
+                          item.pieces.map((piece) => {
+                            const pw = piece.widthM * scale * zoom;
+                            const ph = piece.depthM * scale * zoom;
+                            const px = piece.offsetXm * scale * zoom;
+                            const py = piece.offsetYm * scale * zoom;
+
+                            return (
+                              <div
+                                key={piece.id}
+                                style={{ position: "absolute", left: px, top: py, width: pw, height: ph }}
+                              >
+                                <svg
+                                  width={pw}
+                                  height={ph}
+                                  viewBox="0 0 1 1"
+                                  preserveAspectRatio="none"
+                                  className="absolute inset-0"
+                                >
+                                  <path
+                                    d={toSvgPath(piece.vertices)}
+                                    strokeWidth={2}
+                                    vectorEffect="non-scaling-stroke"
+                                    className={
+                                      isSel
+                                        ? "fill-accent/25 stroke-accent"
+                                        : "fill-white/70 stroke-foreground/50"
+                                    }
+                                  />
+                                </svg>
+                                {pw > 30 && ph > 16 && (
+                                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
+                                    <span
+                                      className="block w-full truncate px-1 text-center font-bold leading-tight"
+                                      style={{ fontSize: Math.max(8, Math.min(12, pw / 8)) }}
+                                    >
+                                      {piece.label}
+                                    </span>
+                                    {pw > 50 && ph > 28 && (
+                                      <span
+                                        className="mt-0.5 text-foreground/55"
+                                        style={{ fontSize: Math.max(7, Math.min(10, pw / 12)) }}
+                                      >
+                                        {piece.widthM}m × {piece.depthM}m
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })
+                        )}
                       </div>
                     );
                   })}
@@ -531,27 +557,24 @@ export function RoomPlannerModal({
             </div>
           )}
 
-          {/* Floating zoom controls */}
+          {/* Zoom controls */}
           {floorPlan && imgSize && (
             <div className="absolute bottom-4 right-4 z-10 flex flex-col items-center gap-1">
               <button
                 onClick={() => setZoom((z) => Math.min(ZOOM_MAX, z * ZOOM_STEP))}
                 className="grid h-8 w-8 place-items-center rounded-md border border-border bg-background shadow-sm hover:bg-secondary"
-                title="Zoom in"
               >
                 <ZoomIn className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setZoom(1)}
                 className="grid h-8 w-8 place-items-center rounded-md border border-border bg-background text-[11px] tabular-nums shadow-sm hover:bg-secondary"
-                title="Reset zoom"
               >
                 {zoomPct}%
               </button>
               <button
                 onClick={() => setZoom((z) => Math.max(ZOOM_MIN, z / ZOOM_STEP))}
                 className="grid h-8 w-8 place-items-center rounded-md border border-border bg-background shadow-sm hover:bg-secondary"
-                title="Zoom out"
               >
                 <ZoomOut className="h-4 w-4" />
               </button>
@@ -562,11 +585,8 @@ export function RoomPlannerModal({
         {/* Footer */}
         <div className="flex flex-shrink-0 items-center justify-between gap-4 border-t border-border bg-cream px-6 py-4">
           <p className="text-xs text-muted-foreground">{footerHint}</p>
-          <Button variant="outline" size="sm" onClick={onClose}>
-            Close
-          </Button>
+          <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
         </div>
-
       </DialogContent>
     </Dialog>
   );

@@ -322,6 +322,7 @@ export function ProductContent({ handle }: { handle: string }) {
         productName={product.title}
         widthM={dims.widthM}
         depthM={dims.depthM}
+        productImageUrl={product.images.edges[0]?.node?.url}
       />
     </Shell>
   );
