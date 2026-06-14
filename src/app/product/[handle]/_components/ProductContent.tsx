@@ -11,7 +11,6 @@ import {
   storefrontApiRequest,
   PRODUCT_BY_HANDLE_QUERY,
   formatPrice,
-  parseDimensionsMetafield,
   type ShopifyProduct,
 } from "@/lib/shopify/client";
 import { useCartStore } from "@/stores/cartStore";
@@ -53,6 +52,8 @@ export function ProductContent({ handle }: { handle: string }) {
   const [error, setError] = useState<string | null>(null);
 
   const [plannerOpen, setPlannerOpen] = useState(false);
+  const [dims, setDims] = useState<{ widthM: number; depthM: number } | null>(null);
+  const [dimsLoading, setDimsLoading] = useState(false);
 
   const addItem = useCartStore((s) => s.addItem);
   const isLoading = useCartStore((s) => s.isLoading);
@@ -135,15 +136,34 @@ export function ProductContent({ handle }: { handle: string }) {
   const dimsMeta = product.metafields.find(
     (m) => m?.namespace === "custom" && m?.key === "dimensions"
   );
-  const parsedDims = parseDimensionsMetafield(dimsMeta?.value);
-  const FALLBACK_DIMS: Record<string, { widthM: number; depthM: number }> = {
-    "Coffee Table":   { widthM: 1.2, depthM: 0.6 },
-    "TV Console":     { widthM: 1.8, depthM: 0.45 },
-    "Side Table":     { widthM: 0.5, depthM: 0.5 },
-    "Bed Side Table": { widthM: 0.5, depthM: 0.45 },
-    "Loft Bed":       { widthM: 2.0, depthM: 0.95 },
+
+  const handleOpenPlanner = async () => {
+    if (dims) { setPlannerOpen(true); return; }
+    setDimsLoading(true);
+    try {
+      const res = await fetch("/api/extract-dimensions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: product.title,
+          productType: product.productType ?? "",
+          description: product.description ?? "",
+          metafieldText: dimsMeta?.value ?? "",
+        }),
+      });
+      const data = await res.json();
+      setDims(
+        data.widthM && data.depthM
+          ? { widthM: data.widthM, depthM: data.depthM }
+          : { widthM: 1.0, depthM: 0.8 }
+      );
+    } catch {
+      setDims({ widthM: 1.0, depthM: 0.8 });
+    } finally {
+      setDimsLoading(false);
+      setPlannerOpen(true);
+    }
   };
-  const dims = parsedDims ?? FALLBACK_DIMS[product.productType ?? ""] ?? { widthM: 1.0, depthM: 0.8 };
 
   const handleAdd = async () => {
     if (!variant) return;
@@ -286,10 +306,13 @@ export function ProductContent({ handle }: { handle: string }) {
               variant="outline"
               size="lg"
               className="mt-3 h-11 w-full border-foreground/15 bg-background font-medium"
-              onClick={() => setPlannerOpen(true)}
+              onClick={handleOpenPlanner}
+              disabled={dimsLoading}
             >
-              <Ruler className="mr-2 h-4 w-4 text-accent" />
-              Preview in Room Planner
+              {dimsLoading
+                ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                : <Ruler className="mr-2 h-4 w-4 text-accent" />}
+              {dimsLoading ? "Measuring…" : "Preview in Room Planner"}
             </Button>
 
             <div className="mt-7 space-y-3 rounded-xl border border-border bg-cream p-5 text-sm">
@@ -320,8 +343,8 @@ export function ProductContent({ handle }: { handle: string }) {
         open={plannerOpen}
         onClose={() => setPlannerOpen(false)}
         productName={product.title}
-        widthM={dims.widthM}
-        depthM={dims.depthM}
+        widthM={dims?.widthM ?? 1.0}
+        depthM={dims?.depthM ?? 0.8}
         productImageUrl={product.images.edges[0]?.node?.url}
       />
     </Shell>

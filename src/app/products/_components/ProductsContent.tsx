@@ -12,12 +12,21 @@ import { useCartSync } from "@/hooks/useCartSync";
 const PAGE_SIZE = 24;
 
 const CATEGORIES = [
-  { label: "All",            query: null },
-  { label: "Coffee Tables",  query: 'product_type:"Coffee Table"' },
-  { label: "TV Consoles",    query: 'product_type:"TV Console"' },
-  { label: "Side Tables",    query: 'product_type:"Side Table"' },
-  { label: "Bedside Tables", query: 'product_type:"Bed Side Table"' },
-  { label: "Loft Beds",      query: 'product_type:"Loft Bed"' },
+  { label: "All",               query: null },
+  { label: "Sofas",             query: 'product_type:"Fabric Sofa" OR product_type:"Leather Sofa" OR product_type:"Faux Leather Sofa" OR product_type:"Wooden Sofa" OR product_type:"Sofa Bed" OR product_type:"Recliner" OR product_type:"Armchair"' },
+  { label: "Coffee Tables",     query: 'product_type:"Coffee Table"' },
+  { label: "TV Consoles",       query: 'product_type:"TV Console"' },
+  { label: "Shoe Cabinets",     query: 'product_type:"Shoe Cabinet"' },
+  { label: "Wardrobes",         query: 'product_type:"Modular Wardrobe" OR product_type:"Open Door Wardrobe" OR product_type:"Sliding Door Wardrobe"' },
+  { label: "Study Tables",      query: 'product_type:"Study Table"' },
+  { label: "Dressing Tables",   query: 'product_type:"Dressing Table"' },
+  { label: "Beds",              query: 'product_type:"Bed" OR product_type:"Wooden Bed Frame" OR product_type:"Storage Bed" OR product_type:"Drawer Bed" OR product_type:"Loft Bed" OR product_type:"Bedroom Set"' },
+  { label: "Bedside Tables",    query: 'product_type:"Bed Side Table" OR product_type:"Bedside Table"' },
+  { label: "Side Tables",       query: 'product_type:"Side Table"' },
+  { label: "Mattresses",        query: 'product_type:"Mattress" OR product_type:"Foldable Mattress"' },
+  { label: "Office Chairs",     query: 'product_type:"Office Chair"' },
+  { label: "Storage & Shelves", query: 'product_type:"Storage Cabinet" OR product_type:"Bookshelf" OR product_type:"Chest of Drawer"' },
+  { label: "Pillows & Bedding", query: 'product_type:"Pillows" OR product_type:"Baby Pillows" OR product_type:"Bolster"' },
 ];
 
 export function ProductsContent() {

@@ -152,36 +152,6 @@ export const PRODUCT_BY_HANDLE_QUERY = `
   }
 `;
 
-interface RichTextNode {
-  type: string;
-  value?: string;
-  children?: RichTextNode[];
-}
-
-function extractRichText(node: RichTextNode): string {
-  if (node.type === "text") return node.value ?? "";
-  return (node.children ?? []).map(extractRichText).join(" ");
-}
-
-export function parseDimensionsMetafield(
-  raw: string | null | undefined
-): { widthM: number; depthM: number } | null {
-  if (!raw) return null;
-  try {
-    const root: RichTextNode = JSON.parse(raw);
-    const text = extractRichText(root);
-    const lengthMatch = text.match(/Length[:\s]+(\d+(?:\.\d+)?)\s*cm/i);
-    const widthMatch = text.match(/Width[:\s]+(\d+(?:\.\d+)?)\s*cm/i);
-    if (!lengthMatch || !widthMatch) return null;
-    return {
-      widthM: parseFloat(lengthMatch[1]) / 100,
-      depthM: parseFloat(widthMatch[1]) / 100,
-    };
-  } catch {
-    return null;
-  }
-}
-
 export function formatPrice(amount: string | number, currencyCode = "SGD") {
   const n = typeof amount === "string" ? parseFloat(amount) : amount;
   return new Intl.NumberFormat("en-SG", {
