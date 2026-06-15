@@ -95,7 +95,7 @@ export function RoomPlanner() {
                   className="block w-full"
                   aria-hidden="true"
                 >
-                  <source src="/videos/final.mp4" type="video/mp4" />
+                  <source src="/videos/final-new.mp4" type="video/mp4" />
                 </video>
               </div>
 

@@ -114,9 +114,8 @@ export function ProductContent({ handle }: { handle: string }) {
   const price = variant?.price ?? product.priceRange.minVariantPrice;
   const numericPrice = parseFloat(price.amount);
   const compareAtAmount = variant?.compareAtPrice?.amount ? parseFloat(variant.compareAtPrice.amount) : 0;
-  const retailPrice = compareAtAmount > numericPrice
-    ? compareAtAmount
-    : Math.round(numericPrice / 0.62 / 10) * 10;
+  // Opening sale: only show discount if original price (compareAt) was below $259
+  const retailPrice = compareAtAmount > numericPrice && compareAtAmount < 259 ? compareAtAmount : 0;
 
   const cartProduct: ShopifyProduct = {
     node: {
@@ -238,7 +237,7 @@ export function ProductContent({ handle }: { handle: string }) {
               <span className="font-display text-3xl">
                 {formatPrice(price.amount, price.currencyCode)}
               </span>
-              {retailPrice > numericPrice && (
+              {retailPrice > 0 && (
                 <>
                   <span className="text-base text-muted-foreground line-through">
                     {formatPrice(retailPrice, price.currencyCode)}

@@ -21,10 +21,9 @@ export function ProductCard({ product, badge }: Props) {
   const compareAtAmount = node.compareAtPriceRange?.minVariantPrice?.amount
     ? parseFloat(node.compareAtPriceRange.minVariantPrice.amount)
     : 0;
-  const retailPrice = compareAtAmount > numericPrice
-    ? compareAtAmount
-    : Math.round(numericPrice / 0.62 / 10) * 10;
-  const hasSavings = retailPrice > numericPrice;
+  // Opening sale: only show discount if original price (compareAt) was below $259
+  const retailPrice = compareAtAmount > numericPrice && compareAtAmount < 259 ? compareAtAmount : 0;
+  const hasSavings = retailPrice > 0;
   const savingAmount = hasSavings ? retailPrice - numericPrice : 0;
   const savingPercent = hasSavings ? Math.round((savingAmount / retailPrice) * 100) : 0;
 
