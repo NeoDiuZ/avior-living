@@ -88,7 +88,7 @@ const ROOM_BASE_QUERIES: Record<string, string> = {
 // ── Room nav cards ────────────────────────────────────────────────────────────
 
 const ROOM_CARDS = [
-  { label: "Opening Sale", href: "/products/opening-sale", image: null,                              sub: "Ends 31 Jul" },
+  { label: "Opening Sale", href: "/products/opening-sale", image: "/images/hero-living-room.jpg",    sub: "Ends 31 Jul" },
   { label: "Living Room",  href: "/products/living-room",  image: "/images/inspiration-living.jpg",  sub: "120+ pieces" },
   { label: "Bedroom",      href: "/products/bedroom",      image: "/images/inspiration-bedroom.jpg", sub: "80+ pieces" },
   { label: "Dining Room",  href: "/products/dining-room",  image: "/images/inspiration-dining.jpg",  sub: "60+ pieces" },
@@ -245,21 +245,12 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
                       active ? "ring-2 ring-accent ring-offset-2 ring-offset-cream" : ""
                     }`}
                   >
-                    {card.image ? (
-                      <>
-                        <img
-                          src={card.image}
-                          alt={card.label}
-                          className="h-28 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                        />
-                        <div className={`absolute inset-0 bg-gradient-to-t transition-opacity duration-300 ${active ? "from-black/80 via-black/20 to-transparent" : "from-black/60 via-black/10 to-transparent group-hover:from-black/75"}`} />
-                      </>
-                    ) : (
-                      /* Opening Sale — dark typographic tile */
-                      <div className="h-28 w-full bg-foreground transition-opacity duration-300">
-                        <div className="absolute inset-0 bg-gradient-to-br from-accent/30 via-transparent to-transparent" />
-                      </div>
-                    )}
+                    <img
+                      src={card.image}
+                      alt={card.label}
+                      className="h-28 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-t transition-opacity duration-300 ${active ? "from-black/80 via-black/20 to-transparent" : "from-black/60 via-black/10 to-transparent group-hover:from-black/75"}`} />
                     <div className="absolute inset-x-0 bottom-0 p-3">
                       <p className={`text-xs font-bold leading-tight tracking-tight ${active ? "text-accent" : "text-cream"}`}>
                         {card.label}
