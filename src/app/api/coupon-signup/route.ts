@@ -24,10 +24,12 @@ export async function POST(req: NextRequest) {
       to: `whatsapp:+65${phone}`,
       body:
         `Hi ${name.trim()}! 👋\n\n` +
-        `You're in! Your *$219* Opening Sale discount will be applied automatically at checkout.\n\n` +
+        `You're in! Here's your free express delivery code:\n\n` +
+        `*${process.env.EXPRESS_DELIVERY_CODE}*\n\n` +
+        `Apply it at checkout to waive the $20 express delivery fee — standard delivery remains free for everyone.\n\n` +
         `Head back to your cart and complete your order:\n` +
         `aviorliving.sg\n\n` +
-        `White-glove delivery, full assembly, and packaging disposal are all included islandwide.\n\n` +
+        `White-glove delivery, full assembly, and packaging disposal are all included.\n\n` +
         `— The Avior Team`,
     });
   } catch (err) {

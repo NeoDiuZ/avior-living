@@ -48,7 +48,7 @@ export function CouponModal() {
       });
       if (!res.ok) throw new Error("failed");
       sessionStorage.setItem(SESSION_KEY, "1");
-      toast.success("Confirmed! Check your WhatsApp.", { duration: 6000 });
+      toast.success("Code sent! Check your WhatsApp.", { duration: 6000 });
       dismiss();
       await addItem(pendingAddItem);
       setName("");
@@ -68,10 +68,10 @@ export function CouponModal() {
             Opening Sale
           </p>
           <h2 className="mt-2 font-display text-3xl font-bold tracking-tight">
-            Claim Your $219 Price
+            Get Free Express Delivery
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-primary-foreground/65">
-            Enter your details and we'll send a confirmation to your WhatsApp — then head straight to checkout.
+            Enter your details and we'll send a free express delivery code (worth $20) straight to your WhatsApp.
           </p>
         </div>
 
@@ -123,7 +123,7 @@ export function CouponModal() {
             disabled={submitting || !name.trim() || whatsapp.length < 8}
             className="h-11 w-full bg-accent font-semibold text-accent-foreground hover:bg-accent/90"
           >
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirm & Go to Cart →"}
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send My Code →"}
           </Button>
 
           <button
@@ -132,7 +132,7 @@ export function CouponModal() {
             disabled={submitting}
             className="w-full text-center text-xs text-muted-foreground transition hover:text-foreground disabled:pointer-events-none"
           >
-            Skip, just add to cart
+            Skip, I'll pay for express delivery
           </button>
         </form>
       </DialogContent>
