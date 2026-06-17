@@ -6,14 +6,17 @@ import { formatPrice, type ShopifyProduct } from "@/lib/shopify/client";
 interface Props {
   product: ShopifyProduct;
   badge?: string;
+  openingSalePrice?: number;
 }
 
-export function ProductCard({ product, badge }: Props) {
+export function ProductCard({ product, badge, openingSalePrice }: Props) {
   const node = product.node;
   const variant = node.variants.edges[0]?.node;
   const image = node.images.edges[0]?.node;
   const addItem = useCartStore((s) => s.addItem);
   const isLoading = useCartStore((s) => s.isLoading);
+  const setPendingAddItem = useCartStore((s) => s.setPendingAddItem);
+  const setCouponModalOpen = useCartStore((s) => s.setCouponModalOpen);
   const isAvailable = variant?.availableForSale ?? false;
 
   const price = variant?.price ?? node.priceRange.minVariantPrice;
@@ -21,28 +24,39 @@ export function ProductCard({ product, badge }: Props) {
   const compareAtAmount = node.compareAtPriceRange?.minVariantPrice?.amount
     ? parseFloat(node.compareAtPriceRange.minVariantPrice.amount)
     : 0;
-  // Opening sale: only show discount if original price (compareAt) was below $259
-  const retailPrice = compareAtAmount > numericPrice && compareAtAmount < 259 ? compareAtAmount : 0;
+
+  // Opening Sale: hardset display price to $219; use Shopify price as the strikethrough (if above $219)
+  const isOpeningSale = openingSalePrice !== undefined;
+  const displayPrice = isOpeningSale ? openingSalePrice : numericPrice;
+  const retailPrice = isOpeningSale && numericPrice > openingSalePrice
+    ? numericPrice
+    : !isOpeningSale && compareAtAmount > numericPrice ? compareAtAmount : 0;
   const hasSavings = retailPrice > 0;
-  const savingAmount = hasSavings ? retailPrice - numericPrice : 0;
+  const savingAmount = hasSavings ? retailPrice - displayPrice : 0;
   const savingPercent = hasSavings ? Math.round((savingAmount / retailPrice) * 100) : 0;
 
   const handleAdd = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!variant) return;
-    await addItem({
+    const item = {
       product,
       variantId: variant.id,
       variantTitle: variant.title,
       price: variant.price,
       quantity: 1,
       selectedOptions: variant.selectedOptions ?? [],
-    });
+    };
+    if (sessionStorage.getItem("avior_coupon_done")) {
+      await addItem(item);
+    } else {
+      setPendingAddItem(item);
+      setCouponModalOpen(true);
+    }
   };
 
   return (
-    <Link href={`/product/${node.handle}`} className="group block">
+    <Link href={`/product/${node.handle}${isOpeningSale ? "?sale=opening" : ""}`} className="group block">
       <div className="relative overflow-hidden rounded-xl bg-secondary">
         <div className="aspect-[4/5] w-full">
           {image ? (
@@ -91,7 +105,7 @@ export function ProductCard({ product, badge }: Props) {
         </div>
         <div className="text-right">
           <p className="font-display text-base font-semibold text-foreground">
-            {formatPrice(price.amount, price.currencyCode)}
+            {formatPrice(displayPrice, price.currencyCode)}
           </p>
           {hasSavings && (
             <div className="mt-0.5 flex items-center justify-end gap-1.5">

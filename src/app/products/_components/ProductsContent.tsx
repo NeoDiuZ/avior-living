@@ -6,12 +6,20 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { Footer } from "@/components/site/Footer";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { ProductCard } from "@/components/site/ProductCard";
-import { storefrontApiRequest, PAGINATED_PRODUCTS_QUERY, type ShopifyProduct } from "@/lib/shopify/client";
+import {
+  storefrontApiRequest,
+  PAGINATED_PRODUCTS_QUERY,
+  COLLECTION_PRODUCTS_QUERY,
+  OPENING_SALE_COLLECTION_HANDLE,
+  type ShopifyProduct,
+} from "@/lib/shopify/client";
 import { useCartSync } from "@/hooks/useCartSync";
 
 const PAGE_SIZE = 24;
+const OPENING_SALE_PRICE = 219;
 
-const CATEGORIES = [
+const CATEGORIES: Array<{ label: string; query: string | null; collection?: string }> = [
+  { label: "Opening Sale",      query: null, collection: OPENING_SALE_COLLECTION_HANDLE },
   { label: "All",               query: null },
   { label: "Sofas",             query: 'product_type:"Fabric Sofa" OR product_type:"Leather Sofa" OR product_type:"Faux Leather Sofa" OR product_type:"Wooden Sofa" OR product_type:"Sofa Bed" OR product_type:"Recliner" OR product_type:"Armchair"' },
   { label: "Coffee Tables",     query: 'product_type:"Coffee Table"' },
@@ -47,16 +55,29 @@ export function ProductsContent() {
     setError(null);
 
     try {
-      const data = await storefrontApiRequest(PAGINATED_PRODUCTS_QUERY, {
-        first: PAGE_SIZE,
-        after,
-        query: CATEGORIES[categoryIndex].query,
-      });
+      const cat = CATEGORIES[categoryIndex];
+      let edges: ShopifyProduct[];
+      let pageInfo: { hasNextPage: boolean; endCursor: string | null } | undefined;
 
-      if (!data) return;
-
-      const edges: ShopifyProduct[] = data.data?.products?.edges ?? [];
-      const pageInfo = data.data?.products?.pageInfo;
+      if (cat.collection) {
+        const data = await storefrontApiRequest(COLLECTION_PRODUCTS_QUERY, {
+          handle: cat.collection,
+          first: PAGE_SIZE,
+          after,
+        });
+        if (!data) return;
+        edges = data.data?.collection?.products?.edges ?? [];
+        pageInfo = data.data?.collection?.products?.pageInfo;
+      } else {
+        const data = await storefrontApiRequest(PAGINATED_PRODUCTS_QUERY, {
+          first: PAGE_SIZE,
+          after,
+          query: cat.query,
+        });
+        if (!data) return;
+        edges = data.data?.products?.edges ?? [];
+        pageInfo = data.data?.products?.pageInfo;
+      }
 
       if (isLoadMore) {
         setProducts((prev) => [...prev, ...edges]);
@@ -160,7 +181,12 @@ export function ProductsContent() {
           {products.length > 0 && (
             <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
               {products.map((p) => (
-                <ProductCard key={p.node.id} product={p} />
+                <ProductCard
+                  key={p.node.id}
+                  product={p}
+                  badge={CATEGORIES[activeCategory].collection ? "Opening Sale" : undefined}
+                  openingSalePrice={CATEGORIES[activeCategory].collection ? OPENING_SALE_PRICE : undefined}
+                />
               ))}
             </div>
           )}

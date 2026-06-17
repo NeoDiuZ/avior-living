@@ -14,7 +14,14 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
+export default async function ProductPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ handle: string }>;
+  searchParams: Promise<{ sale?: string }>;
+}) {
   const { handle } = await params;
-  return <ProductContent handle={handle} />;
+  const { sale } = await searchParams;
+  return <ProductContent handle={handle} isOpeningSale={sale === "opening"} />;
 }

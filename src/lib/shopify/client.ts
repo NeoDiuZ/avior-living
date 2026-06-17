@@ -152,6 +152,30 @@ export const PRODUCT_BY_HANDLE_QUERY = `
   }
 `;
 
+export const OPENING_SALE_COLLECTION_HANDLE = "below-250";
+
+export const COLLECTION_PRODUCTS_QUERY = `
+  query GetCollectionProducts($handle: String!, $first: Int!, $after: String) {
+    collection(handle: $handle) {
+      products(first: $first, after: $after) {
+        pageInfo { hasNextPage endCursor }
+        edges {
+          node {
+            id title handle productType
+            priceRange { minVariantPrice { amount currencyCode } }
+            compareAtPriceRange { minVariantPrice { amount currencyCode } }
+            images(first: 2) { edges { node { url altText } } }
+            variants(first: 10) {
+              edges { node { id title price { amount currencyCode } availableForSale selectedOptions { name value } } }
+            }
+            options { name values }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export function formatPrice(amount: string | number, currencyCode = "SGD") {
   const n = typeof amount === "string" ? parseFloat(amount) : amount;
   return new Intl.NumberFormat("en-SG", {

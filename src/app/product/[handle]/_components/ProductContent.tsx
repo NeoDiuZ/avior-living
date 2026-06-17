@@ -42,7 +42,9 @@ interface ProductDetail {
   metafields: Array<{ namespace: string; key: string; value: string } | null>;
 }
 
-export function ProductContent({ handle }: { handle: string }) {
+const OPENING_SALE_PRICE = 219;
+
+export function ProductContent({ handle, isOpeningSale = false }: { handle: string; isOpeningSale?: boolean }) {
   useCartSync();
   const router = useRouter();
   const [product, setProduct] = useState<ProductDetail | null>(null);
@@ -57,6 +59,8 @@ export function ProductContent({ handle }: { handle: string }) {
 
   const addItem = useCartStore((s) => s.addItem);
   const isLoading = useCartStore((s) => s.isLoading);
+  const setPendingAddItem = useCartStore((s) => s.setPendingAddItem);
+  const setCouponModalOpen = useCartStore((s) => s.setCouponModalOpen);
 
   useEffect(() => {
     let cancelled = false;
@@ -114,8 +118,12 @@ export function ProductContent({ handle }: { handle: string }) {
   const price = variant?.price ?? product.priceRange.minVariantPrice;
   const numericPrice = parseFloat(price.amount);
   const compareAtAmount = variant?.compareAtPrice?.amount ? parseFloat(variant.compareAtPrice.amount) : 0;
-  // Opening sale: only show discount if original price (compareAt) was below $259
-  const retailPrice = compareAtAmount > numericPrice && compareAtAmount < 259 ? compareAtAmount : 0;
+
+  // Opening Sale: hardset display price to $219; Shopify price becomes the strikethrough (if above $219)
+  const displayPrice = isOpeningSale ? OPENING_SALE_PRICE : numericPrice;
+  const retailPrice = isOpeningSale && numericPrice > OPENING_SALE_PRICE
+    ? numericPrice
+    : !isOpeningSale && compareAtAmount > numericPrice ? compareAtAmount : 0;
 
   const cartProduct: ShopifyProduct = {
     node: {
@@ -166,14 +174,20 @@ export function ProductContent({ handle }: { handle: string }) {
 
   const handleAdd = async () => {
     if (!variant) return;
-    await addItem({
+    const item = {
       product: cartProduct,
       variantId: variant.id,
       variantTitle: variant.title,
       price: variant.price,
       quantity: 1,
       selectedOptions: variant.selectedOptions ?? [],
-    });
+    };
+    if (sessionStorage.getItem("avior_coupon_done")) {
+      await addItem(item);
+    } else {
+      setPendingAddItem(item);
+      setCouponModalOpen(true);
+    }
   };
 
   return (
@@ -235,7 +249,7 @@ export function ProductContent({ handle }: { handle: string }) {
 
             <div className="mt-5 flex items-baseline gap-3">
               <span className="font-display text-3xl">
-                {formatPrice(price.amount, price.currencyCode)}
+                {formatPrice(displayPrice, price.currencyCode)}
               </span>
               {retailPrice > 0 && (
                 <>
@@ -243,7 +257,7 @@ export function ProductContent({ handle }: { handle: string }) {
                     {formatPrice(retailPrice, price.currencyCode)}
                   </span>
                   <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-medium text-accent">
-                    Save {Math.round((1 - numericPrice / retailPrice) * 100)}%
+                    Save {Math.round((1 - displayPrice / retailPrice) * 100)}%
                   </span>
                 </>
               )}

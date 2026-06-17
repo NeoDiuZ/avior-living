@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import { Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { storefrontApiRequest, PRODUCTS_QUERY, type ShopifyProduct } from "@/lib/shopify/client";
+import {
+  storefrontApiRequest,
+  COLLECTION_PRODUCTS_QUERY,
+  OPENING_SALE_COLLECTION_HANDLE,
+  type ShopifyProduct,
+} from "@/lib/shopify/client";
 import { ProductCard } from "./ProductCard";
+
+const OPENING_SALE_PRICE = 219;
 
 export function BestSellers() {
   const [products, setProducts] = useState<ShopifyProduct[] | null>(null);
@@ -12,9 +19,13 @@ export function BestSellers() {
     let cancelled = false;
     (async () => {
       try {
-        const data = await storefrontApiRequest(PRODUCTS_QUERY, { first: 8, query: null });
+        const data = await storefrontApiRequest(COLLECTION_PRODUCTS_QUERY, {
+          handle: OPENING_SALE_COLLECTION_HANDLE,
+          first: 8,
+          after: null,
+        });
         if (cancelled || !data) return;
-        setProducts(data.data?.products?.edges ?? []);
+        setProducts(data.data?.collection?.products?.edges ?? []);
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : "Failed to load");
       }
@@ -31,7 +42,7 @@ export function BestSellers() {
           <div>
             <div className="flex flex-wrap items-center gap-3">
               <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-5xl md:text-6xl">
-                <span className="text-accent">$189</span> Opening Sale
+                <span className="text-accent">$219</span> Opening Sale
               </h2>
               <span className="rounded-full bg-accent/10 px-3 py-1 text-sm font-semibold text-accent">
                 Ends 31 Jul
@@ -69,7 +80,12 @@ export function BestSellers() {
           {products && products.length > 0 && (
             <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
               {products.map((p) => (
-                <ProductCard key={p.node.id} product={p} badge="Opening Sale" />
+                <ProductCard
+                  key={p.node.id}
+                  product={p}
+                  badge="Opening Sale"
+                  openingSalePrice={OPENING_SALE_PRICE}
+                />
               ))}
             </div>
           )}

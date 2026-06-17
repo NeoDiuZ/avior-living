@@ -38,3 +38,7 @@ dist-ssr
 .next/
 tsconfig.tsbuildinfo
 screenshot.mjs
+
+# Shopify exports
+*.csv
+*.tmp.*

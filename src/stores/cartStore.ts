@@ -20,7 +20,11 @@ interface CartStore {
   isLoading: boolean;
   isSyncing: boolean;
   isOpen: boolean;
+  pendingAddItem: Omit<CartItem, "lineId"> | null;
+  couponModalOpen: boolean;
   setOpen: (open: boolean) => void;
+  setPendingAddItem: (item: Omit<CartItem, "lineId"> | null) => void;
+  setCouponModalOpen: (open: boolean) => void;
   addItem: (item: Omit<CartItem, "lineId">) => Promise<void>;
   updateQuantity: (variantId: string, quantity: number) => Promise<void>;
   removeItem: (variantId: string) => Promise<void>;
@@ -136,7 +140,11 @@ export const useCartStore = create<CartStore>()(
       isLoading: false,
       isSyncing: false,
       isOpen: false,
+      pendingAddItem: null,
+      couponModalOpen: false,
       setOpen: (open) => set({ isOpen: open }),
+      setPendingAddItem: (item) => set({ pendingAddItem: item }),
+      setCouponModalOpen: (open) => set({ couponModalOpen: open }),
 
       addItem: async (item) => {
         const { items, cartId } = get();
