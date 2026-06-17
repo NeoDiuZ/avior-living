@@ -119,10 +119,10 @@ export function ProductContent({ handle, isOpeningSale = false }: { handle: stri
   const numericPrice = parseFloat(price.amount);
   const compareAtAmount = variant?.compareAtPrice?.amount ? parseFloat(variant.compareAtPrice.amount) : 0;
 
-  // Opening Sale: hardset display price to $219; Shopify price becomes the strikethrough (if above $219)
+  // Opening Sale: hardset display to $219; compareAt is the original price (set via CSV import)
   const displayPrice = isOpeningSale ? OPENING_SALE_PRICE : numericPrice;
-  const retailPrice = isOpeningSale && numericPrice > OPENING_SALE_PRICE
-    ? numericPrice
+  const retailPrice = isOpeningSale && compareAtAmount > OPENING_SALE_PRICE
+    ? compareAtAmount
     : !isOpeningSale && compareAtAmount > numericPrice ? compareAtAmount : 0;
 
   const cartProduct: ShopifyProduct = {

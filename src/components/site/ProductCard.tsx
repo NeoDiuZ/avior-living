@@ -25,11 +25,11 @@ export function ProductCard({ product, badge, openingSalePrice }: Props) {
     ? parseFloat(node.compareAtPriceRange.minVariantPrice.amount)
     : 0;
 
-  // Opening Sale: hardset display price to $219; use Shopify price as the strikethrough (if above $219)
+  // Opening Sale: hardset display to $219; compareAt is the original price (set via CSV import)
   const isOpeningSale = openingSalePrice !== undefined;
   const displayPrice = isOpeningSale ? openingSalePrice : numericPrice;
-  const retailPrice = isOpeningSale && numericPrice > openingSalePrice
-    ? numericPrice
+  const retailPrice = isOpeningSale && compareAtAmount > openingSalePrice
+    ? compareAtAmount
     : !isOpeningSale && compareAtAmount > numericPrice ? compareAtAmount : 0;
   const hasSavings = retailPrice > 0;
   const savingAmount = hasSavings ? retailPrice - displayPrice : 0;
