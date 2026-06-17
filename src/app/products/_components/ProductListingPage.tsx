@@ -88,10 +88,10 @@ const ROOM_BASE_QUERIES: Record<string, string> = {
 // ── Room nav cards ────────────────────────────────────────────────────────────
 
 const ROOM_CARDS = [
-  { label: "Opening Sale", href: "/products/opening-sale", description: "$219 curated picks · Ends 31 Jul" },
-  { label: "Living Room", href: "/products/living-room", description: "Sofas, TV consoles & more" },
-  { label: "Bedroom", href: "/products/bedroom", description: "Beds, wardrobes & storage" },
-  { label: "Dining Room", href: "/products/dining-room", description: "Tables, chairs & sets" },
+  { label: "Opening Sale", href: "/products/opening-sale", image: null,                              sub: "Ends 31 Jul" },
+  { label: "Living Room",  href: "/products/living-room",  image: "/images/inspiration-living.jpg",  sub: "120+ pieces" },
+  { label: "Bedroom",      href: "/products/bedroom",      image: "/images/inspiration-bedroom.jpg", sub: "80+ pieces" },
+  { label: "Dining Room",  href: "/products/dining-room",  image: "/images/inspiration-dining.jpg",  sub: "60+ pieces" },
 ];
 
 const OPENING_SALE_ROOM_FILTERS = [
@@ -214,38 +214,58 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
       <SiteHeader />
       <main>
         {/* Page header */}
-        <div className="border-b border-border bg-cream">
-          <div className="container-page py-10 md:py-14">
+        <div className="bg-cream pt-14 pb-0 md:pt-20">
+          <div className="container-page">
+            {isOpeningSale && (
+              <span className="inline-flex items-center rounded-full bg-accent/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
+                Ends 31 Jul
+              </span>
+            )}
             <h1
-              className="font-display font-bold leading-none tracking-tight"
-              style={{ fontSize: "clamp(2.5rem, 6vw, 4rem)" }}
+              className="mt-2 w-full max-w-4xl font-display font-bold leading-[0.92] tracking-tight"
+              style={{ fontSize: "clamp(2.75rem, 6vw, 5rem)" }}
             >
               {meta.title}
             </h1>
-            <p className="mt-3 text-base text-foreground/60">{meta.description}</p>
+            <p className="mt-3 text-base text-foreground/55">{meta.description}</p>
           </div>
         </div>
 
-        {/* Room nav cards */}
-        <div className="border-b border-border bg-background">
-          <div className="container-page py-4">
-            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+        {/* Room nav — image tiles */}
+        <div className="border-b border-border bg-cream">
+          <div className="container-page py-5">
+            <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide sm:grid sm:grid-cols-4">
               {ROOM_CARDS.map((card) => {
                 const active = card.href === `/products/${room}`;
                 return (
                   <Link
                     key={card.href}
                     href={card.href}
-                    className={`rounded-xl border p-3.5 transition-colors ${
-                      active
-                        ? "border-accent bg-accent/5"
-                        : "border-border hover:border-foreground/20 hover:bg-secondary"
+                    className={`group relative shrink-0 w-36 sm:w-auto overflow-hidden rounded-2xl transition-all duration-300 ${
+                      active ? "ring-2 ring-accent ring-offset-2 ring-offset-cream" : ""
                     }`}
                   >
-                    <p className={`text-sm font-semibold ${active ? "text-accent" : "text-foreground"}`}>
-                      {card.label}
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{card.description}</p>
+                    {card.image ? (
+                      <>
+                        <img
+                          src={card.image}
+                          alt={card.label}
+                          className="h-28 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                        />
+                        <div className={`absolute inset-0 bg-gradient-to-t transition-opacity duration-300 ${active ? "from-black/80 via-black/20 to-transparent" : "from-black/60 via-black/10 to-transparent group-hover:from-black/75"}`} />
+                      </>
+                    ) : (
+                      /* Opening Sale — dark typographic tile */
+                      <div className="h-28 w-full bg-foreground transition-opacity duration-300">
+                        <div className="absolute inset-0 bg-gradient-to-br from-accent/30 via-transparent to-transparent" />
+                      </div>
+                    )}
+                    <div className="absolute inset-x-0 bottom-0 p-3">
+                      <p className={`text-xs font-bold leading-tight tracking-tight ${active ? "text-accent" : "text-cream"}`}>
+                        {card.label}
+                      </p>
+                      <p className="mt-0.5 text-[10px] font-medium text-cream/60">{card.sub}</p>
+                    </div>
                   </Link>
                 );
               })}

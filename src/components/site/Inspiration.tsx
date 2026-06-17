@@ -1,11 +1,9 @@
-const living = "/images/inspiration-living.jpg";
-const bedroom = "/images/inspiration-bedroom.jpg";
-const dining = "/images/inspiration-dining.jpg";
+import Link from "next/link";
 
 const tiles = [
-  { src: living, label: "Living Room", count: "120+ pieces" },
-  { src: bedroom, label: "Bedroom", count: "80+ pieces" },
-  { src: dining, label: "Dining", count: "60+ pieces" },
+  { src: "/images/inspiration-living.jpg", label: "Living Room", count: "120+ pieces", href: "/products/living-room" },
+  { src: "/images/inspiration-bedroom.jpg", label: "Bedroom",     count: "80+ pieces",  href: "/products/bedroom" },
+  { src: "/images/inspiration-dining.jpg",  label: "Dining Room", count: "60+ pieces",  href: "/products/dining-room" },
 ];
 
 export function Inspiration() {
@@ -25,9 +23,9 @@ export function Inspiration() {
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           {tiles.map((t) => (
-            <a
+            <Link
               key={t.label}
-              href="#opening-sale"
+              href={t.href}
               className="group relative block overflow-hidden rounded-3xl bg-sand"
             >
               <img
@@ -45,7 +43,7 @@ export function Inspiration() {
                   {t.count} →
                 </p>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
