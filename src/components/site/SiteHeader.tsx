@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 import { CartDrawer } from "./CartDrawer";
 
 export function SiteHeader() {
@@ -17,13 +18,31 @@ export function SiteHeader() {
             <span className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Living</span>
           </div>
         </Link>
+
         <nav className="hidden items-center gap-7 text-sm font-medium text-foreground/80 md:flex">
-          <Link href="/products" className="hover:text-accent">
-            All Furniture
-          </Link>
-          <a href="/#opening-sale" className="hover:text-accent">
+          <Link href="/products/opening-sale" className="hover:text-accent">
             Opening Sale
-          </a>
+          </Link>
+
+          {/* Shop dropdown */}
+          <div className="group relative">
+            <button className="inline-flex items-center gap-0.5 hover:text-accent">
+              Shop
+              <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180" />
+            </button>
+            <div className="pointer-events-none absolute left-0 top-full z-50 mt-1 min-w-[160px] rounded-xl border border-border bg-background p-1 opacity-0 shadow-lg transition-[opacity,transform] duration-150 group-hover:pointer-events-auto group-hover:opacity-100">
+              <Link href="/products/living-room" className="block rounded-lg px-3 py-2 text-sm text-foreground/80 hover:bg-secondary hover:text-foreground">
+                Living Room
+              </Link>
+              <Link href="/products/bedroom" className="block rounded-lg px-3 py-2 text-sm text-foreground/80 hover:bg-secondary hover:text-foreground">
+                Bedroom
+              </Link>
+              <Link href="/products/dining-room" className="block rounded-lg px-3 py-2 text-sm text-foreground/80 hover:bg-secondary hover:text-foreground">
+                Dining Room
+              </Link>
+            </div>
+          </div>
+
           <a href="/#why-avior" className="hover:text-accent">
             Why Avior
           </a>
@@ -34,6 +53,7 @@ export function SiteHeader() {
             FAQ
           </a>
         </nav>
+
         <div className="flex items-center gap-2">
           <a
             href="https://wa.me/6580000000"

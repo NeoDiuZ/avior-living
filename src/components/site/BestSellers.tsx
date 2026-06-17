@@ -53,7 +53,7 @@ export function BestSellers() {
             </p>
           </div>
           <a
-            href="/products"
+            href="/products/opening-sale"
             className="inline-flex items-center gap-1 text-sm font-semibold text-foreground underline-offset-4 hover:underline"
           >
             View All Items
@@ -98,7 +98,7 @@ export function BestSellers() {
             variant="outline"
             className="h-14 border-foreground/20 px-10 text-base font-semibold hover:bg-secondary"
           >
-            <a href="/products">Shop All Opening Sale Items</a>
+            <a href="/products/opening-sale">Shop All Opening Sale Items</a>
           </Button>
         </div>
       </div>

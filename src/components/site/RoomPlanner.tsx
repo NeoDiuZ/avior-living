@@ -172,7 +172,7 @@ export function RoomPlanner() {
                 style={{ transition: "background-color 160ms ease-out, transform 120ms ease-out" }}
                 asChild
               >
-                <a href="/products">Try Room Planner</a>
+                <a href="/products/living-room">Try Room Planner</a>
               </Button>
               <Button
                 size="lg"
