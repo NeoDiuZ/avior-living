@@ -67,8 +67,8 @@ export interface ShopifyProduct {
 }
 
 export const PAGINATED_PRODUCTS_QUERY = `
-  query GetProductsPaginated($first: Int!, $after: String, $query: String) {
-    products(first: $first, after: $after, query: $query) {
+  query GetProductsPaginated($first: Int!, $after: String, $query: String, $sortKey: ProductSortKeys, $reverse: Boolean) {
+    products(first: $first, after: $after, query: $query, sortKey: $sortKey, reverse: $reverse) {
       pageInfo { hasNextPage endCursor }
       edges {
         node {
