@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       to: `whatsapp:+65${phone}`,
       body:
         `Hi ${name.trim()}! 👋\n\n` +
-        `You're in! Your *$219* Opening Sale discount will be applied automatically at checkout — no code needed.\n\n` +
+        `You're in! Your *$219* Opening Sale discount will be applied automatically at checkout.\n\n` +
         `Head back to your cart and complete your order:\n` +
         `aviorliving.sg\n\n` +
         `White-glove delivery, full assembly, and packaging disposal are all included islandwide.\n\n` +
