@@ -241,9 +241,7 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
                   <Link
                     key={card.href}
                     href={card.href}
-                    className={`group relative shrink-0 w-36 sm:w-auto overflow-hidden rounded-2xl transition-all duration-300 ${
-                      active ? "ring-2 ring-accent ring-offset-2 ring-offset-cream" : ""
-                    }`}
+                    className="group relative shrink-0 w-36 sm:w-auto overflow-hidden rounded-2xl transition-all duration-300"
                   >
                     <img
                       src={card.image}
@@ -257,6 +255,9 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
                       </p>
                       <p className="mt-0.5 text-[10px] font-medium text-cream/60">{card.sub}</p>
                     </div>
+                    {active && (
+                      <div className="pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-inset ring-accent" />
+                    )}
                   </Link>
                 );
               })}
