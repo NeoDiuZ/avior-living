@@ -31,14 +31,14 @@ export function Footer() {
           { label: "Assembly", href: "/#faq" },
           { label: "Warranty", href: "/#faq" },
           { label: "Returns", href: "/#faq" },
-          { label: "WhatsApp Us", href: "https://wa.me/6580000000" },
+          { label: "WhatsApp Us", href: "https://wa.me/6588414701" },
         ]} />
         <Col title="Avior" links={[
           { label: "Why Avior", href: "/#why-avior" },
           { label: "Room Planner", href: "/#room-planner" },
           { label: "All Products", href: "/products" },
           { label: "FAQ", href: "/#faq" },
-          { label: "Contact", href: "https://wa.me/6580000000" },
+          { label: "Contact", href: "https://wa.me/6588414701" },
         ]} />
       </div>
       <div className="border-t border-border">

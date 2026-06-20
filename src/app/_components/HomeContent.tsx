@@ -41,7 +41,7 @@ export function HomeContent() {
           Shop Opening Sale
         </a>
         <a
-          href="https://wa.me/6580000000"
+          href="https://wa.me/6588414701"
           target="_blank"
           rel="noopener noreferrer"
           className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-border bg-background text-sm font-semibold text-foreground transition hover:bg-secondary active:scale-[0.98]"

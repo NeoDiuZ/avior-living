@@ -56,7 +56,7 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2">
           <a
-            href="https://wa.me/6580000000"
+            href="https://wa.me/6588414701"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden h-9 items-center gap-2 rounded-md border border-border bg-secondary px-3 text-sm font-medium text-foreground transition hover:bg-sand sm:inline-flex"

@@ -181,7 +181,7 @@ export function RoomPlanner() {
                 style={{ transition: "background-color 160ms ease-out, transform 120ms ease-out" }}
                 asChild
               >
-                <a href="https://wa.me/6580000000" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/6588414701" target="_blank" rel="noopener noreferrer">
                   <svg
                     viewBox="0 0 24 24"
                     className="h-4 w-4 shrink-0"

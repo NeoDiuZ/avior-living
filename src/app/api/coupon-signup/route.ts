@@ -22,15 +22,8 @@ export async function POST(req: NextRequest) {
     await client.messages.create({
       from: `whatsapp:${process.env.TWILIO_WHATSAPP_FROM}`,
       to: `whatsapp:+65${phone}`,
-      body:
-        `Hi ${name.trim()}! 👋\n\n` +
-        `You're in! Here's your free express delivery code:\n\n` +
-        `*${process.env.EXPRESS_DELIVERY_CODE}*\n\n` +
-        `Apply it at checkout to waive the $20 express delivery fee — standard delivery remains free for everyone.\n\n` +
-        `Head back to your cart and complete your order:\n` +
-        `aviorliving.sg\n\n` +
-        `White-glove delivery, full assembly, and packaging disposal are all included.\n\n` +
-        `— The Avior Team`,
+      contentSid: "HX128d54276caed8a74742b5e01d5e032e",
+      contentVariables: JSON.stringify({ "1": name.trim() }),
     });
   } catch (err) {
     console.error("Twilio error:", err);

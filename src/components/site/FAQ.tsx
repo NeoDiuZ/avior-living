@@ -45,7 +45,7 @@ export function FAQ() {
             Still unsure? Message us on WhatsApp.
           </p>
           <a
-            href="https://wa.me/6580000000"
+            href="https://wa.me/6588414701"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-accent underline-offset-4 hover:underline"
