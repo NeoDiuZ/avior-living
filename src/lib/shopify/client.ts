@@ -143,10 +143,36 @@ export const PRODUCT_BY_HANDLE_QUERY = `
         }
       }
       options { name values }
-      metafields(identifiers: [{namespace: "custom", key: "dimensions"}]) {
+      metafields(identifiers: [
+        {namespace: "custom", key: "dimensions"}
+        {namespace: "custom", key: "product_care"}
+        {namespace: "custom", key: "warranty"}
+        {namespace: "custom", key: "product_detail"}
+      ]) {
         namespace
         key
         value
+      }
+      pairsWellWith: metafield(namespace: "custom", key: "pairs_well_with") {
+        references(first: 8) {
+          edges {
+            node {
+              ... on Product {
+                id
+                title
+                handle
+                productType
+                priceRange { minVariantPrice { amount currencyCode } }
+                compareAtPriceRange { minVariantPrice { amount currencyCode } }
+                images(first: 2) { edges { node { url altText } } }
+                variants(first: 10) {
+                  edges { node { id title price { amount currencyCode } availableForSale selectedOptions { name value } } }
+                }
+                options { name values }
+              }
+            }
+          }
+        }
       }
     }
   }

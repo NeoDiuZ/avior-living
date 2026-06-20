@@ -8,6 +8,14 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { ShopifyRichText } from "@/components/site/ShopifyRichText";
+import { ProductCard } from "@/components/site/ProductCard";
+import {
   storefrontApiRequest,
   PRODUCT_BY_HANDLE_QUERY,
   formatPrice,
@@ -40,6 +48,9 @@ interface ProductDetail {
   };
   options: Array<{ name: string; values: string[] }>;
   metafields: Array<{ namespace: string; key: string; value: string } | null>;
+  pairsWellWith: {
+    references?: { edges: Array<{ node: ShopifyProduct["node"] }> };
+  } | null;
 }
 
 const OPENING_SALE_PRICE = 219;
@@ -143,6 +154,16 @@ export function ProductContent({ handle, isOpeningSale = false }: { handle: stri
   const dimsMeta = product.metafields.find(
     (m) => m?.namespace === "custom" && m?.key === "dimensions"
   );
+  const productCareMeta = product.metafields.find(
+    (m) => m?.namespace === "custom" && m?.key === "product_care"
+  );
+  const warrantyMeta = product.metafields.find(
+    (m) => m?.namespace === "custom" && m?.key === "warranty"
+  );
+  const productDetailMeta = product.metafields.find(
+    (m) => m?.namespace === "custom" && m?.key === "product_detail"
+  );
+  const pairsWellWith = product.pairsWellWith?.references?.edges ?? [];
 
   const handleOpenPlanner = async () => {
     if (dims) { setPlannerOpen(true); return; }
@@ -342,6 +363,125 @@ export function ProductContent({ handle, isOpeningSale = false }: { handle: stri
                 </p>
               </div>
             )}
+
+            <div className="mt-8 border-t border-border">
+              <Accordion type="single" collapsible className="w-full">
+                {productDetailMeta?.value && (
+                  <AccordionItem value="product-detail">
+                    <AccordionTrigger className="text-sm font-semibold">Product Details</AccordionTrigger>
+                    <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                      <ShopifyRichText value={productDetailMeta.value} />
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+
+                {dimsMeta?.value && (
+                  <AccordionItem value="dimensions">
+                    <AccordionTrigger className="text-sm font-semibold">Dimensions</AccordionTrigger>
+                    <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                      <ShopifyRichText value={dimsMeta.value} />
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+
+                {productCareMeta?.value && (
+                  <AccordionItem value="materials-care">
+                    <AccordionTrigger className="text-sm font-semibold">Materials & Care</AccordionTrigger>
+                    <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                      <ShopifyRichText value={productCareMeta.value} />
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+
+                <AccordionItem value="sustainability">
+                  <AccordionTrigger className="text-sm font-semibold">Sustainability & Certifications</AccordionTrigger>
+                  <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                    <p>
+                      All Avior pieces are built from sustainably sourced solid wood and responsibly produced
+                      materials. We work with manufacturers who meet ethical labour and environmental production
+                      standards, and we continually review our supply chain to reduce waste across delivery and
+                      packaging.
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="shipping-returns">
+                  <AccordionTrigger className="text-sm font-semibold">Shipping & Returns</AccordionTrigger>
+                  <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                    <p>
+                      Free white-glove delivery is included islandwide, including high floors and units without
+                      lift access. Most in-stock items arrive within 5–10 business days; you&apos;ll get a WhatsApp
+                      confirmation followed by a delivery window closer to the date.
+                    </p>
+                    <p className="mt-3">
+                      If an item arrives damaged, flag it with our team on delivery, or message us within 48 hours
+                      for a free replacement. Change-of-mind returns are accepted within 7 days for unused,
+                      unassembled items in original packaging; delivery and collection fees may apply.
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="assembly-warranty">
+                  <AccordionTrigger className="text-sm font-semibold">Assembly & Warranty</AccordionTrigger>
+                  <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                    <p>
+                      Every order includes full assembly by our two-person delivery team, with all packaging
+                      removed before we leave — no extra charge, no tools needed on your end.
+                    </p>
+                    <div className="mt-3">
+                      {warrantyMeta?.value ? (
+                        <ShopifyRichText value={warrantyMeta.value} />
+                      ) : (
+                        <p>
+                          Every piece comes with a 1-year warranty covering manufacturing defects, including
+                          structural issues, hardware failure, and surface defects present at delivery.
+                        </p>
+                      )}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="faqs">
+                  <AccordionTrigger className="text-sm font-semibold">FAQs</AccordionTrigger>
+                  <AccordionContent className="space-y-4 text-sm leading-relaxed text-muted-foreground">
+                    <div>
+                      <p className="font-medium text-foreground">What&apos;s included with delivery?</p>
+                      <p className="mt-1">
+                        Delivery, full assembly, and packaging removal are all included at no extra charge —
+                        islandwide, even to upper floors without lift access.
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">How long does delivery take?</p>
+                      <p className="mt-1">
+                        Most in-stock items are delivered within 5–10 business days, with a WhatsApp confirmation
+                        and delivery window sent ahead of time.
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">What if something arrives damaged?</p>
+                      <p className="mt-1">
+                        Flag it with our team on the spot and we&apos;ll arrange a free replacement. For issues
+                        found after delivery, message us on WhatsApp with photos within 48 hours.
+                      </p>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
+                {pairsWellWith.length > 0 && (
+                  <AccordionItem value="pairs-well-with">
+                    <AccordionTrigger className="text-sm font-semibold">Pairs well with</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                        {pairsWellWith.map(({ node }) => (
+                          <ProductCard key={node.id} product={{ node }} />
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+              </Accordion>
+            </div>
           </div>
         </div>
       </div>
