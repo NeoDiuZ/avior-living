@@ -406,17 +406,12 @@ export function ProductContent({ handle, isOpeningSale = false }: { handle: stri
                 </AccordionItem>
 
                 <AccordionItem value="shipping-returns">
-                  <AccordionTrigger className="font-mono text-sm font-medium">Shipping & Returns</AccordionTrigger>
+                  <AccordionTrigger className="font-mono text-sm font-medium">Shipping</AccordionTrigger>
                   <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
                     <p>
-                      Free white-glove delivery is included islandwide, including high floors and units without
-                      lift access. Most in-stock items arrive within 5 to 10 business days; you&apos;ll get a
-                      WhatsApp confirmation followed by a delivery window closer to the date.
-                    </p>
-                    <p className="mt-3">
-                      If an item arrives damaged, flag it with our team on delivery, or message us within 48 hours
-                      for a free replacement. Change-of-mind returns are accepted within 7 days for unused,
-                      unassembled items in original packaging; delivery and collection fees may apply.
+                      Free white-glove delivery is included islandwide. Most in-stock items arrive within 5 to 10
+                      business days; you&apos;ll get a WhatsApp confirmation followed by a delivery window closer
+                      to the date.
                     </p>
                   </AccordionContent>
                 </AccordionItem>
@@ -425,7 +420,7 @@ export function ProductContent({ handle, isOpeningSale = false }: { handle: stri
                   <AccordionTrigger className="font-mono text-sm font-medium">Assembly & Warranty</AccordionTrigger>
                   <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
                     <p>
-                      Every order includes full assembly by our two-person delivery team, with all packaging
+                      Every order includes full assembly by our delivery team, with all packaging
                       removed before we leave. No extra charge, no tools needed on your end.
                     </p>
                     <div className="mt-3">
@@ -448,7 +443,7 @@ export function ProductContent({ handle, isOpeningSale = false }: { handle: stri
                       <p className="font-medium text-foreground">What&apos;s included with delivery?</p>
                       <p className="mt-1">
                         Delivery, full assembly, and packaging removal are all included at no extra charge,
-                        islandwide, even to upper floors without lift access.
+                        islandwide.
                       </p>
                     </div>
                     <div>
@@ -461,8 +456,8 @@ export function ProductContent({ handle, isOpeningSale = false }: { handle: stri
                     <div>
                       <p className="font-medium text-foreground">What if something arrives damaged?</p>
                       <p className="mt-1">
-                        Flag it with our team on the spot and we&apos;ll arrange a free replacement. For issues
-                        found after delivery, message us on WhatsApp with photos within 48 hours.
+                        Message us on WhatsApp with photos and we&apos;ll claim your warranty and arrange a
+                        replacement.
                       </p>
                     </div>
                   </AccordionContent>
