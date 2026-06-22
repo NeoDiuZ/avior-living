@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 const heroImg = "/images/hero-living-room.jpg";
@@ -48,11 +49,12 @@ export function Hero() {
 
         <div className="relative md:col-span-7">
           <div className="relative overflow-hidden rounded-3xl bg-sand shadow-[0_40px_100px_-30px_rgba(80,50,30,0.4)]">
-            <img
+            <Image
               src={heroImg}
               alt="Avior Living Singapore furniture"
               width={1920}
               height={1280}
+              priority
               className="h-auto w-full object-cover"
             />
             <div className="absolute left-5 top-5 rounded-2xl bg-background/95 px-5 py-3 shadow-lg backdrop-blur">

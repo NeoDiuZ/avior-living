@@ -1,12 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, ChevronLeft, Truck, Wrench, Recycle, Ruler } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import {
   Accordion,
   AccordionContent,
@@ -214,6 +223,26 @@ export function ProductContent({ handle, isOpeningSale = false }: { handle: stri
   return (
     <Shell>
       <div className="container-page py-8">
+        <Breadcrumb className="mb-3">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/">Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/products">Products</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{product.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         <button
           onClick={() => router.back()}
           className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
@@ -224,15 +253,18 @@ export function ProductContent({ handle, isOpeningSale = false }: { handle: stri
 
         <div className="mt-6 grid gap-10 md:grid-cols-2 lg:gap-16">
           <div className="space-y-3">
-            <div className="overflow-hidden rounded-2xl bg-secondary">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-secondary">
               {image ? (
-                <img
+                <Image
                   src={image.url}
                   alt={image.altText || product.title}
-                  className="aspect-[4/5] w-full object-cover"
+                  fill
+                  priority
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  className="object-cover"
                 />
               ) : (
-                <div className="grid aspect-[4/5] place-items-center text-sm text-muted-foreground">
+                <div className="grid h-full w-full place-items-center text-sm text-muted-foreground">
                   No image
                 </div>
               )}
@@ -428,7 +460,7 @@ export function ProductContent({ handle, isOpeningSale = false }: { handle: stri
                         <ShopifyRichText value={warrantyMeta.value} />
                       ) : (
                         <p>
-                          Every piece comes with a 1-year warranty covering manufacturing defects, including
+                          Every piece comes with a 2-year warranty covering manufacturing defects, including
                           structural issues, hardware failure, and surface defects present at delivery.
                         </p>
                       )}

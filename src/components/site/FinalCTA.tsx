@@ -13,7 +13,7 @@ export function FinalCTA() {
             size="lg"
             className="h-12 bg-primary-foreground px-8 text-sm font-semibold text-primary hover:bg-primary-foreground/90"
           >
-            <a href="#opening-sale">Shop $189 Opening Sale</a>
+            <a href="#opening-sale">Shop $219 Opening Sale</a>
           </Button>
           <Button
             asChild

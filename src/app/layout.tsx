@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildOrganizationJsonLd } from "@/lib/seo/jsonld";
+import { SITE_URL } from "@/lib/seo/config";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Avior Living | Save 40% Off Retail Furniture in Singapore",
     template: "%s | Avior Living",
@@ -36,6 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap"
         />
+        <JsonLd data={buildOrganizationJsonLd()} />
       </head>
       <body>
         <Providers>{children}</Providers>

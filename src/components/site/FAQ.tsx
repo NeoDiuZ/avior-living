@@ -4,6 +4,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildFaqPageJsonLd } from "@/lib/seo/jsonld";
 
 const faqs = [
   {
@@ -24,7 +26,7 @@ const faqs = [
   },
   {
     q: "What warranty do I get, and what happens if something arrives damaged?",
-    a: "Every item comes with a 1-year warranty covering manufacturing defects, including structural issues, hardware failure, and surface defects present at delivery. If anything arrives damaged, photograph it before our team leaves and flag it on the spot; we'll arrange a replacement at no cost. For issues that develop after delivery, WhatsApp us with photos and we'll assess within one business day. We don't make you fill in forms or wait weeks for a response.",
+    a: "Every item comes with a 2-year warranty covering manufacturing defects, including structural issues, hardware failure, and surface defects present at delivery. If anything arrives damaged, photograph it before our team leaves and flag it on the spot; we'll arrange a replacement at no cost. For issues that develop after delivery, WhatsApp us with photos and we'll assess within one business day. We don't make you fill in forms or wait weeks for a response.",
   },
   {
     q: "Is Avior furniture suitable for Singapore BTOs, HDBs, and compact spaces?",
@@ -35,6 +37,7 @@ const faqs = [
 export function FAQ() {
   return (
     <section id="faq" className="bg-background py-20 md:py-28">
+      <JsonLd data={buildFaqPageJsonLd(faqs)} />
       <div className="container-page grid gap-12 md:grid-cols-12">
         <div className="md:col-span-4">
           <span className="chip mb-3">FAQ</span>

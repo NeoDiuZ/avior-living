@@ -16,10 +16,14 @@ export async function storefrontApiRequest(query: string, variables: Record<stri
   });
 
   if (response.status === 402) {
-    toast.error("Shopify: Payment required", {
-      description:
-        "Shopify API access requires an active billing plan. Please upgrade your store at https://admin.shopify.com.",
-    });
+    // This function also runs server-side (sitemap generation, generateMetadata) where
+    // sonner's toast has no DOM to render into — only fire it in the browser.
+    if (typeof window !== "undefined") {
+      toast.error("Shopify: Payment required", {
+        description:
+          "Shopify API access requires an active billing plan. Please upgrade your store at https://admin.shopify.com.",
+      });
+    }
     return null;
   }
 
@@ -209,4 +213,59 @@ export function formatPrice(amount: string | number, currencyCode = "SGD") {
     currency: currencyCode,
     maximumFractionDigits: 0,
   }).format(n);
+}
+
+export interface ShopifyProductDetail {
+  id: string;
+  title: string;
+  description: string;
+  handle: string;
+  productType?: string;
+  vendor?: string;
+  priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+  images: { edges: Array<{ node: ShopifyImage }> };
+  variants: { edges: Array<{ node: ShopifyVariant }> };
+}
+
+// Server-safe single-product fetch, shared by generateMetadata and the page body
+// in product/[handle]/page.tsx (Next.js dedupes identical fetch() calls made
+// during the same request, so this does not cost a second network round trip).
+export async function getProductByHandle(handle: string): Promise<ShopifyProductDetail | null> {
+  const data = await storefrontApiRequest(PRODUCT_BY_HANDLE_QUERY, { handle });
+  return data?.data?.product ?? null;
+}
+
+export interface ProductHandleAndDate {
+  handle: string;
+}
+
+// Server-only helper for sitemap generation. Loops the paginated products query
+// at Shopify's max page size (250) until exhausted. Treats a null response (the
+// 402 billing-lapse path in storefrontApiRequest) as "stop here" rather than
+// throwing, so a Shopify billing issue degrades the sitemap instead of failing the build.
+export async function getAllProductHandles(): Promise<ProductHandleAndDate[]> {
+  const handles: ProductHandleAndDate[] = [];
+  let after: string | null = null;
+  let hasNextPage = true;
+
+  while (hasNextPage) {
+    const data = await storefrontApiRequest(PAGINATED_PRODUCTS_QUERY, {
+      first: 250,
+      after,
+    });
+
+    const products = data?.data?.products;
+    if (!products) break;
+
+    for (const edge of products.edges as Array<{ node: { handle: string } }>) {
+      if (edge?.node?.handle) {
+        handles.push({ handle: edge.node.handle });
+      }
+    }
+
+    hasNextPage = products.pageInfo?.hasNextPage ?? false;
+    after = products.pageInfo?.endCursor ?? null;
+  }
+
+  return handles;
 }

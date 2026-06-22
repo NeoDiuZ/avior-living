@@ -41,7 +41,7 @@ export function AnnouncementBar() {
         {/* Offer copy */}
         <p className="flex-1 text-center text-sm font-medium">
           From{" "}
-          <span className="font-bold">$189</span>
+          <span className="font-bold">$219</span>
           <span className="hidden sm:inline">
             {" "}· Free delivery, assembly &amp; disposal.
           </span>{" "}

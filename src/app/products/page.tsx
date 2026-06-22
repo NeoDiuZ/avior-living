@@ -4,12 +4,27 @@ import { ArrowRight } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Footer } from "@/components/site/Footer";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildBreadcrumbJsonLd } from "@/lib/seo/jsonld";
 
 export const metadata: Metadata = {
   title: "Shop Furniture — Avior Living",
   description:
     "Browse factory-direct furniture by room. Free white-glove delivery, assembly and disposal across Singapore.",
 };
+
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { name: "Home", url: "/" },
+  { name: "Products", url: "/products" },
+]);
 
 function RoomCard({
   href,
@@ -45,12 +60,26 @@ function RoomCard({
 export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={breadcrumbJsonLd} />
       <AnnouncementBar />
       <SiteHeader />
       <main className="overflow-x-hidden">
         {/* Editorial heading */}
         <div className="bg-cream pt-16 pb-12 md:pt-24 md:pb-16">
           <div className="container-page">
+            <Breadcrumb className="mb-4">
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href="/">Home</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Products</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
               Shop by Room
             </p>
