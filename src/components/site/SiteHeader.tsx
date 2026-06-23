@@ -49,6 +49,9 @@ export function SiteHeader() {
           <a href="/#room-planner" className="hover:text-accent">
             Room Planner
           </a>
+          <Link href="/blogs" className="hover:text-accent">
+            Blogs
+          </Link>
           <a href="/#faq" className="hover:text-accent">
             FAQ
           </a>

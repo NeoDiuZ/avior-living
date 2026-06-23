@@ -1,3 +1,5 @@
+import { BUSINESS_UEN } from "@/lib/seo/config";
+
 export function Footer() {
   return (
     <footer className="border-t border-border bg-cream">
@@ -37,13 +39,17 @@ export function Footer() {
           { label: "Why Avior", href: "/#why-avior" },
           { label: "Room Planner", href: "/#room-planner" },
           { label: "All Products", href: "/products" },
+          { label: "Blogs", href: "/blogs" },
           { label: "FAQ", href: "/#faq" },
           { label: "Contact", href: "https://wa.me/6588414701" },
         ]} />
       </div>
       <div className="border-t border-border">
         <div className="container-page flex flex-wrap items-center justify-between gap-3 py-5 text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} Avior Living Pte Ltd. Singapore.</p>
+          <p>
+            © {new Date().getFullYear()} Avior Living Pte Ltd. Singapore.
+            {BUSINESS_UEN ? ` UEN: ${BUSINESS_UEN}.` : ""}
+          </p>
           <p>Factory direct. Zero markup.</p>
         </div>
       </div>

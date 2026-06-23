@@ -165,3 +165,50 @@
   letter-spacing: 0.01em;
   white-space: nowrap;
 }
+
+.article-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2.5px;
+  width: 100%;
+  background: var(--color-accent);
+  transform-origin: 0% 50%;
+  transform: scaleX(0);
+  z-index: 60;
+  visibility: hidden;
+}
+
+@supports (animation-timeline: scroll()) {
+  .article-progress {
+    visibility: visible;
+    animation: article-progress-fill linear forwards;
+    animation-timeline: scroll(root);
+  }
+}
+
+@keyframes article-progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.article-dropcap::first-letter {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 3.4em;
+  line-height: 0.85;
+  float: left;
+  padding-right: 0.08em;
+  padding-top: 0.03em;
+  color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-progress {
+    animation: none !important;
+  }
+}

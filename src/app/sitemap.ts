@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo/config";
 import { getAllProductHandles } from "@/lib/shopify/client";
+import { blogPosts } from "@/content/blog-posts";
 
 const staticRoutes: Array<{ path: string; changeFrequency: "daily" | "weekly"; priority: number }> = [
   { path: "", changeFrequency: "daily", priority: 1 },
@@ -9,6 +10,7 @@ const staticRoutes: Array<{ path: string; changeFrequency: "daily" | "weekly"; p
   { path: "/products/living-room", changeFrequency: "weekly", priority: 0.8 },
   { path: "/products/bedroom", changeFrequency: "weekly", priority: 0.8 },
   { path: "/products/dining-room", changeFrequency: "weekly", priority: 0.8 },
+  { path: "/blogs", changeFrequency: "weekly", priority: 0.6 },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -29,5 +31,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticEntries, ...productEntries];
+  const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+    url: `${SITE_URL}/blogs/${post.slug}`,
+    lastModified: new Date(post.datePublished),
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
+
+  return [...staticEntries, ...productEntries, ...blogEntries];
 }
