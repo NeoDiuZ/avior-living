@@ -126,8 +126,15 @@ function Block({ block, isFirstParagraph }: { block: BlogBlock; isFirstParagraph
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-border bg-sand">
-                {block.headers.map((header) => (
-                  <th key={header} className="px-5 py-3.5 font-semibold text-foreground">
+                {block.headers.map((header, h) => (
+                  <th
+                    key={header}
+                    className={
+                      h === 0
+                        ? "sticky left-0 z-10 min-w-[140px] border-r border-border bg-sand px-3 py-3 font-semibold text-foreground sm:px-5 sm:py-3.5"
+                        : "min-w-[180px] px-3 py-3 font-semibold text-foreground sm:px-5 sm:py-3.5"
+                    }
+                  >
                     {header}
                   </th>
                 ))}
@@ -137,7 +144,14 @@ function Block({ block, isFirstParagraph }: { block: BlogBlock; isFirstParagraph
               {block.rows.map((row, i) => (
                 <tr key={i} className={i !== block.rows.length - 1 ? "border-b border-border" : ""}>
                   {row.map((cell, j) => (
-                    <td key={j} className="px-5 py-3.5 text-muted-foreground">
+                    <td
+                      key={j}
+                      className={
+                        j === 0
+                          ? "sticky left-0 z-10 border-r border-border bg-background px-3 py-3 font-medium text-foreground sm:px-5 sm:py-3.5"
+                          : "px-3 py-3 text-muted-foreground sm:px-5 sm:py-3.5"
+                      }
+                    >
                       {cell}
                     </td>
                   ))}
@@ -220,7 +234,7 @@ export default async function BlogPostPage({
             </h1>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-muted-foreground">{post.dek}</p>
 
-            <div className="mt-6 flex items-center gap-3 border-t border-border pt-6 text-sm text-muted-foreground">
+            <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-6 text-sm text-muted-foreground">
               <div>
                 <p className="font-medium text-foreground">{post.authorName}</p>
                 <p>{post.authorRole}</p>

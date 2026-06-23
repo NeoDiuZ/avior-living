@@ -119,7 +119,7 @@ export default function BlogsIndexPage() {
                     <p className="mt-4 max-w-md text-[0.95rem] leading-relaxed text-muted-foreground">
                       {featured.dek}
                     </p>
-                    <div className="mt-5 flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
                       <span>{featured.authorName}</span>
                       <span aria-hidden="true">·</span>
                       <time dateTime={featured.datePublished}>{formatDate(featured.datePublished)}</time>
@@ -168,7 +168,7 @@ export default function BlogsIndexPage() {
                         <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
                           {post.dek}
                         </p>
-                        <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
+                        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                           <time dateTime={post.datePublished}>{formatDate(post.datePublished)}</time>
                           <span aria-hidden="true">·</span>
                           <span>{post.readTime}</span>
