@@ -40,15 +40,24 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.description,
+    authors: [{ name: post.authorName }],
+    alternates: {
+      canonical: `/blogs/${post.slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.description,
+      url: `/blogs/${post.slug}`,
       type: "article",
       publishedTime: post.datePublished,
-      images: [{ url: post.coverImage }],
+      authors: [post.authorName],
+      images: [{ url: post.coverImage, width: 1024, height: 1280, alt: post.coverImageAlt }],
     },
-    alternates: {
-      canonical: `/blogs/${post.slug}`,
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.description,
+      images: [post.coverImage],
     },
   };
 }

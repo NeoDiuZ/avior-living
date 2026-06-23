@@ -108,6 +108,24 @@ export function buildArticleJsonLd(input: ArticleJsonLdInput) {
   };
 }
 
+export interface ItemListJsonLdEntry {
+  name: string;
+  url: string;
+}
+
+export function buildItemListJsonLd(items: ItemListJsonLdEntry[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      url: absoluteUrl(item.url),
+    })),
+  };
+}
+
 export function buildFaqPageJsonLd(faqs: FaqJsonLdEntry[]) {
   return {
     "@context": "https://schema.org",

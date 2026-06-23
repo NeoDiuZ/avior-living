@@ -14,19 +14,35 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { buildBreadcrumbJsonLd } from "@/lib/seo/jsonld";
+import { buildBreadcrumbJsonLd, buildItemListJsonLd } from "@/lib/seo/jsonld";
 import { blogPosts } from "@/content/blog-posts";
 
+const BLOGS_TITLE = "Blogs - Avior Living";
+const BLOGS_DESCRIPTION =
+  "Furniture buying guides and honest comparisons for Singapore homes: HDB/BTO sizing, delivery, and how Avior stacks up against other Singapore furniture brands.";
+
 export const metadata: Metadata = {
-  title: "Blogs — Avior Living",
-  description:
-    "Furniture buying guides and honest comparisons for Singapore homes — HDB/BTO sizing, delivery, and how Avior stacks up against other Singapore furniture brands.",
+  title: BLOGS_TITLE,
+  description: BLOGS_DESCRIPTION,
+  alternates: {
+    canonical: "/blogs",
+  },
+  openGraph: {
+    title: BLOGS_TITLE,
+    description: BLOGS_DESCRIPTION,
+    url: "/blogs",
+    type: "website",
+  },
 };
 
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   { name: "Home", url: "/" },
   { name: "Blogs", url: "/blogs" },
 ]);
+
+const itemListJsonLd = buildItemListJsonLd(
+  blogPosts.map((post) => ({ name: post.title, url: `/blogs/${post.slug}` })),
+);
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-SG", {
@@ -42,6 +58,7 @@ export default function BlogsIndexPage() {
   return (
     <div className="min-h-screen bg-background">
       <JsonLd data={breadcrumbJsonLd} />
+      <JsonLd data={itemListJsonLd} />
       <AnnouncementBar />
       <SiteHeader />
       <main>

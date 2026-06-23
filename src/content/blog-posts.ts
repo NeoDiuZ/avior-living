@@ -37,6 +37,121 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+    slug: "avior-vs-ikea-muji-fortytwo-castlery-singapore-furniture-compared",
+    title: "Avior Living vs IKEA, Muji, FortyTwo, and Castlery: The Real Cost of Furnishing a Singapore Home",
+    dek: "The sticker price is only part of the bill. Delivery fees, assembly fees, lift surcharges, and return terms decide what you actually pay, and what happens if something goes wrong.",
+    description:
+      "A fact-checked comparison of Avior Living against IKEA, Muji, FortyTwo, and Castlery on delivery, assembly, warranty, returns, and room-planning tools.",
+    category: "Comparisons",
+    datePublished: "2026-06-23",
+    authorName: "Avior Living Team",
+    authorRole: "Avior Living Editorial",
+    readTime: "9 min read",
+    coverImage: "/images/hero-living-room.jpg",
+    coverImageAlt: "A bright, furnished living room styled for a Singapore home",
+    blocks: [
+      {
+        type: "p",
+        text: "Furniture shopping in Singapore rarely ends at the listed price. IKEA charges by weight and floor count, FortyTwo adds delivery surcharges for certain locations, and Muji's furniture delivery fee depends on your basket size. None of that is hidden or wrong, it is just easy to miss until checkout. This comparison lays out what five Singapore furniture options actually charge and cover, using each company's own published policies.",
+      },
+      {
+        type: "h2",
+        text: "Why furniture costs what it costs",
+      },
+      {
+        type: "p",
+        text: "Most furniture in Singapore passes through four hands before it reaches your home: the factory that makes it, a distributor that imports it, a retailer that lists it, and a showroom that displays it. Each layer adds its own margin to cover staff, rent, and logistics. A showroom on Orchard Road or in a mall is one of the largest fixed costs a furniture retailer carries, and it gets paid for in the price tag regardless of whether you ever visit it. Avior sources directly from the same factories that supply established brands and skips the distributor and showroom layers entirely, which is reflected in pricing roughly 40% below typical retail.",
+      },
+      {
+        type: "h2",
+        text: "Delivery and assembly, line by line",
+      },
+      {
+        type: "table",
+        headers: ["", "Avior Living", "IKEA (SG)", "Muji (SG)", "FortyTwo (SG)", "Castlery (SG)"],
+        rows: [
+          ["Delivery", "Free, 5-10 business days", "$35 home delivery, or $5-15 for small parcels", "Charged below $250 in the Furniture Department", "$9.90-$35 depending on cart, plus a $30 surcharge for select locations", "2-4 weeks for in-stock items"],
+          ["Assembly", "Free, included on every order", "10-20% of product retail price, or $35 call-out fee for a separate trip", "Not publicly specified for furniture", "Free on most products; fee stated per item if not included", "Availability varies by product"],
+          ["No-lift / upper-floor delivery", "Included, no surcharge per Avior's published delivery terms", "+$20 if no lift access from the 3rd floor up", "Not publicly specified", "First non-lift floor free, then $10 per item per floor after that", "Not publicly specified"],
+          ["Warranty", "2 years on manufacturing defects, hardware, and surface issues", "Varies by product, per individual guarantee documents", "Not publicly specified for furniture", "Up to 10 years on manufacturing defects (select mattresses up to 20 years)", "Varies by product category"],
+          ["Returns", "Policy in progress, contact WhatsApp for current terms", "365 days with proof of purchase, unassembled, original packaging", "Not publicly specified for furniture", "100 days; refund excludes delivery and assembly fees already paid", "30 days, 20% restocking fee deducted from refund"],
+          ["Support channel", "WhatsApp, response within 1 business day", "Phone and online contact form", "In-store or email", "Help centre and email", "Email (help.sg@castlery.com)"],
+        ],
+      },
+      {
+        type: "callout",
+        text: "Avior's written return policy is being finalized and will be published here once live. Until then, message us on WhatsApp before ordering if return terms are a deciding factor for you.",
+      },
+      {
+        type: "h2",
+        text: "Plan before you buy: the Room Planner",
+      },
+      {
+        type: "p",
+        text: "IKEA's Kreativ tool lets you scan your own room and try products in a virtual version of it, which is a genuinely useful AR feature. Avior's Room Planner takes a more direct route for a smaller catalogue: upload your actual floor plan, then place pieces from Avior's exact in-stock range to scale against your real room dimensions, no app download or room scan required. Neither Muji, FortyTwo, nor Castlery publish a comparable planning tool today.",
+      },
+      {
+        type: "quote",
+        text: "Knowing a sofa fits before you order it removes the single most common reason furniture gets returned: it simply didn't fit the space.",
+      },
+      {
+        type: "p",
+        text: "The Room Planner is visual guidance, not a substitute for measuring your own doorways and corridors, but it catches the obvious mismatches (a sofa too long for the wall, a bed frame too wide for the room) before you commit to an order.",
+      },
+      {
+        type: "h2",
+        text: "What 'cheap' actually means at Avior",
+      },
+      {
+        type: "p",
+        text: "Avior's opening sale prices a flat $219 across multiple categories, ending 31 July 2026. The number on the page is the number you pay: delivery, assembly, and packaging disposal are already included, so there's no surcharge added at checkout the way there can be with a lift-access fee or a delivery-distance charge elsewhere. That bundle, free delivery, free assembly, free disposal, a 2-year warranty, and WhatsApp support with a 1-business-day response, is what Avior calls the Avior Assurance: the cost of using the product is covered, even if the upfront sticker price is lower than competitors who charge several of those items separately.",
+      },
+      {
+        type: "h2",
+        text: "Which option actually fits",
+      },
+      {
+        type: "list",
+        items: [
+          "Want the longest return window and don't mind a higher starting price: IKEA's 365-day policy is the most generous of the five.",
+          "Want the longest warranty: FortyTwo's up to 10-year manufacturing warranty is the longest published figure here.",
+          "Want price transparency with delivery, assembly, and disposal already factored into the listed price: that's the model Avior is built around.",
+          "Want to check fit before ordering without downloading an app: Avior's Room Planner works from your own floor plan upload.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Does IKEA charge for furniture assembly in Singapore?",
+        a: "Yes. Per IKEA Singapore's published assembly service page, the fee is 20% of the original retail price for most furniture and 10% for sofas and sofa beds, with a separate $35 call-out fee if you book assembly as its own trip.",
+      },
+      {
+        q: "How long is FortyTwo's furniture warranty?",
+        a: "FortyTwo publishes warranty coverage of up to 10 years on manufacturing defects and missing components, with select mattresses covered up to 20 years by the manufacturer.",
+      },
+      {
+        q: "Is delivery free with Avior Living?",
+        a: "Yes. Delivery, assembly, and packaging disposal are included at no extra charge on every order, with most in-stock items delivered within 5-10 business days.",
+      },
+      {
+        q: "Does Avior have a return policy?",
+        a: "Avior's written return policy is still being finalized. If return terms matter to your decision, message Avior on WhatsApp before ordering to confirm current terms.",
+      },
+    ],
+    sources: [
+      { label: "IKEA Singapore - Delivery Services", url: "https://www.ikea.com/sg/en/customer-service/services/delivery/" },
+      { label: "IKEA Singapore - Assembly Service", url: "https://www.ikea.com/sg/en/customer-service/services/assembly/" },
+      { label: "IKEA Singapore - 365 Day Return Policy", url: "https://www.ikea.com/sg/en/customer-service/returns-claims/return-policy/" },
+      { label: "IKEA - Design and Planning Tools (Kreativ)", url: "https://www.ikea.com/us/en/planners/" },
+      { label: "Muji Singapore - Delivery Charge", url: "https://www.muji.com/sg/blog/topics/delivery-charge/" },
+      { label: "FortyTwo Help Centre - Delivery Fee", url: "https://support.fortytwo.sg/hc/en-us/articles/201882229-How-much-is-the-Delivery-Fee" },
+      { label: "FortyTwo Help Centre - Return and Refund Policy", url: "https://support.fortytwo.sg/hc/en-us/articles/202731345-What-is-your-Return-and-Refund-Policy" },
+      { label: "FortyTwo - New and Improved Warranty", url: "https://www.fortytwo.sg/new-and-improved-warranty" },
+      { label: "Castlery Singapore - Delivery", url: "https://www.castlery.com/sg/delivery" },
+      { label: "Castlery Singapore - Sales and Refunds", url: "https://www.castlery.com/sg/sales-and-refunds" },
+    ],
+  },
+  {
     slug: "avior-vs-castlery-delivery-price-returns-compared",
     title: "Avior Living vs Castlery: Delivery Speed, Pricing, and Returns Compared",
     dek: "Two Singapore direct-to-consumer brands, two different bets on what matters more: how fast it arrives, or how easily you can send it back.",
