@@ -17,7 +17,11 @@ export function buildOrganizationJsonLd() {
       ? {
           hasMerchantReturnPolicy: {
             "@type": "MerchantReturnPolicy",
-            url: RETURN_POLICY_URL,
+            url: absoluteUrl(RETURN_POLICY_URL),
+            returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+            merchantReturnDays: 0,
+            returnFees: "https://schema.org/FreeReturn",
+            applicableCountry: "SG",
           },
         }
       : {}),

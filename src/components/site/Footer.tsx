@@ -32,7 +32,7 @@ export function Footer() {
           { label: "Delivery Info", href: "/#faq" },
           { label: "Assembly", href: "/#faq" },
           { label: "Warranty", href: "/#faq" },
-          { label: "Returns", href: "/#faq" },
+          { label: "Returns", href: "/returns" },
           { label: "WhatsApp Us", href: "https://wa.me/6588414701" },
         ]} />
         <Col title="Avior" links={[

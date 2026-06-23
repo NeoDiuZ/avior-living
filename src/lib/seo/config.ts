@@ -8,5 +8,4 @@ export const WHATSAPP_CONTACT = "https://wa.me/6588414701";
 
 export const BUSINESS_UEN: string | undefined = "202625239N";
 
-// TODO: set once a written return policy exists and has a page to link to.
-export const RETURN_POLICY_URL: string | undefined = undefined;
+export const RETURN_POLICY_URL: string | undefined = "/returns";

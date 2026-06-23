@@ -29,6 +29,10 @@ const faqs = [
     a: "Every item comes with a 2-year warranty covering manufacturing defects, including structural issues, hardware failure, and surface defects present at delivery. If anything arrives damaged, photograph it before our team leaves and flag it on the spot; we'll arrange a replacement at no cost. For issues that develop after delivery, WhatsApp us with photos and we'll assess within one business day. We don't make you fill in forms or wait weeks for a response.",
   },
   {
+    q: "What is Avior's return policy?",
+    a: "Returns happen on the spot: inspect your furniture while our delivery team is still there and let them know before they leave if you'd like to return it, free of any return fee. Once the team has left, the order is final and can't be returned for a refund. This is separate from the 2-year warranty above, which still covers defects found later as a repair or replacement, not a refund. See our full return policy for details.",
+  },
+  {
     q: "Is Avior furniture suitable for Singapore BTOs, HDBs, and compact spaces?",
     a: "Yes, our range is designed with Singapore homes in mind. Pieces are sized for typical BTO and HDB room layouts, with dimensions that clear standard doorframes. Many items are available in compact variants suited for 3-room and 4-room flats. We also carry loft beds and multi-function pieces that work well in smaller bedrooms. If you're furnishing a new BTO and want to plan the whole space, our team can advise on what combinations work best together.",
   },

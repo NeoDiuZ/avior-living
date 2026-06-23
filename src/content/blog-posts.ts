@@ -74,13 +74,13 @@ export const blogPosts: BlogPost[] = [
           ["Assembly", "Free, included on every order", "10-20% of product retail price, or $35 call-out fee for a separate trip", "Not publicly specified for furniture", "Free on most products; fee stated per item if not included", "Availability varies by product"],
           ["No-lift / upper-floor delivery", "Included, no surcharge per Avior's published delivery terms", "+$20 if no lift access from the 3rd floor up", "Not publicly specified", "First non-lift floor free, then $10 per item per floor after that", "Not publicly specified"],
           ["Warranty", "2 years on manufacturing defects, hardware, and surface issues", "Varies by product, per individual guarantee documents", "Not publicly specified for furniture", "Up to 10 years on manufacturing defects (select mattresses up to 20 years)", "Varies by product category"],
-          ["Returns", "Policy in progress, contact WhatsApp for current terms", "365 days with proof of purchase, unassembled, original packaging", "Not publicly specified for furniture", "100 days; refund excludes delivery and assembly fees already paid", "30 days, 20% restocking fee deducted from refund"],
+          ["Returns", "On the spot, before our delivery team leaves; final after that", "365 days with proof of purchase, unassembled, original packaging", "Not publicly specified for furniture", "100 days; refund excludes delivery and assembly fees already paid", "30 days, 20% restocking fee deducted from refund"],
           ["Support channel", "WhatsApp, response within 1 business day", "Phone and online contact form", "In-store or email", "Help centre and email", "Email (help.sg@castlery.com)"],
         ],
       },
       {
         type: "callout",
-        text: "Avior's written return policy is being finalized and will be published here once live. Until then, message us on WhatsApp before ordering if return terms are a deciding factor for you.",
+        text: "Avior's return window is short by design: inspect your furniture while the delivery team is still there and flag any issue before they leave. Read the full return policy for details. It's the trade-off for a flat, no-surcharge price.",
       },
       {
         type: "h2",
@@ -135,7 +135,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         q: "Does Avior have a return policy?",
-        a: "Avior's written return policy is still being finalized. If return terms matter to your decision, message Avior on WhatsApp before ordering to confirm current terms.",
+        a: "Yes. Avior's return window is on the spot: inspect your furniture while the delivery team is still there and let them know before they leave if you want to return it, with no return fee. Once the team has left, the order is final.",
       },
     ],
     sources: [
@@ -199,14 +199,14 @@ export const blogPosts: BlogPost[] = [
         rows: [
           ["Delivery (in-stock)", "5-10 business days", "2-4 weeks"],
           ["Delivery, assembly, disposal", "All included free", "Delivery fees vary by order; assembly availability varies by product"],
-          ["Return window", "Contact via WhatsApp for current policy", "30 days, 20% restocking fee deducted from refund"],
+          ["Return window", "On the spot, before our delivery team leaves; final after that", "30 days, 20% restocking fee deducted from refund"],
           ["Warranty", "2 years on manufacturing defects, hardware, and surface issues", "Varies by product category, per Castlery's published warranty page"],
           ["Support channel", "WhatsApp, response within 1 business day", "Email (help.sg@castlery.com)"],
         ],
       },
       {
         type: "callout",
-        text: "Avior's return policy is being finalized and will be published here once live. Until then, reach out on WhatsApp before ordering if return terms are a deciding factor.",
+        text: "Avior's return window closes when the delivery team leaves, so inspect your furniture and raise any issue on the spot. Castlery's 30-day window is longer but carries a 20% restocking fee. Read the full return policy for details.",
       },
       {
         type: "h2",
