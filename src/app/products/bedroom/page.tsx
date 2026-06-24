@@ -6,6 +6,9 @@ import { buildBreadcrumbJsonLd } from "@/lib/seo/jsonld";
 export const metadata: Metadata = {
   title: "Bedroom Furniture",
   description: "Factory-direct beds, wardrobes, mattresses, bedside tables and more. Free white-glove delivery, assembly and disposal across Singapore.",
+  alternates: {
+    canonical: "/products/bedroom",
+  },
 };
 
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([

@@ -6,6 +6,9 @@ import { buildBreadcrumbJsonLd } from "@/lib/seo/jsonld";
 export const metadata: Metadata = {
   title: "Living Room Furniture",
   description: "Factory-direct sofas, TV consoles, coffee tables, shoe cabinets and more. Free white-glove delivery, assembly and disposal across Singapore.",
+  alternates: {
+    canonical: "/products/living-room",
+  },
 };
 
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([

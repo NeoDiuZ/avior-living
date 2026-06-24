@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Avior Living | Save 40% Off Retail Furniture in Singapore",
   description:
     "Factory-direct furniture for Singapore homes. Save up to 40% off retail. Free white-glove delivery, assembly, and packaging disposal.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Avior Living | Factory-Direct Furniture, Singapore",
     description:

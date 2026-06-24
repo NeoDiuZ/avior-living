@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: "Shop Furniture — Avior Living",
   description:
     "Browse factory-direct furniture by room. Free white-glove delivery, assembly and disposal across Singapore.",
+  alternates: {
+    canonical: "/products",
+  },
 };
 
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
