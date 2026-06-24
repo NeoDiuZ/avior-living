@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     await client.messages.create({
       from: `whatsapp:${process.env.TWILIO_WHATSAPP_FROM}`,
       to: `whatsapp:+65${phone}`,
-      contentSid: "HX717514a716fdd0c586f3896a32ac0545",
+      contentSid: "HX097ec887d29a256089bad837d717ca31",
       contentVariables: JSON.stringify({ "1": name.trim() }),
     });
   } catch (err) {
