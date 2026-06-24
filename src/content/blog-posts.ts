@@ -37,6 +37,109 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+    slug: "best-affordable-furniture-singapore-checklist-warranty-delivery-returns",
+    title: "Best Affordable Furniture in Singapore: What to Check Before You Buy (Warranty, Delivery, Returns)",
+    dek: "Cheap furniture in Singapore stops being cheap the moment delivery, assembly, and a missing warranty get added on. Here's what actually decides whether a low price holds up.",
+    description:
+      "A practical checklist for finding affordable furniture in Singapore with free delivery, free assembly, a real warranty, and a clear return policy, with real numbers from Avior Living, IKEA, Muji, FortyTwo, and Castlery.",
+    category: "Buying Guides",
+    datePublished: "2026-06-24",
+    authorName: "Avior Living Team",
+    authorRole: "Avior Living Editorial",
+    readTime: "8 min read",
+    coverImage: "/images/inspiration-dining.jpg",
+    coverImageAlt: "An affordable, well-furnished dining space in a Singapore home",
+    blocks: [
+      {
+        type: "p",
+        text: "The cheapest furniture in Singapore on paper is rarely the cheapest in practice. A low sticker price can still cost more once delivery, assembly, and a lift-access surcharge are added at checkout, and it costs even more if there's no warranty when something breaks or no real way to return it. Affordable furniture that actually stays affordable comes down to four things: delivery cost, assembly cost, warranty coverage, and return terms. Here's how to check each one before you buy, and how Avior Living and four other Singapore options compare.",
+      },
+      {
+        type: "h2",
+        text: "Affordable furniture with free delivery and assembly in Singapore",
+      },
+      {
+        type: "p",
+        text: "Delivery and assembly fees are where a cheap price tag quietly grows. IKEA charges 10-20% of the product's retail price for assembly and $35 for home delivery, plus $20 more if there's no lift access from the 3rd floor up. FortyTwo's delivery runs $9.90-$35 depending on the cart, with a $30 surcharge for certain locations and $10 per floor for non-lift access beyond the first. Muji's furniture delivery is charged below a $250 basket. Avior includes delivery, assembly, and packaging disposal free on every order, including upper floors with no lift access, so the price shown is the price paid.",
+      },
+      {
+        type: "h2",
+        text: "Affordable furniture with a real warranty in Singapore",
+      },
+      {
+        type: "p",
+        text: "A low price with no warranty is a bet that nothing goes wrong. Check what's actually covered and for how long: Avior covers manufacturing defects, hardware failure, and surface issues for 2 years. FortyTwo publishes up to 10 years on manufacturing defects (select mattresses up to 20 years, via the manufacturer). IKEA's warranty varies by individual product guarantee document. Muji doesn't publicly specify a furniture warranty. Castlery's warranty also varies by product category. \"Warranty included\" means little without a stated duration and what it actually covers, so look for both before comparing price.",
+      },
+      {
+        type: "h2",
+        text: "Affordable furniture with a clear return policy in Singapore",
+      },
+      {
+        type: "table",
+        headers: ["", "Avior Living", "IKEA (SG)", "FortyTwo (SG)", "Castlery (SG)"],
+        rows: [
+          ["Return window", "On the spot, before delivery team leaves", "365 days, unassembled, original packaging", "100 days; refund excludes delivery/assembly fees paid", "30 days, 20% restocking fee deducted"],
+          ["Return fee", "None", "None", "None (fees already paid are non-refundable)", "20% restocking fee"],
+          ["Warranty length", "2 years", "Varies by product", "Up to 10 years", "Varies by product"],
+        ],
+      },
+      {
+        type: "callout",
+        text: "A short return window with no fee and a long return window with a 20% restocking fee solve different problems. If you're confident in the piece after seeing it delivered and assembled, the short, free window costs nothing. If you want time to live with it first, a longer window matters more than the fee attached to it.",
+      },
+      {
+        type: "h2",
+        text: "Why \"affordable\" doesn't have to mean lower quality",
+      },
+      {
+        type: "p",
+        text: "Furniture in Singapore typically passes through a factory, a distributor, a retailer, and a showroom before it reaches a buyer, and each layer adds its own markup to cover staff, rent, and logistics. A showroom alone is one of the largest fixed costs a furniture retailer carries. Avior sources directly from the same factories that supply established Singapore brands and skips the distributor and showroom layers, which is reflected in pricing roughly 40% below typical retail without changing the material or build of the furniture itself.",
+      },
+      {
+        type: "quote",
+        text: "Affordable and cheap aren't the same thing. Affordable furniture still has a warranty and a way to return it. Cheap furniture is a gamble with no safety net.",
+      },
+      {
+        type: "h2",
+        text: "A quick checklist before you buy",
+      },
+      {
+        type: "list",
+        items: [
+          "Does the listed price include delivery and assembly, or are they added at checkout?",
+          "Is there a lift-access or upper-floor surcharge buried in the delivery terms?",
+          "What's the warranty length, and does it cover hardware and surface defects, not just structural failure?",
+          "What's the return window, and is there a restocking fee if you use it?",
+          "Is support reachable through a channel you'll actually use, like WhatsApp, with a stated response time?",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "What is the best affordable furniture option in Singapore?",
+        a: "It depends on what you're optimising for. For the lowest total cost with delivery, assembly, and disposal included in the price, Avior Living's model is built around that. For the longest return window, IKEA's 365 days is the most generous. For the longest warranty, FortyTwo publishes up to 10 years on manufacturing defects.",
+      },
+      {
+        q: "Is cheap furniture in Singapore worth buying without a warranty?",
+        a: "Not recommended for anything load-bearing or mechanical, like sofas, bed frames, or items with moving hardware. A 2-year warranty (Avior) or a published multi-year warranty (FortyTwo) gives you recourse if a defect shows up after delivery; furniture with no stated warranty leaves that risk entirely on the buyer.",
+      },
+      {
+        q: "Does free delivery furniture in Singapore really have no hidden fees?",
+        a: "Check the lift-access and floor-surcharge terms specifically, since that's where \"free delivery\" most often gets an asterisk. IKEA adds $20 for no lift access from the 3rd floor, and FortyTwo charges $10 per item per floor after the first non-lift floor. Avior's free delivery includes upper floors with no lift access at no extra charge.",
+      },
+    ],
+    sources: [
+      { label: "IKEA Singapore - Delivery Services", url: "https://www.ikea.com/sg/en/customer-service/services/delivery/" },
+      { label: "IKEA Singapore - Assembly Service", url: "https://www.ikea.com/sg/en/customer-service/services/assembly/" },
+      { label: "IKEA Singapore - 365 Day Return Policy", url: "https://www.ikea.com/sg/en/customer-service/returns-claims/return-policy/" },
+      { label: "Muji Singapore - Delivery Charge", url: "https://www.muji.com/sg/blog/topics/delivery-charge/" },
+      { label: "FortyTwo Help Centre - Delivery Fee", url: "https://support.fortytwo.sg/hc/en-us/articles/201882229-How-much-is-the-Delivery-Fee" },
+      { label: "FortyTwo Help Centre - Return and Refund Policy", url: "https://support.fortytwo.sg/hc/en-us/articles/202731345-What-is-your-Return-and-Refund-Policy" },
+      { label: "FortyTwo - New and Improved Warranty", url: "https://www.fortytwo.sg/new-and-improved-warranty" },
+      { label: "Castlery Singapore - Sales and Refunds", url: "https://www.castlery.com/sg/sales-and-refunds" },
+    ],
+  },
+  {
     slug: "avior-vs-ikea-muji-fortytwo-castlery-singapore-furniture-compared",
     title: "Avior Living vs IKEA, Muji, FortyTwo, and Castlery: The Real Cost of Furnishing a Singapore Home",
     dek: "The sticker price is only part of the bill. Delivery fees, assembly fees, lift surcharges, and return terms decide what you actually pay, and what happens if something goes wrong.",
