@@ -38,7 +38,7 @@ export function HomeContent() {
           href="#opening-sale"
           className="flex h-12 flex-1 items-center justify-center rounded-xl bg-primary text-sm font-semibold text-primary-foreground transition active:scale-[0.98]"
         >
-          Shop Opening Sale
+          Shop National Day Sale
         </a>
         <a
           href="https://wa.me/6588414701"

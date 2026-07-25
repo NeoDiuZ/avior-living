@@ -115,7 +115,7 @@ const ROOM_BASE_QUERIES: Record<string, string> = {
 // ── Room nav cards ────────────────────────────────────────────────────────────
 
 const ROOM_CARDS = [
-  { label: "Opening Sale", href: "/products/opening-sale", image: "/images/hero-living-room.jpg",    sub: "Ends 31 Jul" },
+  { label: "National Day Sale", href: "/products/opening-sale", image: "/images/hero-living-room.jpg",    sub: "Ends 9 Aug" },
   { label: "Living Room",  href: "/products/living-room",  image: "/images/inspiration-living.jpg",  sub: "120+ pieces" },
   { label: "Bedroom",      href: "/products/bedroom",      image: "/images/inspiration-bedroom.jpg", sub: "80+ pieces" },
   { label: "Dining Room",  href: "/products/dining-room",  image: "/images/inspiration-dining.jpg",  sub: "60+ pieces" },
@@ -129,7 +129,7 @@ const OPENING_SALE_ROOM_FILTERS = [
 ];
 
 const PAGE_META: Record<string, { title: string; description: string }> = {
-  "opening-sale": { title: "Opening Sale", description: "Curated pieces at $219. Up to 40% below retail. Ends 31 Jul." },
+  "opening-sale": { title: "Opening × National Day Sale", description: "Curated pieces at $219. Up to 40% below retail. Ends 9 Aug." },
   "living-room":  { title: "Living Room",  description: "Sofas, TV consoles, coffee tables and more." },
   bedroom:        { title: "Bedroom",       description: "Beds, wardrobes, mattresses and storage." },
   "dining-room":  { title: "Dining Room",   description: "Dining tables, chairs and sets." },
@@ -339,7 +339,7 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
             </Breadcrumb>
             {isOpeningSale && (
               <span className="inline-flex items-center rounded-full bg-accent/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
-                Ends 31 Jul
+                Ends 9 Aug
               </span>
             )}
             <h1
@@ -505,7 +505,7 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
                 <ProductCard
                   key={p.node.id}
                   product={p}
-                  badge={isOpeningSale ? "Opening Sale" : undefined}
+                  badge={isOpeningSale ? "National Day Sale" : undefined}
                   openingSalePrice={isOpeningSale ? OPENING_SALE_PRICE : undefined}
                 />
               ))}

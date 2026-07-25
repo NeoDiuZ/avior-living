@@ -65,7 +65,7 @@ export function CouponModal() {
       <DialogContent className="max-w-md overflow-hidden border-0 p-0 [&>button]:hidden">
         <div className="bg-primary px-8 py-9 text-primary-foreground">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-accent">
-            Opening Sale
+            Opening × National Day Sale
           </p>
           <h2 className="mt-2 font-display text-3xl font-bold tracking-tight">
             Get Free Express Delivery

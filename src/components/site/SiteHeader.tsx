@@ -21,7 +21,7 @@ export function SiteHeader() {
 
         <nav className="hidden items-center gap-7 text-sm font-medium text-foreground/80 md:flex">
           <Link href="/products/opening-sale" className="hover:text-accent">
-            Opening Sale
+            National Day Sale
           </Link>
 
           {/* Shop dropdown */}

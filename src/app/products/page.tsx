@@ -109,14 +109,14 @@ export default function ProductsPage() {
               >
                 <img
                   src="/images/hero-living-room.jpg"
-                  alt="Opening Sale"
+                  alt="Opening × National Day Sale"
                   loading="eager"
                   className="h-[420px] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 md:h-[480px]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
                 <div className="absolute inset-0 flex flex-col justify-between p-8 md:p-10">
                   <span className="inline-flex w-fit items-center rounded-full border border-cream/30 bg-cream/10 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-cream backdrop-blur-sm">
-                    Ends 31 Jul
+                    Ends 9 Aug
                   </span>
                   <div>
                     <p
@@ -126,7 +126,7 @@ export default function ProductsPage() {
                       $219
                     </p>
                     <p className="mt-1 font-display text-2xl font-semibold text-cream/70 md:text-3xl">
-                      Opening Sale
+                      Opening × National Day Sale
                     </p>
                     <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-cream/50 transition-all duration-300 group-hover:gap-3 group-hover:text-cream/90">
                       Shop all discounted pieces

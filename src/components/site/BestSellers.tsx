@@ -42,14 +42,14 @@ export function BestSellers() {
           <div>
             <div className="flex flex-wrap items-center gap-3">
               <h2 className="font-display text-4xl leading-[1] tracking-tight sm:text-5xl md:text-6xl">
-                <span className="text-accent">$219</span> Opening Sale
+                <span className="text-accent">$219</span> Opening × National Day Sale
               </h2>
               <span className="rounded-full bg-accent/10 px-3 py-1 text-sm font-semibold text-accent">
-                Ends 31 Jul
+                Ends 9 Aug
               </span>
             </div>
             <p className="mt-3 text-base text-foreground/65 sm:text-lg">
-              Up to 40% off retail. Ends 31 Jul.
+              Up to 40% off retail. Ends 9 Aug.
             </p>
           </div>
           <a
@@ -83,7 +83,7 @@ export function BestSellers() {
                 <ProductCard
                   key={p.node.id}
                   product={p}
-                  badge="Opening Sale"
+                  badge="National Day Sale"
                   openingSalePrice={OPENING_SALE_PRICE}
                 />
               ))}
@@ -98,7 +98,7 @@ export function BestSellers() {
             variant="outline"
             className="h-14 border-foreground/20 px-10 text-base font-semibold hover:bg-secondary"
           >
-            <a href="/products/opening-sale">Shop All Opening Sale Items</a>
+            <a href="/products/opening-sale">Shop All National Day Sale Items</a>
           </Button>
         </div>
       </div>

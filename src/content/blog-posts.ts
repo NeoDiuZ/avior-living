@@ -207,7 +207,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "p",
-        text: "Avior's opening sale prices a flat $219 across multiple categories, ending 31 July 2026. The number on the page is the number you pay: delivery, assembly, and packaging disposal are already included, so there's no surcharge added at checkout the way there can be with a lift-access fee or a delivery-distance charge elsewhere. That bundle, free delivery, free assembly, free disposal, a 2-year warranty, and WhatsApp support with a 1-business-day response, is what Avior calls the Avior Assurance: the cost of using the product is covered, even if the upfront sticker price is lower than competitors who charge several of those items separately.",
+        text: "Avior's Opening × National Day Sale prices a flat $219 across multiple categories, ending 9 August 2026. The number on the page is the number you pay: delivery, assembly, and packaging disposal are already included, so there's no surcharge added at checkout the way there can be with a lift-access fee or a delivery-distance charge elsewhere. That bundle, free delivery, free assembly, free disposal, a 2-year warranty, and WhatsApp support with a 1-business-day response, is what Avior calls the Avior Assurance: the cost of using the product is covered, even if the upfront sticker price is lower than competitors who charge several of those items separately.",
       },
       {
         type: "h2",

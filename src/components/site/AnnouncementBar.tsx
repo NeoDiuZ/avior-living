@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
-const SALE_END = new Date("2026-07-31T23:59:59+08:00");
+const SALE_END = new Date("2026-08-09T23:59:59+08:00");
 
 function useCountdown(target: Date) {
   const [ms, setMs] = useState(() => Math.max(0, target.getTime() - Date.now()));
@@ -35,7 +35,7 @@ export function AnnouncementBar() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-foreground opacity-75" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent-foreground" />
           </span>
-          Opening Sale
+          National Day Sale
         </span>
 
         {/* Offer copy */}

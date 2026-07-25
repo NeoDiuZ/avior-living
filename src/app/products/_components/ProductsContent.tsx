@@ -19,7 +19,7 @@ const PAGE_SIZE = 24;
 const OPENING_SALE_PRICE = 219;
 
 const CATEGORIES: Array<{ label: string; query: string | null; collection?: string }> = [
-  { label: "Opening Sale",      query: null, collection: OPENING_SALE_COLLECTION_HANDLE },
+  { label: "National Day Sale", query: null, collection: OPENING_SALE_COLLECTION_HANDLE },
   { label: "All",               query: null },
   { label: "Sofas",             query: 'product_type:"Fabric Sofa" OR product_type:"Leather Sofa" OR product_type:"Faux Leather Sofa" OR product_type:"Wooden Sofa" OR product_type:"Sofa Bed" OR product_type:"Recliner" OR product_type:"Armchair"' },
   { label: "Coffee Tables",     query: 'product_type:"Coffee Table"' },
@@ -184,7 +184,7 @@ export function ProductsContent() {
                 <ProductCard
                   key={p.node.id}
                   product={p}
-                  badge={CATEGORIES[activeCategory].collection ? "Opening Sale" : undefined}
+                  badge={CATEGORIES[activeCategory].collection ? "National Day Sale" : undefined}
                   openingSalePrice={CATEGORIES[activeCategory].collection ? OPENING_SALE_PRICE : undefined}
                 />
               ))}

@@ -4,7 +4,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { buildBreadcrumbJsonLd } from "@/lib/seo/jsonld";
 
 export const metadata: Metadata = {
-  title: "Opening Sale — $219 Furniture",
+  title: "Opening × National Day Sale — $219 Furniture",
   description: "Curated furniture pieces at $219. Up to 40% below retail with free white-glove delivery, assembly and disposal across Singapore.",
   alternates: {
     canonical: "/products/opening-sale",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   { name: "Home", url: "/" },
   { name: "Products", url: "/products" },
-  { name: "Opening Sale", url: "/products/opening-sale" },
+  { name: "Opening × National Day Sale", url: "/products/opening-sale" },
 ]);
 
 export default function OpeningSalePage() {
