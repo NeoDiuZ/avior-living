@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Footer } from "@/components/site/Footer";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
+import { ProductSearchBar } from "@/components/site/ProductSearchBar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -94,6 +95,7 @@ export default function ProductsPage() {
               <br />
               <span className="text-accent">Singapore homes.</span>
             </h1>
+            <ProductSearchBar className="mt-7 max-w-md" />
           </div>
         </div>
 

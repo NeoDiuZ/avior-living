@@ -72,15 +72,19 @@ export function ProductCard({ product, badge, openingSalePrice }: Props) {
             </div>
           )}
         </div>
-        {badge && (
-          <span className="absolute left-3 top-3 rounded-full bg-accent px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-accent-foreground">
-            {badge}
-          </span>
-        )}
-        {hasSavings && (
-          <span className="absolute right-3 top-3 rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground">
-            -{savingPercent}%
-          </span>
+        {(badge || hasSavings) && (
+          <div className="absolute inset-x-3 top-3 flex items-start gap-1.5">
+            {badge && (
+              <span className="min-w-0 flex-1 truncate rounded-full bg-accent px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-accent-foreground">
+                {badge}
+              </span>
+            )}
+            {hasSavings && (
+              <span className="ml-auto shrink-0 rounded-full bg-primary px-2.5 py-1 text-[11px] font-bold text-primary-foreground">
+                -{savingPercent}%
+              </span>
+            )}
+          </div>
         )}
         {isAvailable ? (
           <button
