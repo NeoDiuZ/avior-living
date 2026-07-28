@@ -16,6 +16,7 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { Footer } from "@/components/site/Footer";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { ProductCard } from "@/components/site/ProductCard";
+import { ProductSearchBar } from "@/components/site/ProductSearchBar";
 import {
   storefrontApiRequest,
   PAGINATED_PRODUCTS_QUERY,
@@ -349,6 +350,7 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
               {meta.title}
             </h1>
             <p className="mt-3 text-base text-foreground/55">{meta.description}</p>
+            <ProductSearchBar className="mt-6 max-w-md" />
           </div>
         </div>
 
