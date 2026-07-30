@@ -1,4 +1,4 @@
-import { SITE_URL, BUSINESS_LEGAL_NAME, BUSINESS_UEN, RETURN_POLICY_URL } from "@/lib/seo/config";
+import { SITE_URL, BUSINESS_LEGAL_NAME, BUSINESS_UEN, RETURN_POLICY_URL, SOCIAL_LINKS } from "@/lib/seo/config";
 
 function absoluteUrl(path: string): string {
   return new URL(path, SITE_URL).toString();
@@ -12,6 +12,7 @@ export function buildOrganizationJsonLd() {
     legalName: BUSINESS_LEGAL_NAME,
     url: SITE_URL,
     logo: absoluteUrl("/images/avior logo.png"),
+    sameAs: [SOCIAL_LINKS.tiktok, SOCIAL_LINKS.instagram],
     ...(BUSINESS_UEN ? { taxID: BUSINESS_UEN } : {}),
     ...(RETURN_POLICY_URL
       ? {

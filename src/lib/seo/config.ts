@@ -9,3 +9,8 @@ export const WHATSAPP_CONTACT = "https://wa.me/6588414701";
 export const BUSINESS_UEN: string | undefined = "202625239N";
 
 export const RETURN_POLICY_URL: string | undefined = "/returns";
+
+export const SOCIAL_LINKS = {
+  tiktok: "https://www.tiktok.com/@aviorliving",
+  instagram: "https://www.instagram.com/aviorliving",
+} as const;
