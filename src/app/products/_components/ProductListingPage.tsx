@@ -2,8 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { Loader2, SlidersHorizontal, X, Check } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Loader2, X } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,6 +16,9 @@ import { Footer } from "@/components/site/Footer";
 import { AnnouncementBar } from "@/components/site/AnnouncementBar";
 import { ProductCard } from "@/components/site/ProductCard";
 import { ProductSearchBar } from "@/components/site/ProductSearchBar";
+import { RoomFilterPills, FilterSortButton } from "./FilterBar";
+import { FilterSortDrawer } from "./FilterSortDrawer";
+import { SORT_OPTIONS, PRICE_RANGES, buildPriceQuery, filterAndSortProducts } from "./filters";
 import {
   storefrontApiRequest,
   PAGINATED_PRODUCTS_QUERY,
@@ -28,48 +30,6 @@ import { useCartSync } from "@/hooks/useCartSync";
 
 const OPENING_SALE_PRICE = 219;
 const PAGE_SIZE = 24;
-
-// ── Sort options ──────────────────────────────────────────────────────────────
-
-const SORT_OPTIONS = [
-  { label: "Featured",            sortKey: "RELEVANCE",   reverse: false },
-  { label: "Price: Low to High",  sortKey: "PRICE",       reverse: false },
-  { label: "Price: High to Low",  sortKey: "PRICE",       reverse: true  },
-  { label: "Newest",              sortKey: "CREATED_AT",  reverse: true  },
-];
-
-// ── Price range presets ───────────────────────────────────────────────────────
-
-const PRICE_RANGES = [
-  { label: "Any price",     min: null as number | null, max: null as number | null },
-  { label: "Under $200",    min: null,  max: 200  },
-  { label: "$200 – $500",   min: 200,   max: 500  },
-  { label: "$500 – $1,000", min: 500,   max: 1000 },
-  { label: "Over $1,000",   min: 1000,  max: null },
-];
-
-// ── Product type → room mapping (Opening Sale client-side filter) ─────────────
-
-const LIVING_ROOM_TYPES = new Set([
-  "Fabric Sofa","Leather Sofa","Faux Leather Sofa","Wooden Sofa","Sofa Bed","Recliner","Armchair",
-  "TV Console","Coffee Table","Shoe Cabinet","Side Table",
-  "Storage Cabinet","Bookshelf","Chest of Drawer",
-  "Pillows","Baby Pillows","Bolster",
-]);
-const BEDROOM_TYPES = new Set([
-  "Bed","Wooden Bed Frame","Storage Bed","Drawer Bed","Loft Bed","Bedroom Set",
-  "Modular Wardrobe","Open Door Wardrobe","Sliding Door Wardrobe",
-  "Bed Side Table","Bedside Table","Study Table","Dressing Table",
-  "Mattress","Foldable Mattress","Office Chair",
-]);
-const DINING_ROOM_TYPES = new Set([
-  "Dining Table","Dining Chair","Dining Set","Buffet Table",
-]);
-const ROOM_TYPE_SETS: Record<string, Set<string>> = {
-  "living-room": LIVING_ROOM_TYPES,
-  bedroom: BEDROOM_TYPES,
-  "dining-room": DINING_ROOM_TYPES,
-};
 
 // ── Sub-filter configs ────────────────────────────────────────────────────────
 
@@ -122,30 +82,12 @@ const ROOM_CARDS = [
   { label: "Dining Room",  href: "/products/dining-room",  image: "/images/inspiration-dining.jpg",  sub: "60+ pieces" },
 ];
 
-const OPENING_SALE_ROOM_FILTERS = [
-  { label: "All Rooms",    key: null as string | null },
-  { label: "Living Room",  key: "living-room" },
-  { label: "Bedroom",      key: "bedroom" },
-  { label: "Dining Room",  key: "dining-room" },
-];
-
 const PAGE_META: Record<string, { title: string; description: string }> = {
   "opening-sale": { title: "Opening × National Day Sale", description: "Curated pieces at $219. Up to 40% below retail. Ends 9 Aug." },
   "living-room":  { title: "Living Room",  description: "Sofas, TV consoles, coffee tables and more." },
   bedroom:        { title: "Bedroom",       description: "Beds, wardrobes, mattresses and storage." },
   "dining-room":  { title: "Dining Room",   description: "Dining tables, chairs and sets." },
 };
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function buildPriceQuery(base: string | null, priceIdx: number): string | null {
-  const range = PRICE_RANGES[priceIdx];
-  const parts: string[] = [];
-  if (base) parts.push(`(${base})`);
-  if (range.min !== null) parts.push(`variants.price:>=${range.min}`);
-  if (range.max !== null) parts.push(`variants.price:<=${range.max}`);
-  return parts.length ? parts.join(" AND ") : null;
-}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -207,39 +149,7 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
   // Client-side filter + sort for Opening Sale
   const openingSaleFiltered = useMemo(() => {
     if (!allSaleProducts) return [];
-    let items = allSaleProducts;
-
-    // Room filter
-    if (activeRoomFilter) {
-      const types = ROOM_TYPE_SETS[activeRoomFilter];
-      items = items.filter((p) => types?.has(p.node.productType ?? ""));
-    }
-
-    // Price filter
-    const range = PRICE_RANGES[priceRangeIndex];
-    if (range.min !== null || range.max !== null) {
-      items = items.filter((p) => {
-        const price = parseFloat(p.node.priceRange.minVariantPrice.amount);
-        if (range.min !== null && price < range.min) return false;
-        if (range.max !== null && price > range.max) return false;
-        return true;
-      });
-    }
-
-    // Sort
-    const sort = SORT_OPTIONS[sortIndex];
-    if (sort.sortKey === "PRICE") {
-      items = [...items].sort((a, b) => {
-        const pa = parseFloat(a.node.priceRange.minVariantPrice.amount);
-        const pb = parseFloat(b.node.priceRange.minVariantPrice.amount);
-        return sort.reverse ? pb - pa : pa - pb;
-      });
-    } else if (sort.sortKey === "CREATED_AT") {
-      // Collection is already in created order; reverse for newest
-      items = sort.reverse ? [...items].reverse() : items;
-    }
-
-    return items;
+    return filterAndSortProducts(allSaleProducts, { roomFilter: activeRoomFilter, priceRangeIndex, sortIndex });
   }, [allSaleProducts, activeRoomFilter, priceRangeIndex, sortIndex]);
 
   // ── Room pages: paginated fetch ───────────────────────────────────────────────
@@ -350,7 +260,6 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
               {meta.title}
             </h1>
             <p className="mt-3 text-base text-foreground/55">{meta.description}</p>
-            <ProductSearchBar className="mt-6 max-w-md" />
           </div>
         </div>
 
@@ -390,60 +299,36 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
 
         {/* Filters bar */}
         <div className="container-page py-5">
-          <div className="flex items-center gap-3">
-            {/* Sub-filter pills */}
-            <div className="flex flex-1 gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
-              {isOpeningSale
-                ? OPENING_SALE_ROOM_FILTERS.map((f) => (
-                    <button
-                      key={f.label}
-                      onClick={() => setActiveRoomFilter(f.key)}
-                      className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
-                        activeRoomFilter === f.key
-                          ? "border-accent bg-accent text-accent-foreground"
-                          : "border-border bg-background text-foreground/70 hover:border-foreground/30 hover:text-foreground"
-                      }`}
-                    >
-                      {f.label}
-                    </button>
-                  ))
-                : subFilters.map((f, i) => (
-                    <button
-                      key={f.label}
-                      onClick={() => {
-                        if (i === activeSubFilter) return;
-                        setActiveSubFilter(i);
-                        setProducts([]);
-                        setCursor(null);
-                      }}
-                      className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
-                        activeSubFilter === i
-                          ? "border-accent bg-accent text-accent-foreground"
-                          : "border-border bg-background text-foreground/70 hover:border-foreground/30 hover:text-foreground"
-                      }`}
-                    >
-                      {f.label}
-                    </button>
-                  ))}
-            </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <ProductSearchBar className="w-full sm:w-64 sm:shrink-0" />
 
-            {/* Filter button */}
-            <button
-              onClick={openDrawer}
-              className={`relative shrink-0 inline-flex h-9 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors ${
-                activeFilterCount > 0
-                  ? "border-accent bg-accent text-accent-foreground"
-                  : "border-border bg-background text-foreground/70 hover:border-foreground/30 hover:text-foreground"
-              }`}
-            >
-              <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={2} />
-              Filter & Sort
-              {activeFilterCount > 0 && (
-                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-accent-foreground text-[10px] font-bold text-accent">
-                  {activeFilterCount}
-                </span>
-              )}
-            </button>
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              {/* Sub-filter pills */}
+              <div className="flex flex-1 gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
+                {isOpeningSale
+                  ? <RoomFilterPills active={activeRoomFilter} onChange={setActiveRoomFilter} />
+                  : subFilters.map((f, i) => (
+                      <button
+                        key={f.label}
+                        onClick={() => {
+                          if (i === activeSubFilter) return;
+                          setActiveSubFilter(i);
+                          setProducts([]);
+                          setCursor(null);
+                        }}
+                        className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+                          activeSubFilter === i
+                            ? "border-accent bg-accent text-accent-foreground"
+                            : "border-border bg-background text-foreground/70 hover:border-foreground/30 hover:text-foreground"
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+              </div>
+
+              <FilterSortButton activeCount={activeFilterCount} onClick={openDrawer} />
+            </div>
           </div>
 
           {/* Product count + active sort label */}
@@ -533,78 +418,16 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
       </main>
       <Footer />
 
-      {/* Filter & Sort drawer */}
-      <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <SheetContent side="right" className="flex w-full flex-col sm:max-w-sm">
-          <SheetHeader className="border-b border-border pb-4">
-            <SheetTitle className="text-left font-display text-lg">Filter & Sort</SheetTitle>
-          </SheetHeader>
-
-          <div className="flex-1 overflow-y-auto py-6 space-y-8">
-            {/* Sort */}
-            <div>
-              <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                Sort by
-              </p>
-              <div className="space-y-1">
-                {SORT_OPTIONS.map((opt, i) => (
-                  <button
-                    key={opt.label}
-                    onClick={() => setPendingSort(i)}
-                    className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
-                      pendingSort === i
-                        ? "bg-accent/10 text-accent"
-                        : "hover:bg-secondary text-foreground/70 hover:text-foreground"
-                    }`}
-                  >
-                    {opt.label}
-                    {pendingSort === i && <Check className="h-4 w-4" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Price range */}
-            <div>
-              <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                Price
-              </p>
-              <div className="space-y-1">
-                {PRICE_RANGES.map((range, i) => (
-                  <button
-                    key={range.label}
-                    onClick={() => setPendingPrice(i)}
-                    className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
-                      pendingPrice === i
-                        ? "bg-accent/10 text-accent"
-                        : "hover:bg-secondary text-foreground/70 hover:text-foreground"
-                    }`}
-                  >
-                    {range.label}
-                    {pendingPrice === i && <Check className="h-4 w-4" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Drawer footer */}
-          <div className="border-t border-border pt-4 flex gap-3">
-            <button
-              onClick={clearFilters}
-              className="flex-1 h-11 rounded-xl border border-border text-sm font-semibold text-foreground/70 transition hover:bg-secondary"
-            >
-              Clear all
-            </button>
-            <button
-              onClick={applyFilters}
-              className="flex-1 h-11 rounded-xl bg-primary text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
-            >
-              Show results
-            </button>
-          </div>
-        </SheetContent>
-      </Sheet>
+      <FilterSortDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        pendingSort={pendingSort}
+        setPendingSort={setPendingSort}
+        pendingPrice={pendingPrice}
+        setPendingPrice={setPendingPrice}
+        onClear={clearFilters}
+        onApply={applyFilters}
+      />
     </div>
   );
 }
