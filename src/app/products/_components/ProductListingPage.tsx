@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef, useLayoutEffect } from "react";
 import Link from "next/link";
 import { Loader2, X } from "lucide-react";
 import {
@@ -27,6 +27,7 @@ import {
   type ShopifyProduct,
 } from "@/lib/shopify/client";
 import { useCartSync } from "@/hooks/useCartSync";
+import { getListCache, setListCache } from "@/lib/listStateCache";
 
 const OPENING_SALE_PRICE = 219;
 const PAGE_SIZE = 24;
@@ -93,6 +94,17 @@ const PAGE_META: Record<string, { title: string; description: string }> = {
 
 export type RoomKey = "opening-sale" | "living-room" | "bedroom" | "dining-room";
 
+interface CachedListState {
+  sortIndex: number;
+  priceRangeIndex: number;
+  allSaleProducts: ShopifyProduct[] | null;
+  activeRoomFilter: string | null;
+  products: ShopifyProduct[];
+  activeSubFilter: number;
+  cursor: string | null;
+  hasMore: boolean;
+}
+
 export function ProductListingPage({ room }: { room: RoomKey }) {
   useCartSync();
 
@@ -100,33 +112,42 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
   const meta = PAGE_META[room];
   const subFilters = SUB_FILTERS[room] ?? [];
 
+  const cacheKey = `product-listing:${room}`;
+  const cached = useRef(getListCache<CachedListState>(cacheKey)).current;
+
   // Filter / sort state
   const [drawerOpen, setDrawerOpen]         = useState(false);
-  const [sortIndex, setSortIndex]           = useState(0);
-  const [priceRangeIndex, setPriceRangeIndex] = useState(0);
+  const [sortIndex, setSortIndex]           = useState(cached?.data.sortIndex ?? 0);
+  const [priceRangeIndex, setPriceRangeIndex] = useState(cached?.data.priceRangeIndex ?? 0);
   // Pending state inside drawer (applied only on "Show results")
   const [pendingSort, setPendingSort]       = useState(0);
   const [pendingPrice, setPendingPrice]     = useState(0);
 
   // Opening Sale state
-  const [allSaleProducts, setAllSaleProducts] = useState<ShopifyProduct[] | null>(null);
-  const [activeRoomFilter, setActiveRoomFilter] = useState<string | null>(null);
+  const [allSaleProducts, setAllSaleProducts] = useState<ShopifyProduct[] | null>(cached?.data.allSaleProducts ?? null);
+  const [activeRoomFilter, setActiveRoomFilter] = useState<string | null>(cached?.data.activeRoomFilter ?? null);
 
   // Room page state
-  const [products, setProducts]     = useState<ShopifyProduct[]>([]);
-  const [activeSubFilter, setActiveSubFilter] = useState(0);
-  const [cursor, setCursor]         = useState<string | null>(null);
-  const [hasMore, setHasMore]       = useState(false);
+  const [products, setProducts]     = useState<ShopifyProduct[]>(cached?.data.products ?? []);
+  const [activeSubFilter, setActiveSubFilter] = useState(cached?.data.activeSubFilter ?? 0);
+  const [cursor, setCursor]         = useState<string | null>(cached?.data.cursor ?? null);
+  const [hasMore, setHasMore]       = useState(cached?.data.hasMore ?? false);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cached);
   const [error, setError]     = useState<string | null>(null);
+  const skipNextSaleFetch = useRef(!!cached?.data.allSaleProducts);
+  const skipNextRoomFetch = useRef(!isOpeningSale && !!cached);
 
   const activeFilterCount = (sortIndex > 0 ? 1 : 0) + (priceRangeIndex > 0 ? 1 : 0);
 
   // ── Opening Sale: fetch all once ─────────────────────────────────────────────
   useEffect(() => {
     if (!isOpeningSale) return;
+    if (skipNextSaleFetch.current) {
+      skipNextSaleFetch.current = false;
+      return;
+    }
     setLoading(true);
     setError(null);
     (async () => {
@@ -192,10 +213,46 @@ export function ProductListingPage({ room }: { room: RoomKey }) {
 
   useEffect(() => {
     if (isOpeningSale) return;
+    if (skipNextRoomFetch.current) {
+      skipNextRoomFetch.current = false;
+      return;
+    }
     setProducts([]);
     setCursor(null);
     fetchRoomProducts(activeSubFilter, null);
   }, [activeSubFilter, fetchRoomProducts, isOpeningSale]);
+
+  // Restore scroll position instantly when returning to a cached list (e.g.
+  // navigating back from a product page).
+  useLayoutEffect(() => {
+    if (cached) window.scrollTo(0, cached.scrollY);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persist list + filter state and scroll position when leaving this page
+  // (e.g. clicking into a product), so back-navigation can restore it instead
+  // of refetching from scratch and resetting scroll to the top. Next.js
+  // scrolls to top as soon as a navigation starts — before this component
+  // unmounts — so `window.scrollY` is already 0 by the time the unmount
+  // cleanup runs. Track the last real scroll position via a listener instead.
+  const scrollYRef = useRef(0);
+  useEffect(() => {
+    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const latest = useRef<CachedListState>({
+    sortIndex, priceRangeIndex, allSaleProducts, activeRoomFilter, products, activeSubFilter, cursor, hasMore,
+  });
+  latest.current = {
+    sortIndex, priceRangeIndex, allSaleProducts, activeRoomFilter, products, activeSubFilter, cursor, hasMore,
+  };
+  useEffect(() => {
+    return () => {
+      setListCache(cacheKey, latest.current, scrollYRef.current);
+    };
+  }, [cacheKey]);
 
   const displayProducts = isOpeningSale ? openingSaleFiltered : products;
 

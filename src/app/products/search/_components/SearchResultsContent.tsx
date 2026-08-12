@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Search, X } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -16,6 +16,7 @@ import {
   type ShopifyProduct,
 } from "@/lib/shopify/client";
 import { useCartSync } from "@/hooks/useCartSync";
+import { getListCache, setListCache } from "@/lib/listStateCache";
 
 const SEARCH_BATCH_SIZE = 100;
 const DEBOUNCE_MS = 400;
@@ -34,24 +35,35 @@ function buildSearchQuery(term: string): string {
     .join(" AND ");
 }
 
+interface CachedSearchState {
+  allResults: ShopifyProduct[];
+  sortIndex: number;
+  priceRangeIndex: number;
+  activeRoomFilter: string | null;
+}
+
 export function SearchResultsContent({ initialQuery }: { initialQuery: string }) {
   useCartSync();
   const router = useRouter();
 
+  const cacheKey = `search-results:${initialQuery}`;
+  const cached = useRef(getListCache<CachedSearchState>(cacheKey)).current;
+
   const [input, setInput] = useState(initialQuery);
   const [activeQuery, setActiveQuery] = useState(initialQuery);
-  const [allResults, setAllResults] = useState<ShopifyProduct[]>([]);
+  const [allResults, setAllResults] = useState<ShopifyProduct[]>(cached?.data.allResults ?? []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const skipNextFetch = useRef(!!cached);
 
   // Filter / sort state (mirrors ProductListingPage's room + sale pages)
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [sortIndex, setSortIndex] = useState(0);
-  const [priceRangeIndex, setPriceRangeIndex] = useState(0);
+  const [sortIndex, setSortIndex] = useState(cached?.data.sortIndex ?? 0);
+  const [priceRangeIndex, setPriceRangeIndex] = useState(cached?.data.priceRangeIndex ?? 0);
   const [pendingSort, setPendingSort] = useState(0);
   const [pendingPrice, setPendingPrice] = useState(0);
-  const [activeRoomFilter, setActiveRoomFilter] = useState<string | null>(null);
+  const [activeRoomFilter, setActiveRoomFilter] = useState<string | null>(cached?.data.activeRoomFilter ?? null);
 
   const activeFilterCount = (sortIndex > 0 ? 1 : 0) + (priceRangeIndex > 0 ? 1 : 0);
 
@@ -72,6 +84,10 @@ export function SearchResultsContent({ initialQuery }: { initialQuery: string })
   // Fetch a single batch of matches for the active term; room/price/sort are
   // then applied client-side (see filterAndSortProducts), same as Opening Sale.
   useEffect(() => {
+    if (skipNextFetch.current) {
+      skipNextFetch.current = false;
+      return;
+    }
     const shopifyQuery = buildSearchQuery(activeQuery);
     if (!shopifyQuery) {
       setAllResults([]);
@@ -102,6 +118,34 @@ export function SearchResultsContent({ initialQuery }: { initialQuery: string })
     () => filterAndSortProducts(allResults, { roomFilter: activeRoomFilter, priceRangeIndex, sortIndex }),
     [allResults, activeRoomFilter, priceRangeIndex, sortIndex],
   );
+
+  // Restore scroll position instantly when returning to cached results (e.g.
+  // navigating back from a product page).
+  useLayoutEffect(() => {
+    if (cached) window.scrollTo(0, cached.scrollY);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persist results + filter state and scroll position when leaving this page
+  // (e.g. clicking into a product), so back-navigation can restore it instead
+  // of re-searching from scratch and resetting scroll to the top. Next.js
+  // scrolls to top as soon as a navigation starts — before this component
+  // unmounts — so `window.scrollY` is already 0 by the time the unmount
+  // cleanup runs. Track the last real scroll position via a listener instead.
+  const scrollYRef = useRef(0);
+  useEffect(() => {
+    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const latest = useRef<CachedSearchState>({ allResults, sortIndex, priceRangeIndex, activeRoomFilter });
+  latest.current = { allResults, sortIndex, priceRangeIndex, activeRoomFilter };
+  useEffect(() => {
+    return () => {
+      setListCache(cacheKey, latest.current, scrollYRef.current);
+    };
+  }, [cacheKey]);
 
   const hasQuery = activeQuery.length > 0;
 

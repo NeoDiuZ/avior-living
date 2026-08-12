@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef, useLayoutEffect } from "react";
 import { Loader2, SlidersHorizontal } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Footer } from "@/components/site/Footer";
@@ -14,6 +14,7 @@ import {
   type ShopifyProduct,
 } from "@/lib/shopify/client";
 import { useCartSync } from "@/hooks/useCartSync";
+import { getListCache, setListCache } from "@/lib/listStateCache";
 
 const PAGE_SIZE = 24;
 const OPENING_SALE_PRICE = 219;
@@ -37,16 +38,28 @@ const CATEGORIES: Array<{ label: string; query: string | null; collection?: stri
   { label: "Pillows & Bedding", query: 'product_type:"Pillows" OR product_type:"Baby Pillows" OR product_type:"Bolster"' },
 ];
 
+const CACHE_KEY = "products-content";
+
+interface CachedListState {
+  activeCategory: number;
+  products: ShopifyProduct[];
+  cursor: string | null;
+  hasMore: boolean;
+}
+
 export function ProductsContent() {
   useCartSync();
 
-  const [activeCategory, setActiveCategory] = useState(0);
-  const [products, setProducts] = useState<ShopifyProduct[]>([]);
-  const [cursor, setCursor] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const cached = useRef(getListCache<CachedListState>(CACHE_KEY)).current;
+
+  const [activeCategory, setActiveCategory] = useState(cached?.data.activeCategory ?? 0);
+  const [products, setProducts] = useState<ShopifyProduct[]>(cached?.data.products ?? []);
+  const [cursor, setCursor] = useState<string | null>(cached?.data.cursor ?? null);
+  const [hasMore, setHasMore] = useState(cached?.data.hasMore ?? false);
+  const [loading, setLoading] = useState(!cached);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const skipNextFetch = useRef(!!cached);
 
   const fetchProducts = useCallback(async (categoryIndex: number, after: string | null = null) => {
     const isLoadMore = after !== null;
@@ -96,8 +109,41 @@ export function ProductsContent() {
   }, []);
 
   useEffect(() => {
+    if (skipNextFetch.current) {
+      skipNextFetch.current = false;
+      return;
+    }
     fetchProducts(activeCategory, null);
   }, [activeCategory, fetchProducts]);
+
+  // Restore scroll position instantly when returning to a cached list (e.g.
+  // navigating back from a product page) — no layout shift to wait out since
+  // the restored products render on the same pass.
+  useLayoutEffect(() => {
+    if (cached) window.scrollTo(0, cached.scrollY);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persist the list state + scroll position when leaving this page (e.g.
+  // clicking into a product), so a back-navigation can restore it instead of
+  // refetching from scratch and resetting scroll to the top. Next.js scrolls
+  // to top as soon as a navigation starts — before this component unmounts —
+  // so `window.scrollY` is already 0 by the time the unmount cleanup runs.
+  // Track the last real scroll position via a listener instead.
+  const scrollYRef = useRef(0);
+  useEffect(() => {
+    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const latest = useRef({ activeCategory, products, cursor, hasMore });
+  latest.current = { activeCategory, products, cursor, hasMore };
+  useEffect(() => {
+    return () => {
+      setListCache(CACHE_KEY, latest.current, scrollYRef.current);
+    };
+  }, []);
 
   const handleCategoryChange = (index: number) => {
     if (index === activeCategory) return;
